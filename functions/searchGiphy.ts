@@ -10,8 +10,8 @@ Deno.serve(async (req) => {
     }
 
     const url = new URL(req.url);
-    const query = url.searchParams.get('q') || 'trending';
-    const limit = url.searchParams.get('limit') || '25';
+    const query = url.searchParams.get('q') || '';
+    const limit = url.searchParams.get('limit') || '50';
     const offset = url.searchParams.get('offset') || '0';
 
     const apiKey = Deno.env.get('GIPHY_API_KEY');
@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
     }
 
     // Use search or trending endpoint
-    const endpoint = query === 'trending' 
+    const endpoint = (!query || query.trim() === '' || query === 'trending')
       ? `https://api.giphy.com/v1/gifs/trending?api_key=${apiKey}&limit=${limit}&offset=${offset}`
       : `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}`;
 
