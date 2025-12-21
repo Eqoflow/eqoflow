@@ -11,7 +11,7 @@ const CATEGORY_COLORS = {
   community: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
   privacy: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
   builder: "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300",
-  discovery: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300",
+  discovery: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300"
 };
 
 export default function QuestCard({ quest, completion, onClaim, onTrack, isLoading }) {
@@ -31,19 +31,19 @@ export default function QuestCard({ quest, completion, onClaim, onTrack, isLoadi
   };
 
   return (
-    <Card 
+    <Card
       className={`relative overflow-hidden transition-all hover:shadow-lg ${isCompleted ? 'opacity-75' : ''} bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800`}
       style={{
-        transition: 'all 0.3s ease',
+        transition: 'all 0.3s ease'
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = '0 0 35px color-mix(in srgb, var(--color-primary) 70%, transparent), 0 0 60px color-mix(in srgb, var(--color-primary) 40%, transparent)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.boxShadow = '';
-      }}
-    >
-      <CardHeader>
+      }}>
+
+      <CardHeader className="bg-[#000000] p-6 flex flex-col space-y-1.5">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
@@ -54,11 +54,11 @@ export default function QuestCard({ quest, completion, onClaim, onTrack, isLoadi
                     {getFrequencyIcon()}
                     <span className="capitalize">{quest.frequency}</span>
                   </Badge>
-                  {isRepeatable && maxClaims && (
-                    <Badge variant="secondary" className="text-gray-300 bg-gray-800">
+                  {isRepeatable && maxClaims &&
+              <Badge variant="secondary" className="text-gray-300 bg-gray-800">
                       {claimCount}/{maxClaims}
                     </Badge>
-                  )}
+              }
                 </div>
                 <CardTitle className="text-lg text-white">{quest.title}</CardTitle>
               </div>
@@ -73,7 +73,7 @@ export default function QuestCard({ quest, completion, onClaim, onTrack, isLoadi
             <CardDescription className="text-gray-400">{quest.description}</CardDescription>
             </CardHeader>
 
-            <CardContent>
+            <CardContent className="bg-[#000] pt-0 p-6">
             {/* Progress Bar */}
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
@@ -85,43 +85,43 @@ export default function QuestCard({ quest, completion, onClaim, onTrack, isLoadi
 
         {/* Actions */}
         <div className="mt-4 flex items-center gap-2">
-          {canClaim ? (
-            <Button 
-              onClick={() => onClaim(quest.quest_id)} 
-              disabled={isLoading}
-              className="flex-1 text-white"
-              style={{ backgroundColor: 'var(--color-primary)' }}
-            >
+          {canClaim ?
+          <Button
+            onClick={() => onClaim(quest.quest_id)}
+            disabled={isLoading}
+            className="flex-1 text-white"
+            style={{ backgroundColor: 'var(--color-primary)' }}>
+
               <CheckCircle2 className="w-4 h-4 mr-2" />
               Claim Reward
-            </Button>
-          ) : isCompleted && !isRepeatable ? (
-            <Button disabled className="flex-1 text-black bg-white hover:bg-gray-100" variant="outline">
+            </Button> :
+          isCompleted && !isRepeatable ?
+          <Button disabled className="flex-1 text-black bg-white hover:bg-gray-100" variant="outline">
               <CheckCircle2 className="w-4 h-4 mr-2" />
               Completed
-            </Button>
-          ) : isCompleted && isRepeatable && claimCount >= maxClaims ? (
-            <Button disabled className="flex-1 text-black bg-white hover:bg-gray-100" variant="outline">
+            </Button> :
+          isCompleted && isRepeatable && claimCount >= maxClaims ?
+          <Button disabled className="flex-1 text-black bg-white hover:bg-gray-100" variant="outline">
               Max Claims Reached
-            </Button>
-          ) : (
-            <Button 
-              onClick={() => onTrack(quest.quest_id)} 
-              variant="outline"
-              className="flex-1 text-black bg-white hover:bg-gray-100 border-transparent"
-            >
+            </Button> :
+
+          <Button
+            onClick={() => onTrack(quest.quest_id)}
+            variant="outline"
+            className="flex-1 text-black bg-white hover:bg-gray-100 border-transparent">
+
               Track Progress
             </Button>
-          )}
+          }
         </div>
 
         {/* Additional Info */}
-        {isRepeatable && (
-          <p className="text-xs text-gray-400 mt-2 text-center">
+        {isRepeatable &&
+        <p className="text-xs text-gray-400 mt-2 text-center">
             Resets {quest.frequency === 'daily' ? 'daily' : quest.frequency === 'weekly' ? 'weekly' : 'after claim'}
           </p>
-        )}
+        }
       </CardContent>
-    </Card>
-  );
+    </Card>);
+
 }
