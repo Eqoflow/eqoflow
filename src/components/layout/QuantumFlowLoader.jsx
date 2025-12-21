@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export default function EqoFlowLoader({ size = "md" }) {
+function EqoFlowLoader({ size = "md" }) {
   const sizeClasses = {
     sm: "w-16 h-16",
     md: "w-24 h-24", 
@@ -45,3 +45,6 @@ export default function EqoFlowLoader({ size = "md" }) {
     </div>
   );
 }
+
+export default EqoFlowLoader;
+export { EqoFlowLoader, EqoFlowLoader as QuantumFlowLoader };
