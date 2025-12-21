@@ -1222,7 +1222,10 @@ export default function Feed() {
       setInCache(CACHE_CONFIG.FEED_POSTS, updatedPosts);
 
       try {
-        const newPost = await Post.create({
+        console.log('[Feed.js] About to create post with media_urls:', postData.media_urls);
+        console.log('[Feed.js] Full postData being sent to Post.create:', postData);
+        
+        const dataToSave = {
           ...postData,
           content: postData.content || "",
           media_urls: postData.media_urls || [],
@@ -1241,7 +1244,15 @@ export default function Feed() {
           youtube_video_id: postData.youtube_video_id,
           youtube_thumbnail_url: postData.youtube_thumbnail_url,
           youtube_video_title: postData.youtube_video_title
-        });
+        };
+        
+        console.log('[Feed.js] Data being saved to DB:', dataToSave);
+        console.log('[Feed.js] media_urls in dataToSave:', dataToSave.media_urls);
+        
+        const newPost = await Post.create(dataToSave);
+        
+        console.log('[Feed.js] Post created successfully. newPost.media_urls:', newPost.media_urls);
+        console.log('[Feed.js] Full newPost object:', newPost);
 
         // Post to X if toggle was enabled
         if (postData.post_to_x && newPost.id) {
