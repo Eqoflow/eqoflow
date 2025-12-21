@@ -107,12 +107,11 @@ export default function IdentityHub({ user, onUpdate }) {
             try {
               if (popup && popup.closed) {
                 clearInterval(checkConnect);
-                setConnectingPlatforms((prev) => ({ ...prev, [platform.id]: false }));
+                // Wait a moment for backend to process the OAuth callback
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 // Refresh user data to check if connection succeeded
                 await refreshUser();
-                if (onUpdate) {
-                  await onUpdate({ ...user });
-                }
+                setConnectingPlatforms((prev) => ({ ...prev, [platform.id]: false }));
               }
             } catch (e) {
 
