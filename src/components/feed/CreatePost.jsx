@@ -240,6 +240,9 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log('[CreatePost] handleSubmit - mediaFiles at submission:', mediaFiles);
+    console.log('[CreatePost] mediaFiles.length:', mediaFiles.length);
+
     setIsSubmitting(true);
     setErrorMessage(null);
 
