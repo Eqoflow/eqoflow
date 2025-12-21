@@ -459,11 +459,19 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
 
   const handleGiphySelect = (gifUrl) => {
     console.log('Giphy GIF selected:', gifUrl);
-    console.log('Current mediaFiles:', mediaFiles);
-    const newMediaFiles = [...mediaFiles, { url: gifUrl, type: 'image', name: 'giphy.gif' }];
-    console.log('New mediaFiles:', newMediaFiles);
-    setMediaFiles(newMediaFiles);
-    setShowGiphyPicker(false);
+    console.log('Current mediaFiles before:', mediaFiles);
+    
+    // Use functional update to ensure we get the latest state
+    setMediaFiles(prevFiles => {
+      const newFiles = [...prevFiles, { url: gifUrl, type: 'image', name: 'giphy.gif' }];
+      console.log('New mediaFiles after:', newFiles);
+      return newFiles;
+    });
+    
+    // Close the picker after a brief delay to ensure state update completes
+    setTimeout(() => {
+      setShowGiphyPicker(false);
+    }, 100);
   };
 
   return (
