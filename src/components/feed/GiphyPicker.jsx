@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { searchGiphy } from "@/functions/searchGiphy";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -19,10 +19,9 @@ export default function GiphyPicker({ isOpen, onClose, onSelect }) {
   const loadGifs = async (query) => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/functions/searchGiphy?q=${encodeURIComponent(query)}`);
-      const data = await response.json();
-      if (data?.gifs) {
-        setGifs(data.gifs);
+      const response = await searchGiphy({ q: query, limit: '25' });
+      if (response.data?.gifs) {
+        setGifs(response.data.gifs);
       }
     } catch (error) {
       console.error("Failed to load GIFs:", error);
