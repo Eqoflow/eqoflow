@@ -35,10 +35,10 @@ Deno.serve(async (req) => {
       gifs: data.data.map(gif => ({
         id: gif.id,
         title: gif.title,
-        url: gif.images.original.url,
+        url: gif.images.downsized.url || gif.images.original.url,
         preview: gif.images.fixed_height.url,
-        width: gif.images.original.width,
-        height: gif.images.original.height
+        width: gif.images.downsized?.width || gif.images.original.width,
+        height: gif.images.downsized?.height || gif.images.original.height
       })),
       pagination: data.pagination
     });
