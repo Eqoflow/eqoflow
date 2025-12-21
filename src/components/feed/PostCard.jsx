@@ -98,7 +98,7 @@ const renderMedia = (url) => {
         <div className="relative w-full h-full">
           <img src={url} alt="Post media" className="rounded-lg object-cover w-full h-full" />
           <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-white">
-            GIPHY
+            Powered by Giphy
           </div>
         </div>
       );
