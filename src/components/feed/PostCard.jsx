@@ -89,9 +89,20 @@ const ADMIN_EMAILS = [
 const renderMedia = (url) => {
   // Check if URL contains .gif in the path (for Giphy URLs with query params)
   const isGif = url.toLowerCase().includes('.gif');
+  const isGiphy = url.toLowerCase().includes('giphy.com');
   const extension = url.split('.').pop().toLowerCase().split('?')[0];
 
   if (['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(extension) || isGif) {
+    if (isGiphy) {
+      return (
+        <div className="relative w-full h-full">
+          <img src={url} alt="Post media" className="rounded-lg object-cover w-full h-full" />
+          <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-white">
+            GIPHY
+          </div>
+        </div>
+      );
+    }
     return <img src={url} alt="Post media" className="rounded-lg object-cover w-full h-full" />;
   }
   if (['mp4', 'webm'].includes(extension)) {
