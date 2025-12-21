@@ -103,13 +103,16 @@ export default function IdentityHub({ user, onUpdate }) {
           const popup = window.open(data.authUrl, '_blank', 'width=600,height=700');
 
           // Listen for completion
-          const checkConnect = setInterval(() => {
+          const checkConnect = setInterval(async () => {
             try {
               if (popup && popup.closed) {
                 clearInterval(checkConnect);
                 setConnectingPlatforms((prev) => ({ ...prev, [platform.id]: false }));
-                // Refresh to check if connection succeeded
-                onUpdate({ ...user });
+                // Refresh user data to check if connection succeeded
+                await refreshUser();
+                if (onUpdate) {
+                  await onUpdate({ ...user });
+                }
               }
             } catch (e) {
 
