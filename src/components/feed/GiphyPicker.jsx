@@ -19,12 +19,15 @@ export default function GiphyPicker({ isOpen, onClose, onSelect }) {
   const loadGifs = async (query) => {
     setLoading(true);
     try {
-      const response = await searchGiphy({ q: query, limit: '25' });
+      const response = await searchGiphy({ q: query || '', limit: '50' });
       if (response.data?.gifs) {
         setGifs(response.data.gifs);
+      } else {
+        setGifs([]);
       }
     } catch (error) {
       console.error("Failed to load GIFs:", error);
+      setGifs([]);
     } finally {
       setLoading(false);
     }
