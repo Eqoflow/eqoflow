@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { searchGiphy } from "@/functions/searchGiphy";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, Loader2 } from "lucide-react";
@@ -52,6 +52,9 @@ export default function GiphyPicker({ isOpen, onClose, onSelect }) {
       <DialogContent className="bg-gray-900 text-white border-gray-800 max-w-3xl">
         <DialogHeader>
           <DialogTitle>Search GIFs</DialogTitle>
+          <DialogDescription className="text-gray-400">
+            Search and select GIFs from Giphy to add to your post
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSearch} className="relative mb-4">
