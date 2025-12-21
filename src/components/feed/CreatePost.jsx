@@ -30,6 +30,7 @@ import { UploadFile } from "@/integrations/Core";
 import NFTGateSetup from "../nft/NFTGateSetup";
 import { Community } from '@/entities/Community';
 import { getYoutubeVideoDetails } from '@/functions/getYoutubeVideoDetails';
+import GiphyPicker from "./GiphyPicker";
 
 // Helper function to detect if an image is PNG
 const isPngImage = (url) => {
@@ -80,6 +81,9 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
 
   // X cross-posting state
   const [postToX, setPostToX] = useState(false);
+
+  // Giphy picker state
+  const [showGiphyPicker, setShowGiphyPicker] = useState(false);
 
   const fetchUserCommunities = useCallback(async () => {
     if (user && user.email && !communityId) {
@@ -453,6 +457,11 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
     setMediaUploadAcceptType(null);
   };
 
+  const handleGiphySelect = (gifUrl) => {
+    setMediaFiles([...mediaFiles, { url: gifUrl, type: 'image', name: 'giphy.gif' }]);
+    setShowGiphyPicker(false);
+  };
+
   return (
     <Card className="dark-card neon-glow max-h-[90vh] flex flex-col">
       <CardHeader className="bg-[#000000] pb-3 p-6 flex flex-col space-y-1.5 md:pb-4 flex-shrink-0">
@@ -809,9 +818,9 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
                 type="button"
                 variant="ghost"
                 size="sm"
-                onClick={() => handleIconClick('image/gif')}
+                onClick={() => setShowGiphyPicker(true)}
                 className="text-gray-400 hover:text-purple-400 px-2 text-xs font-bold h-10"
-                title="Upload GIF"
+                title="Search GIFs"
                 disabled={showPollInputs}>
                 GIF
               </Button>
@@ -932,6 +941,11 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
 
         }
       </AnimatePresence>
+
+      <GiphyPicker
+        isOpen={showGiphyPicker}
+        onClose={() => setShowGiphyPicker(false)}
+        onSelect={handleGiphySelect} />
 
       {/* Media Upload Warning Modal */}
       <AnimatePresence>
