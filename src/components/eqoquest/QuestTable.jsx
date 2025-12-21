@@ -57,7 +57,7 @@ export default function QuestTable({ quests, completions, onClaim, onTrack, isLo
                 <TableCell>
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <p className="font-semibold text-sm text-white">{quest.title}</p>
+                      <p className="font-semibold text-sm" style={{ color: 'var(--color-primary)' }}>{quest.title}</p>
                       <Badge variant="outline" className="flex items-center gap-1 text-white border-gray-700">
                         {getFrequencyIcon(quest.frequency)}
                         <span className="capitalize text-xs">{quest.frequency}</span>
