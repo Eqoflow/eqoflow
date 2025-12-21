@@ -1251,15 +1251,20 @@ export default function Feed() {
               : newPost.content;
             
             const xResult = await postToX({ text: tweetText });
+            console.log('X posting result:', xResult);
             
-            if (xResult.data?.success && xResult.data?.tweetId) {
+            if (xResult?.data?.success && xResult?.data?.tweetId) {
               await Post.update(newPost.id, {
                 x_tweet_id: xResult.data.tweetId,
                 x_posted_at: new Date().toISOString()
               });
+              console.log('Successfully posted to X with tweet ID:', xResult.data.tweetId);
+            } else {
+              console.warn('X posting did not return success or tweetId:', xResult);
             }
           } catch (xError) {
             console.error('Failed to post to X:', xError);
+            console.error('X error details:', xError?.response?.data || xError.message);
             // Don't block the post creation if X posting fails
           }
         }
