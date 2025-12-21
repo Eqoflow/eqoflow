@@ -31,15 +31,15 @@ export default function QuestTable({ quests, completions, onClaim, onTrack, isLo
   };
 
   return (
-    <div className="rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden bg-white dark:bg-gray-900">
+    <div className="rounded-lg border border-gray-800 overflow-hidden bg-[#000000]">
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead className="w-[40%]">Quest</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Progress</TableHead>
-            <TableHead className="text-center">SP</TableHead>
-            <TableHead className="text-right">Action</TableHead>
+          <TableRow className="border-b border-gray-800">
+            <TableHead className="w-[40%] text-white">Quest</TableHead>
+            <TableHead className="text-white">Category</TableHead>
+            <TableHead className="text-white">Progress</TableHead>
+            <TableHead className="text-center text-white">SP</TableHead>
+            <TableHead className="text-right text-white">Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -53,22 +53,22 @@ export default function QuestTable({ quests, completions, onClaim, onTrack, isLo
             const maxClaims = quest.max_claims;
 
             return (
-              <TableRow key={quest.quest_id} className={isCompleted ? 'opacity-60' : ''}>
+              <TableRow key={quest.quest_id} className={`border-b border-gray-800 ${isCompleted ? 'opacity-60' : ''}`}>
                 <TableCell>
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <p className="font-semibold text-sm">{quest.title}</p>
-                      <Badge variant="outline" className="flex items-center gap-1">
+                      <p className="font-semibold text-sm text-white">{quest.title}</p>
+                      <Badge variant="outline" className="flex items-center gap-1 text-white border-gray-700">
                         {getFrequencyIcon(quest.frequency)}
                         <span className="capitalize text-xs">{quest.frequency}</span>
                       </Badge>
                       {isRepeatable && maxClaims && (
-                        <Badge variant="secondary" className="text-xs">
+                        <Badge variant="secondary" className="text-xs text-white bg-gray-800">
                           {claimCount}/{maxClaims}
                         </Badge>
                       )}
                     </div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">{quest.description}</p>
+                    <p className="text-xs text-gray-400">{quest.description}</p>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -79,7 +79,7 @@ export default function QuestTable({ quests, completions, onClaim, onTrack, isLo
                 <TableCell>
                   <div className="space-y-1 min-w-[120px]">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-gray-600 dark:text-gray-400">{progress}%</span>
+                      <span className="text-gray-400">{progress}%</span>
                     </div>
                     <Progress value={progress} className="h-2" />
                   </div>
