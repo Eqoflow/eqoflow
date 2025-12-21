@@ -458,6 +458,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   };
 
   const handleGiphySelect = (gifUrl) => {
+    console.log('Giphy GIF selected:', gifUrl);
     setMediaFiles([...mediaFiles, { url: gifUrl, type: 'image', name: 'giphy.gif' }]);
     setShowGiphyPicker(false);
   };
