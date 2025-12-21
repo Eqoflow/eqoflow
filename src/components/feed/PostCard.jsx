@@ -956,17 +956,53 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
                       </>
                   }
                     {onEdit && onDelete && currentUser?.email === post.created_by &&
-                  <>
+                    <>
                         <DropdownMenuItem onClick={() => onEdit(post)} className="text-white hover:bg-purple-500/10 cursor-pointer">
                           <Edit className="w-4 h-4 mr-2" />
                           Edit Echo
                         </DropdownMenuItem>
+                        {currentUser?.x_access_token && !displayPost.x_tweet_id && (
+                          <DropdownMenuItem 
+                            onClick={async () => {
+                              try {
+                                const tweetText = displayPost.content.length > 280 
+                                  ? displayPost.content.substring(0, 277) + '...'
+                                  : displayPost.content;
+
+                                const xResult = await base44.functions.invoke('postToX', { text: tweetText });
+
+                                if (xResult?.data?.success && xResult?.data?.tweetId) {
+                                  await Post.update(displayPost.id, {
+                                    x_tweet_id: xResult.data.tweetId,
+                                    x_posted_at: new Date().toISOString()
+                                  });
+
+                                  const updated = { ...displayPost, x_tweet_id: xResult.data.tweetId, x_posted_at: new Date().toISOString() };
+                                  setLocalPost(updated);
+                                  if (onReactionChange) onReactionChange(updated);
+
+                                  setErrorMessage("Successfully posted to X!");
+                                  setTimeout(() => setErrorMessage(null), 3000);
+                                }
+                              } catch (error) {
+                                console.error('Failed to post to X:', error);
+                                setErrorMessage("Failed to post to X. Please try again.");
+                                setTimeout(() => setErrorMessage(null), 3000);
+                              }
+                            }} 
+                            className="text-white hover:bg-purple-500/10 cursor-pointer">
+                            <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                            </svg>
+                            Post to X
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem onClick={() => onDelete(post.id)} className="text-red-400 hover:!text-red-400 hover:!bg-red-500/10 cursor-pointer">
                           <Trash2 className="w-4 h-4 mr-2" />
                           Delete Echo
                         </DropdownMenuItem>
                       </>
-                  }
+                    }
                   </DropdownMenuContent>
                 </DropdownMenu>
               }
@@ -1312,6 +1348,42 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
                         <Edit className="w-4 h-4 mr-2" />
                         Edit Echo
                       </DropdownMenuItem>
+                      {currentUser?.x_access_token && !displayPost.x_tweet_id && (
+                        <DropdownMenuItem 
+                          onClick={async () => {
+                            try {
+                              const tweetText = displayPost.content.length > 280 
+                                ? displayPost.content.substring(0, 277) + '...'
+                                : displayPost.content;
+                              
+                              const xResult = await base44.functions.invoke('postToX', { text: tweetText });
+                              
+                              if (xResult?.data?.success && xResult?.data?.tweetId) {
+                                await Post.update(displayPost.id, {
+                                  x_tweet_id: xResult.data.tweetId,
+                                  x_posted_at: new Date().toISOString()
+                                });
+                                
+                                const updated = { ...displayPost, x_tweet_id: xResult.data.tweetId, x_posted_at: new Date().toISOString() };
+                                setLocalPost(updated);
+                                if (onReactionChange) onReactionChange(updated);
+                                
+                                setErrorMessage("Successfully posted to X!");
+                                setTimeout(() => setErrorMessage(null), 3000);
+                              }
+                            } catch (error) {
+                              console.error('Failed to post to X:', error);
+                              setErrorMessage("Failed to post to X. Please try again.");
+                              setTimeout(() => setErrorMessage(null), 3000);
+                            }
+                          }} 
+                          className="text-white hover:bg-purple-500/10 cursor-pointer">
+                          <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                          </svg>
+                          Post to X
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuItem onClick={() => onDelete(displayPost.id)} className="text-red-400 hover:!text-red-400 hover:!bg-red-500/10 cursor-pointer">
                         <Trash2 className="w-4 h-4 mr-2" />
                         Delete Echo
