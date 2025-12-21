@@ -31,17 +31,17 @@ export default function QuestCard({ quest, completion, onClaim, onTrack, isLoadi
   };
 
   return (
-    <Card
-      className={`relative overflow-hidden transition-all hover:shadow-lg ${isCompleted ? 'opacity-75' : ''} bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800`}
-      style={{
-        transition: 'all 0.3s ease'
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = '0 0 35px color-mix(in srgb, var(--color-primary) 70%, transparent), 0 0 60px color-mix(in srgb, var(--color-primary) 40%, transparent)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = '';
-      }}>
+    <Card className="bg-[#383838] text-card-foreground opacity-75 rounded-xl border shadow relative overflow-hidden transition-all hover:shadow-lg dark:bg-gray-900 border-gray-200 dark:border-gray-800"
+
+    style={{
+      transition: 'all 0.3s ease'
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.boxShadow = '0 0 35px color-mix(in srgb, var(--color-primary) 70%, transparent), 0 0 60px color-mix(in srgb, var(--color-primary) 40%, transparent)';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.boxShadow = '';
+    }}>
 
       <CardHeader className="bg-[#000000] p-6 flex flex-col space-y-1.5">
         <div className="flex items-start justify-between gap-2">
