@@ -9,10 +9,10 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { searchParams } = new URL(req.url);
-    const query = searchParams.get('q') || 'trending';
-    const limit = searchParams.get('limit') || '25';
-    const offset = searchParams.get('offset') || '0';
+    const url = new URL(req.url);
+    const query = url.searchParams.get('q') || 'trending';
+    const limit = url.searchParams.get('limit') || '25';
+    const offset = url.searchParams.get('offset') || '0';
 
     const apiKey = Deno.env.get('GIPHY_API_KEY');
     if (!apiKey) {

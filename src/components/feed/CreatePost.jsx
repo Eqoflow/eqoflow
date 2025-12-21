@@ -818,11 +818,22 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
                 type="button"
                 variant="ghost"
                 size="sm"
-                onClick={() => setShowGiphyPicker(true)}
+                onClick={() => handleIconClick('image/gif')}
                 className="text-gray-400 hover:text-purple-400 px-2 text-xs font-bold h-10"
-                title="Search GIFs"
+                title="Upload GIF"
                 disabled={showPollInputs}>
                 GIF
+              </Button>
+
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowGiphyPicker(true)}
+                className="text-gray-400 hover:text-purple-400 px-2 text-xs font-bold h-10"
+                title="Search Giphy"
+                disabled={showPollInputs}>
+                <span className="text-[10px]">GIPHY</span>
               </Button>
 
               <Button

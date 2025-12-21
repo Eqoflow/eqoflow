@@ -19,9 +19,10 @@ export default function GiphyPicker({ isOpen, onClose, onSelect }) {
   const loadGifs = async (query) => {
     setLoading(true);
     try {
-      const response = await base44.functions.invoke('searchGiphy', { q: query });
-      if (response.data?.gifs) {
-        setGifs(response.data.gifs);
+      const response = await fetch(`/api/functions/searchGiphy?q=${encodeURIComponent(query)}`);
+      const data = await response.json();
+      if (data?.gifs) {
+        setGifs(data.gifs);
       }
     } catch (error) {
       console.error("Failed to load GIFs:", error);
