@@ -599,7 +599,7 @@ export default function EqoQuest() {
                 </Card>
 
             {/* Competitive Overview */}
-            <Card className="bg-white dark:bg-gray-800 border-2 border-gray-700 p-6 lg:h-[380px]">
+            <Card className="bg-[#000000] text-card-foreground p-6 rounded-xl shadow dark:bg-gray-800 border-2 border-gray-700 lg:h-[380px]">
               <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <h3 className="text-lg font-bold uppercase tracking-wide" style={{ color: 'var(--color-primary)' }}>Competitive Overview</h3>
                 <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-900/50 px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700">
@@ -844,8 +844,8 @@ export default function EqoQuest() {
             </Card>
 
             {/* Top Post */}
-            <Card className="bg-white dark:bg-gray-800 border-2 border-gray-700 p-4 flex flex-col lg:h-[177px]">
-              <h3 className="bg-[#ff0000] p-3 rounded-lg dark:bg-gray-700 flex-1 overflow-hidden" style={{ color: 'var(--color-primary)' }}>Top Post</h3>
+            <Card className="bg-[#000000] text-card-foreground p-4 rounded-xl shadow dark:bg-gray-800 border-2 border-gray-700 flex flex-col lg:h-[177px]">
+              <h3 className="bg-[#000000] p-3 rounded-lg dark:bg-gray-700 flex-1 overflow-hidden" style={{ color: 'var(--color-primary)' }}>Top Post</h3>
               <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 flex-1 overflow-hidden">
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Most liked post ({topPost?.like_count || 0} ❤️):</p>
                 <p className="text-sm text-gray-900 dark:text-white line-clamp-2">
