@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { createPageUrl } from "@/utils";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,8 +21,8 @@ import {
   Flame,
   Gem,
   Globe } from
-  "lucide-react";
-  import QuestCard from "../components/eqoquest/QuestCard";
+"lucide-react";
+import QuestCard from "../components/eqoquest/QuestCard";
 import QuestTable from "../components/eqoquest/QuestTable";
 import UserStrip from "../components/eqoquest/UserStrip";
 import FullLeaderboardModal from "../components/eqoquest/FullLeaderboardModal";
@@ -93,15 +94,15 @@ export default function EqoQuest() {
   useQuery({
     queryKey: ['checkProgress', user?.id, currentSeason?.season_id],
     queryFn: async () => {
-        if (!user || !currentSeason) return null;
-        try {
-            await base44.functions.invoke('checkQuestProgress');
-            queryClient.invalidateQueries(['completions']);
-            return true;
-        } catch (error) {
-            console.error("Failed to check quest progress:", error);
-            return false;
-        }
+      if (!user || !currentSeason) return null;
+      try {
+        await base44.functions.invoke('checkQuestProgress');
+        queryClient.invalidateQueries(['completions']);
+        return true;
+      } catch (error) {
+        console.error("Failed to check quest progress:", error);
+        return false;
+      }
     },
     enabled: !!user && !!currentSeason,
     staleTime: 60000, // Only run once every minute max
@@ -146,29 +147,29 @@ export default function EqoQuest() {
 
       // Fetch real-time stats from backend function to ensure accuracy
       try {
-          const response = await base44.functions.invoke('getUserEngagementStats');
-          const stats = response.data;
+        const response = await base44.functions.invoke('getUserEngagementStats');
+        const stats = response.data;
 
-          // Fallback to LifetimeProgression if function fails or returns empty? 
-          // No, function is source of truth for "all time" now.
+        // Fallback to LifetimeProgression if function fails or returns empty? 
+        // No, function is source of truth for "all time" now.
 
-          // We still need "level" calculation, which the function didn't do explicitly, 
-          // but we can pass EP to the UI which calculates level from EP.
-          // We construct a progression object compatible with existing UI.
-          return {
-              ep_total: stats.totalEP || 0,
-              level: 0, // Will be calculated by UI based on ep_total
-              posts: stats.posts,
-              shares: stats.shares,
-              comments: stats.comments,
-              replies: stats.replies
-          };
+        // We still need "level" calculation, which the function didn't do explicitly, 
+        // but we can pass EP to the UI which calculates level from EP.
+        // We construct a progression object compatible with existing UI.
+        return {
+          ep_total: stats.totalEP || 0,
+          level: 0, // Will be calculated by UI based on ep_total
+          posts: stats.posts,
+          shares: stats.shares,
+          comments: stats.comments,
+          replies: stats.replies
+        };
       } catch (error) {
-          console.error("Failed to fetch user engagement stats:", error);
-          // Fallback to old method if function fails
-          const progs = await base44.entities.LifetimeProgression.filter({ user_id: user.id });
-          if (progs.length === 0) return { ep_total: 0, level: 0 };
-          return progs[0];
+        console.error("Failed to fetch user engagement stats:", error);
+        // Fallback to old method if function fails
+        const progs = await base44.entities.LifetimeProgression.filter({ user_id: user.id });
+        if (progs.length === 0) return { ep_total: 0, level: 0 };
+        return progs[0];
       }
     },
     enabled: !!user?.email,
@@ -201,15 +202,15 @@ export default function EqoQuest() {
 
   // Fetch all user's comments for metrics calculation
   const { data: userComments = [] } = useQuery({
-      queryKey: ['userComments', user?.email],
-      queryFn: async () => {
-          if (!user?.email) return [];
-          // Comments usually linked via created_by (email) or sometimes author_email/user_id
-          // Based on Comment schema in snapshot, it has created_by (built-in). 
-          // It does not explicitly have user_id in properties list but typically created_by is reliable for "my comments".
-          return await base44.entities.Comment.filter({ created_by: user.email });
-      },
-      enabled: !!user?.email
+    queryKey: ['userComments', user?.email],
+    queryFn: async () => {
+      if (!user?.email) return [];
+      // Comments usually linked via created_by (email) or sometimes author_email/user_id
+      // Based on Comment schema in snapshot, it has created_by (built-in). 
+      // It does not explicitly have user_id in properties list but typically created_by is reliable for "my comments".
+      return await base44.entities.Comment.filter({ created_by: user.email });
+    },
+    enabled: !!user?.email
   });
 
   // Fetch quest completions (needed for metrics)
@@ -234,10 +235,10 @@ export default function EqoQuest() {
     // Pace: SP earned per day since season started
     let pace = 0;
     if (currentSeason && userScore) {
-        const seasonStart = new Date(currentSeason.start_date);
-        const now = new Date();
-        const daysInSeason = Math.max(1, Math.ceil((now - seasonStart) / (1000 * 60 * 60 * 24)));
-        pace = (userScore.sp_total / daysInSeason).toFixed(2);
+      const seasonStart = new Date(currentSeason.start_date);
+      const now = new Date();
+      const daysInSeason = Math.max(1, Math.ceil((now - seasonStart) / (1000 * 60 * 60 * 24)));
+      pace = (userScore.sp_total / daysInSeason).toFixed(2);
     }
 
     // Activity: Ratio of days with posts to days since account creation
@@ -258,8 +259,8 @@ export default function EqoQuest() {
     // Use stats from progression if available (fetched from backend function), otherwise fallback to local calculation
     const posts = progression?.posts !== undefined ? progression.posts : userPosts.filter((post) => !post.is_repost).length;
     const shares = progression?.shares !== undefined ? progression.shares : userPosts.filter((post) => post.is_repost).length;
-    const comments = progression?.comments !== undefined ? progression.comments : userComments.filter(c => !c.parent_comment_id).length;
-    const replies = progression?.replies !== undefined ? progression.replies : userComments.filter(c => !!c.parent_comment_id).length;
+    const comments = progression?.comments !== undefined ? progression.comments : userComments.filter((c) => !c.parent_comment_id).length;
+    const replies = progression?.replies !== undefined ? progression.replies : userComments.filter((c) => !!c.parent_comment_id).length;
 
     // Quests: Completed quests
     const quests = completions.filter((c) => c.completed).length;
@@ -268,7 +269,7 @@ export default function EqoQuest() {
     const reputation = ((progression?.ep_total || 0) / 1000).toFixed(1);
 
     return { pace, activity, convoPercent, posts, replies, quests, comments, shares, reputation };
-    }, [user, currentSeason, userScore, userPosts, userComments, completions, progression]);
+  }, [user, currentSeason, userScore, userPosts, userComments, completions, progression]);
 
   // Fetch full leaderboard (top 100)
   const { data: fullLeaderboardData = [] } = useQuery({
@@ -416,7 +417,7 @@ export default function EqoQuest() {
       alert("Please log in to update your avatar");
       return;
     }
-    
+
     setUpdatingAvatar(true);
     try {
       if (userProfile) {
@@ -789,7 +790,7 @@ export default function EqoQuest() {
 
             {/* Your Rank */}
             <Card className="bg-white dark:bg-gray-800 border-2 border-gray-700 p-4 h-[177px] relative">
-              <h3 className="text-sm font-bold mb-2 uppercase" style={{ color: 'var(--color-primary)' }}>Your Rank</h3>
+              <h3 className="bg-[#000000] absolute inset-0 flex items-center justify-center" style={{ color: 'var(--color-primary)' }}>Your Rank</h3>
               <div className="absolute inset-0 flex items-center justify-center">
                 {(() => {
                   const currentLevel = progression?.level || 0;
@@ -844,7 +845,7 @@ export default function EqoQuest() {
 
             {/* Top Post */}
             <Card className="bg-white dark:bg-gray-800 border-2 border-gray-700 p-4 flex flex-col lg:h-[177px]">
-              <h3 className="text-sm font-bold mb-2 uppercase" style={{ color: 'var(--color-primary)' }}>Top Post</h3>
+              <h3 className="bg-[#ff0000] p-3 rounded-lg dark:bg-gray-700 flex-1 overflow-hidden" style={{ color: 'var(--color-primary)' }}>Top Post</h3>
               <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 flex-1 overflow-hidden">
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Most liked post ({topPost?.like_count || 0} ❤️):</p>
                 <p className="text-sm text-gray-900 dark:text-white line-clamp-2">
@@ -870,8 +871,8 @@ export default function EqoQuest() {
           isOpen={showAvatarModal}
           onClose={() => setShowAvatarModal(false)}
           onSelect={handleAvatarSelect}
-          isLoading={updatingAvatar}
-        />
+          isLoading={updatingAvatar} />
+
 
         {/* User Strip */}
         <div className="mt-8">
