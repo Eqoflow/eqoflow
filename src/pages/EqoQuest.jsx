@@ -491,7 +491,7 @@ export default function EqoQuest() {
   const primaryColor = getPrimaryColor();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 eqo-quest-page">
+    <div className="min-h-screen bg-[#000000] dark:bg-gray-900 eqo-quest-page">
       <style>{`
         :root {
           --color-primary: ${primaryColor};
