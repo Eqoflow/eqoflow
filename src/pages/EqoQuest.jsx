@@ -511,7 +511,7 @@ export default function EqoQuest() {
         }
       `}</style>
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800">
+      <div className="sticky top-0 z-20 bg-[#000000] backdrop-blur-xl border-b border-gray-800">
         <div className="bg-[#000000] mx-auto px-4 py-4 flex items-center justify-between max-w-7xl">
           <h1 className="text-xl font-bold" style={{ color: 'var(--color-primary)' }}>EqoQuest</h1>
         </div>
