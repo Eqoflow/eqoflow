@@ -10,11 +10,12 @@ export default function UnlockContentModal({ post, user, onClose, onSuccess }) {
   const [isUnlocking, setIsUnlocking] = useState(false);
   const [error, setError] = useState(null);
 
-  const userBalance = Number(user?.token_balance) || 0;
-  const price = Number(post?.eqoflo_price) || 0;
+  // Parse values carefully to ensure proper comparison
+  const userBalance = parseFloat(user?.token_balance) || 0;
+  const price = parseFloat(post?.eqoflo_price) || 0;
   const platformFee = Math.floor(price * 0.07);
   const creatorReceives = price - platformFee;
-  const hasEnoughBalance = userBalance >= price;
+  const hasEnoughBalance = userBalance >= price && price > 0;
 
   const handleUnlock = async () => {
     setIsUnlocking(true);

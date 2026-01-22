@@ -39,52 +39,54 @@ Deno.serve(async (req) => {
     }
 
     // Get user's current balance
-    const userProfiles = await base44.entities.UserProfileData.filter({ user_email: user.email });
+    const userProfiles = await base44.asServiceRole.entities.UserProfileData.filter({ user_email: user.email });
     const userProfile = userProfiles.length > 0 ? userProfiles[0] : null;
-    const currentBalance = userProfile?.token_balance || 0;
+    const currentBalance = parseFloat(userProfile?.token_balance) || 0;
+    const requiredPrice = parseFloat(post.eqoflo_price) || 0;
 
     // Check if user has enough balance
-    if (currentBalance < post.eqoflo_price) {
+    if (currentBalance < requiredPrice) {
       return Response.json({ 
         error: 'Insufficient balance',
-        required: post.eqoflo_price,
+        required: requiredPrice,
         current: currentBalance
       }, { status: 400 });
     }
 
     // Calculate platform fee (7%) and creator amount (93%)
-    const platformFee = Math.floor(post.eqoflo_price * 0.07);
-    const creatorAmount = post.eqoflo_price - platformFee;
+    const platformFee = Math.floor(requiredPrice * 0.07);
+    const creatorAmount = requiredPrice - platformFee;
 
     // Deduct from user's balance
-    const newUserBalance = currentBalance - post.eqoflo_price;
+    const newUserBalance = currentBalance - requiredPrice;
     if (userProfile) {
-      await base44.entities.UserProfileData.update(userProfile.id, {
+      await base44.asServiceRole.entities.UserProfileData.update(userProfile.id, {
         token_balance: newUserBalance
       });
     } else {
-      await base44.entities.UserProfileData.create({
+      await base44.asServiceRole.entities.UserProfileData.create({
         user_email: user.email,
         token_balance: newUserBalance
       });
     }
 
     // Add to creator's balance
-    const creatorProfiles = await base44.entities.UserProfileData.filter({ user_email: post.created_by });
+    const creatorProfiles = await base44.asServiceRole.entities.UserProfileData.filter({ user_email: post.created_by });
     if (creatorProfiles.length > 0) {
       const creatorProfile = creatorProfiles[0];
-      await base44.entities.UserProfileData.update(creatorProfile.id, {
-        token_balance: (creatorProfile.token_balance || 0) + creatorAmount
+      const creatorCurrentBalance = parseFloat(creatorProfile.token_balance) || 0;
+      await base44.asServiceRole.entities.UserProfileData.update(creatorProfile.id, {
+        token_balance: creatorCurrentBalance + creatorAmount
       });
     } else {
-      await base44.entities.UserProfileData.create({
+      await base44.asServiceRole.entities.UserProfileData.create({
         user_email: post.created_by,
         token_balance: creatorAmount
       });
     }
 
     // Log platform fee as revenue
-    await base44.entities.PlatformRevenue.create({
+    await base44.asServiceRole.entities.PlatformRevenue.create({
       source: 'gated_content',
       amount: platformFee,
       currency: 'eqoflo',
@@ -95,17 +97,17 @@ Deno.serve(async (req) => {
 
     // Update post - add user to unlocked_by and update total_revenue
     const currentUnlockedBy = post.unlocked_by || [];
-    const currentTotalRevenue = post.total_revenue || 0;
+    const currentTotalRevenue = parseFloat(post.total_revenue) || 0;
 
-    await base44.entities.Post.update(postId, {
+    await base44.asServiceRole.entities.Post.update(postId, {
       unlocked_by: [...currentUnlockedBy, user.email],
-      total_revenue: currentTotalRevenue + post.eqoflo_price
+      total_revenue: currentTotalRevenue + requiredPrice
     });
 
     return Response.json({
       success: true,
       message: 'Content unlocked successfully',
-      paid: post.eqoflo_price,
+      paid: requiredPrice,
       creatorReceived: creatorAmount,
       platformFee: platformFee,
       newBalance: newUserBalance
