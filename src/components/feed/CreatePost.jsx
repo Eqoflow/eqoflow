@@ -23,7 +23,8 @@ import {
   Loader2,
   AlertTriangle,
   BookMarked,
-  BarChart3 } from
+  BarChart3,
+  Coins } from
 "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UploadFile } from "@/integrations/Core";
