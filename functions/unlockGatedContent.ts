@@ -52,7 +52,7 @@ Deno.serve(async (req) => {
     }
 
     // Calculate platform fee (7%) and creator amount (93%)
-    const platformFee = Math.floor(requiredPrice * 0.07);
+    const platformFee = Math.round(requiredPrice * 0.07);
     const creatorAmount = requiredPrice - platformFee;
 
     // Deduct from user's balance
