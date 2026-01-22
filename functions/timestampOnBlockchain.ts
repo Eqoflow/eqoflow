@@ -3,7 +3,14 @@ import { Connection, Keypair, PublicKey, Transaction, SystemProgram } from 'npm:
 import bs58 from 'npm:bs58@6.0.0';
 
 const EQOFLO_FEE = 3; // $eqoflo fee for blockchain timestamping
-const SOLANA_RPC = 'https://api.mainnet-beta.solana.com';
+
+// Use Helius RPC for faster, more reliable blockchain operations
+const getHeliusRpc = () => {
+  const heliusKey = Deno.env.get('HELIUS_API_KEY');
+  return heliusKey 
+    ? `https://mainnet.helius-rpc.com/?api-key=${heliusKey}`
+    : 'https://api.mainnet-beta.solana.com';
+};
 
 Deno.serve(async (req) => {
   try {
@@ -51,8 +58,10 @@ Deno.serve(async (req) => {
     const privateKeyBytes = bs58.decode(privateKeyString);
     const keypair = Keypair.fromSecretKey(privateKeyBytes);
     
-    // Use faster RPC endpoint with shorter commitment
-    const connection = new Connection(SOLANA_RPC, { commitment: 'processed' });
+    // Use Helius RPC for faster, more reliable operations
+    const rpcUrl = getHeliusRpc();
+    console.log('[timestampOnBlockchain] Using RPC:', rpcUrl.includes('helius') ? 'Helius' : 'Public Solana');
+    const connection = new Connection(rpcUrl, { commitment: 'confirmed' });
 
     // Create memo transaction with content hash
     const memoData = `EQOFLOW:${content_hash}:${post_id || 'content'}:${new Date().toISOString()}`;
@@ -74,37 +83,21 @@ Deno.serve(async (req) => {
     };
     transaction.add(memoInstruction);
 
-    // Get recent blockhash with timeout
-    const blockhashPromise = connection.getLatestBlockhash('finalized');
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Blockhash fetch timeout')), 5000)
-    );
-    
-    const { blockhash } = await Promise.race([blockhashPromise, timeoutPromise]);
+    // Get recent blockhash
+    const { blockhash } = await connection.getLatestBlockhash('confirmed');
     transaction.recentBlockhash = blockhash;
     transaction.feePayer = keypair.publicKey;
+    console.log('[timestampOnBlockchain] Got blockhash:', blockhash.substring(0, 8) + '...');
 
-    // Sign and send transaction with timeout
+    // Sign and send transaction
     transaction.sign(keypair);
     
-    const sendPromise = connection.sendRawTransaction(transaction.serialize(), {
-      skipPreflight: true,
-      maxRetries: 2
+    const signature = await connection.sendRawTransaction(transaction.serialize(), {
+      skipPreflight: false, // Check transaction validity
+      maxRetries: 3
     });
-    const sendTimeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Transaction send timeout')), 8000)
-    );
     
-    const signature = await Promise.race([sendPromise, sendTimeoutPromise]);
-    
-    console.log('[timestampOnBlockchain] Transaction sent:', signature);
-    
-    // Confirm transaction in background (don't wait to avoid timeout)
-    connection.confirmTransaction(signature, 'confirmed').then(() => {
-      console.log('[timestampOnBlockchain] Transaction confirmed on-chain:', signature);
-    }).catch((err) => {
-      console.error('[timestampOnBlockchain] Confirmation warning (non-blocking):', err.message);
-    });
+    console.log('[timestampOnBlockchain] Transaction sent successfully:', signature);
 
     // Log the transaction for transparency
     await base44.entities.PlatformRevenue.create({
