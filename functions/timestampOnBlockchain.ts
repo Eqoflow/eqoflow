@@ -50,7 +50,9 @@ Deno.serve(async (req) => {
 
     const privateKeyBytes = bs58.decode(privateKeyString);
     const keypair = Keypair.fromSecretKey(privateKeyBytes);
-    const connection = new Connection(SOLANA_RPC, 'confirmed');
+    
+    // Use faster RPC endpoint with shorter commitment
+    const connection = new Connection(SOLANA_RPC, { commitment: 'processed' });
 
     // Create memo transaction with content hash
     const memoData = `EQOFLOW:${content_hash}:${post_id || 'content'}:${new Date().toISOString()}`;
@@ -72,14 +74,30 @@ Deno.serve(async (req) => {
     };
     transaction.add(memoInstruction);
 
-    // Get recent blockhash
-    const { blockhash } = await connection.getLatestBlockhash();
+    // Get recent blockhash with timeout
+    const blockhashPromise = connection.getLatestBlockhash('finalized');
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Blockhash fetch timeout')), 5000)
+    );
+    
+    const { blockhash } = await Promise.race([blockhashPromise, timeoutPromise]);
     transaction.recentBlockhash = blockhash;
     transaction.feePayer = keypair.publicKey;
 
-    // Sign and send transaction
+    // Sign and send transaction with timeout
     transaction.sign(keypair);
-    const signature = await connection.sendRawTransaction(transaction.serialize());
+    
+    const sendPromise = connection.sendRawTransaction(transaction.serialize(), {
+      skipPreflight: true,
+      maxRetries: 2
+    });
+    const sendTimeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Transaction send timeout')), 8000)
+    );
+    
+    const signature = await Promise.race([sendPromise, sendTimeoutPromise]);
+    
+    console.log('[timestampOnBlockchain] Transaction sent:', signature);
     
     // Confirm transaction in background (don't wait to avoid timeout)
     connection.confirmTransaction(signature, 'confirmed').then(() => {
