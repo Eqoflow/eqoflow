@@ -60,9 +60,31 @@ Deno.serve(async (req) => {
     // Simulate blockchain timestamp (replace with real blockchain later)
     let blockchainTxId = null;
     let timestampError = null;
+    const EQOFLO_FEE = 3;
 
     if (enable_blockchain_timestamp) {
       console.log('[processPostCreation] Simulating blockchain timestamp...');
+      
+      // Check user's $eqoflo balance
+      const currentBalance = user.token_balance || 0;
+      console.log('[processPostCreation] User balance:', currentBalance, '/ Required:', EQOFLO_FEE);
+
+      if (currentBalance < EQOFLO_FEE) {
+        console.error('[processPostCreation] Insufficient balance');
+        return Response.json({ 
+          error: `Insufficient $eqoflo balance. ${EQOFLO_FEE} $eqoflo required for blockchain timestamping.`,
+          required: EQOFLO_FEE,
+          current_balance: currentBalance
+        }, { status: 402 });
+      }
+
+      // Deduct $eqoflo fee
+      console.log('[processPostCreation] Deducting fee...');
+      const newBalance = currentBalance - EQOFLO_FEE;
+      await base44.asServiceRole.entities.User.update(user.id, {
+        token_balance: newBalance
+      });
+      console.log('[processPostCreation] Fee deducted. New balance:', newBalance);
       
       // Generate simulated Solana transaction signature
       const chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
@@ -70,6 +92,21 @@ Deno.serve(async (req) => {
       updateData.blockchain_tx_id = blockchainTxId;
       
       console.log('[processPostCreation] Simulated blockchain TX ID:', blockchainTxId);
+      
+      // Log revenue
+      try {
+        await base44.asServiceRole.entities.PlatformRevenue.create({
+          revenue_type: 'blockchain_timestamp_fee',
+          amount_usd: 0,
+          amount_tokens: EQOFLO_FEE,
+          description: `Blockchain timestamping fee for post ${post_id}`,
+          user_email: user.email,
+          transaction_id: blockchainTxId
+        });
+        console.log('[processPostCreation] Revenue logged');
+      } catch (revenueError) {
+        console.error('[processPostCreation] Failed to log revenue:', revenueError.message);
+      }
       
       // TODO: Replace with real blockchain timestamping once integration is complete
       // await base44.functions.invoke('timestampOnBlockchain', { content_hash: contentHash, post_id: post_id });
