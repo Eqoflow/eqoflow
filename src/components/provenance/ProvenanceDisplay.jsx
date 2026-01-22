@@ -107,6 +107,9 @@ export default function ProvenanceDisplay({ post, compact = false }) {
               </Button>
             </a>
           </div>
+          <p className="text-xs text-green-400/70 mt-1">
+            Timestamped: {new Date(post.updated_date || post.created_date).toLocaleString()}
+          </p>
         </div>
       )}
 
