@@ -35,25 +35,24 @@ Deno.serve(async (req) => {
     const post = posts[0];
     console.log('[processPostCreation] Post found. Content:', post.content?.substring(0, 50));
 
-    // Generate content hash
+    // Generate content hash (simulated for now)
     console.log('[processPostCreation] Generating content hash...');
-    const hashResponse = await base44.functions.invoke('generateContentHash', {
+    
+    // Simple hash generation - combine content and metadata
+    const hashInput = JSON.stringify({
       content: post.content,
       media_urls: post.media_urls || [],
-      metadata: {
-        author: post.created_by,
-        created_at: post.created_date
-      }
+      author: post.created_by,
+      created_at: post.created_date
     });
-
-    console.log('[processPostCreation] Hash response:', hashResponse);
-
-    if (!hashResponse.data?.content_hash) {
-      console.error('[processPostCreation] No content hash in response:', hashResponse);
-      return Response.json({ error: 'Failed to generate content hash' }, { status: 500 });
-    }
-
-    const contentHash = hashResponse.data.content_hash;
+    
+    // Generate SHA-256 hash
+    const encoder = new TextEncoder();
+    const data = encoder.encode(hashInput);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const contentHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    
     console.log('[processPostCreation] Content hash generated:', contentHash);
     
     const updateData = { content_hash: contentHash };
