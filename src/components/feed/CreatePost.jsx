@@ -92,6 +92,10 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const [availableLicenses, setAvailableLicenses] = useState([]);
   const [enableBlockchainTimestamp, setEnableBlockchainTimestamp] = useState(false);
 
+  // $eqoflo Gated Content state
+  const [enableGatedContent, setEnableGatedContent] = useState(false);
+  const [eqofloPrice, setEqofloPrice] = useState(250); // Minimum $5 (250 * $0.02)
+
   const fetchUserCommunities = useCallback(async () => {
     if (user && user.email && !communityId) {
       try {
@@ -412,7 +416,8 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       youtube_thumbnail_url: youtubeVideoDetails?.thumbnail || null,
       youtube_video_title: youtubeVideoDetails?.title || null,
       license_id: selectedLicenseId,
-      enable_blockchain_timestamp: enableBlockchainTimestamp
+      enable_blockchain_timestamp: enableBlockchainTimestamp,
+      eqoflo_price: enableGatedContent ? eqofloPrice : null
     };
 
     if (communityId) {
@@ -442,6 +447,8 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       setYoutubeVideoDetails(null);
       setPostToX(false);
       setEnableBlockchainTimestamp(false);
+      setEnableGatedContent(false);
+      setEqofloPrice(250);
       
       // Reset license to default
       const defaultLicense = availableLicenses.find(l => l.is_default);
@@ -849,6 +856,53 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
                   {availableLicenses.find(l => l.id === selectedLicenseId)?.description}
                 </div>
               )}
+            </div>
+          }
+
+          {/* $eqoflo Gated Content */}
+          {!showPollInputs &&
+          <div className="space-y-3 p-4 bg-gradient-to-r from-amber-600/10 to-orange-600/10 border border-amber-500/20 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Coins className="w-4 h-4 text-amber-400" />
+                    <Label htmlFor="gated-content" className="text-sm font-medium text-white cursor-pointer">
+                      Monetize with $eqoflo
+                    </Label>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">Set a price to unlock this content</p>
+                </div>
+                <Switch
+                id="gated-content"
+                checked={enableGatedContent}
+                onCheckedChange={setEnableGatedContent} />
+
+              </div>
+              
+              {enableGatedContent &&
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                className="space-y-2">
+                  <Label className="text-sm text-white">Price (min 250 $eqoflo = $5)</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                    type="number"
+                    min="250"
+                    step="50"
+                    value={eqofloPrice}
+                    onChange={(e) => setEqofloPrice(Math.max(250, parseInt(e.target.value) || 250))}
+                    className="bg-black/20 border-amber-500/20 text-white" />
+
+                    <span className="text-sm text-gray-400 whitespace-nowrap">
+                      ≈ ${(eqofloPrice * 0.02).toFixed(2)}
+                    </span>
+                  </div>
+                  <p className="text-xs text-amber-400">
+                    Platform fee: 7% • You earn: {Math.round(eqofloPrice * 0.93)} $eqoflo per unlock
+                  </p>
+                </motion.div>
+              }
             </div>
           }
 
