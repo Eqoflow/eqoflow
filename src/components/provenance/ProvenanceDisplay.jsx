@@ -10,6 +10,8 @@ export default function ProvenanceDisplay({ post, compact = false }) {
   const [license, setLicense] = useState(null);
   const [copied, setCopied] = useState(false);
 
+  if (!post) return null;
+
   useEffect(() => {
     if (post?.license_id) {
       loadLicense();
