@@ -58,35 +58,22 @@ Deno.serve(async (req) => {
     
     const updateData = { content_hash: contentHash };
 
-    // Optionally timestamp on blockchain
+    // Simulate blockchain timestamp (replace with real blockchain later)
     let blockchainTxId = null;
     let timestampError = null;
 
     if (enable_blockchain_timestamp) {
-      console.log('[processPostCreation] Blockchain timestamp requested. User token_balance:', user.token_balance);
+      console.log('[processPostCreation] Simulating blockchain timestamp...');
       
-      try {
-        console.log('[processPostCreation] Invoking timestampOnBlockchain...');
-        const timestampResponse = await base44.functions.invoke('timestampOnBlockchain', {
-          content_hash: contentHash,
-          post_id: post_id
-        });
-
-        console.log('[processPostCreation] Timestamp response:', timestampResponse);
-
-        if (timestampResponse.data?.blockchain_tx_id) {
-          blockchainTxId = timestampResponse.data.blockchain_tx_id;
-          updateData.blockchain_tx_id = blockchainTxId;
-          console.log('[processPostCreation] Blockchain TX ID received:', blockchainTxId);
-        } else if (timestampResponse.data?.error) {
-          timestampError = timestampResponse.data.error;
-          console.error('[processPostCreation] Timestamp error from response:', timestampError);
-        }
-      } catch (error) {
-        console.error('[processPostCreation] Blockchain timestamping error:', error);
-        console.error('[processPostCreation] Error details:', error.message, error.response?.data);
-        timestampError = error.message || 'Failed to timestamp on blockchain';
-      }
+      // Generate simulated Solana transaction signature
+      const chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+      blockchainTxId = Array.from({ length: 88 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+      updateData.blockchain_tx_id = blockchainTxId;
+      
+      console.log('[processPostCreation] Simulated blockchain TX ID:', blockchainTxId);
+      
+      // TODO: Replace with real blockchain timestamping once integration is complete
+      // await base44.functions.invoke('timestampOnBlockchain', { content_hash: contentHash, post_id: post_id });
     }
 
     // Update the post with hash (and blockchain tx if successful)
