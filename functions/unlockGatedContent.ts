@@ -82,14 +82,29 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Log platform fee as revenue
+    // Log platform fee as revenue to show in gamify/admin hub
+    const feeAmountUsd = platformFee * 0.02;
     await base44.asServiceRole.entities.PlatformRevenue.create({
       revenue_source: 'other',
-      amount_usd: platformFee * 0.02,
-      description: `Platform fee from gated content unlock (${platformFee} $eqoflo)`,
+      amount_usd: feeAmountUsd,
+      description: `Gated content unlock fee - ${platformFee} $eqoflo tokens (Creator: ${post.created_by}, Post: ${postId})`,
       creator_email: post.created_by,
       related_transaction_id: postId
     });
+
+    // Update platform total balance tracking
+    try {
+      const platformWallets = await base44.asServiceRole.entities.PlatformWallet.filter({});
+      if (platformWallets.length > 0) {
+        const currentTotal = parseFloat(platformWallets[0].total_revenue) || 0;
+        await base44.asServiceRole.entities.PlatformWallet.update(platformWallets[0].id, {
+          total_revenue: currentTotal + feeAmountUsd,
+          last_updated: new Date().toISOString()
+        });
+      }
+    } catch (e) {
+      console.warn("Could not update PlatformWallet:", e.message);
+    }
 
     // Update post - add user to unlocked_by and update total_revenue
     const currentUnlockedBy = post.unlocked_by || [];
