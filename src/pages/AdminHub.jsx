@@ -347,7 +347,7 @@ export default function AdminHub() {
         {/* Action Alerts - (placeholder removed as no existing alerts section in original file) */}
 
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="bg-slate-900/50 p-1 grid grid-cols-3 lg:grid-cols-6 gap-2">
+          <TabsList className="bg-slate-900/50 p-1 grid grid-cols-3 lg:grid-cols-6 gap-2 flex-wrap">
             <TabsTrigger value="overview" className="text-white">
               <BarChart3 className="w-4 h-4 mr-2" />
               Overview
@@ -363,6 +363,10 @@ export default function AdminHub() {
             <TabsTrigger value="marketplace" className="text-white">
               <ShoppingBag className="w-4 h-4 mr-2" />
               Marketplace
+            </TabsTrigger>
+            <TabsTrigger value="paid-echo" className="text-white">
+              <Coins className="w-4 h-4 mr-2" />
+              Paid Echo
             </TabsTrigger>
             <TabsTrigger value="system" className="text-white">
               <Settings className="w-4 h-4 mr-2" />
