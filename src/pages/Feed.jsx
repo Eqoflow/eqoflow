@@ -42,6 +42,7 @@ import { awardEP } from "@/functions/awardEP";
 import { getCurrentWelcomeBonus } from "@/functions/getCurrentWelcomeBonus";
 import { postToX } from "@/functions/postToX";
 import { getSharedPost } from "@/functions/getSharedPost";
+import { base44 } from "@/api/base44Client";
 import QuantumFlowLoader from "../components/layout/QuantumFlowLoader";
 import WelcomeModal from "../components/onboarding/WelcomeModal";
 import RoadmapModal from "../components/roadmap/RoadmapModal";
@@ -1253,6 +1254,41 @@ export default function Feed() {
         
         console.log('[Feed.js] Post created successfully. newPost.media_urls:', newPost.media_urls);
         console.log('[Feed.js] Full newPost object:', newPost);
+
+        // Process content provenance (hashing and optional blockchain timestamping)
+        if (postData.enable_blockchain_timestamp || postData.license_id) {
+          try {
+            const { data: provenanceData } = await base44.functions.invoke('processPostCreation', {
+              post_id: newPost.id,
+              enable_blockchain_timestamp: postData.enable_blockchain_timestamp || false
+            });
+
+            if (provenanceData?.content_hash) {
+              console.log('[Feed.js] Content provenance processed:', provenanceData);
+              
+              // Update the newPost object with provenance data
+              newPost.content_hash = provenanceData.content_hash;
+              if (provenanceData.blockchain_tx_id) {
+                newPost.blockchain_tx_id = provenanceData.blockchain_tx_id;
+              }
+
+              // Show success message if blockchain timestamped
+              if (provenanceData.blockchain_tx_id) {
+                setErrorMessage("✓ Post created and timestamped on blockchain!");
+                setTimeout(() => setErrorMessage(null), 4000);
+              }
+            }
+
+            if (provenanceData?.timestamp_error) {
+              console.warn('[Feed.js] Blockchain timestamp error:', provenanceData.timestamp_error);
+              setErrorMessage(provenanceData.timestamp_error);
+              setTimeout(() => setErrorMessage(null), 6000);
+            }
+          } catch (provenanceError) {
+            console.error('[Feed.js] Failed to process content provenance:', provenanceError);
+            // Don't block post creation if provenance fails
+          }
+        }
 
         // Post to X if toggle was enabled
         if (postData.post_to_x && newPost.id) {

@@ -67,6 +67,7 @@ import { filterProfanity } from '@/components/utils/profanityFilter';
 import { base44 } from "@/api/base44Client";
 import ImageSlideshow from './ImageSlideshow';
 import { maskEmail } from '../utils/maskData';
+import ProvenanceDisplay from '../provenance/ProvenanceDisplay';
 
 // This function finds URLs in a string and wraps them in an anchor tag.
 const linkify = (text) => {
@@ -1114,6 +1115,9 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
                 )}
               </div>
             )}
+
+            {/* Content Provenance Display */}
+            <ProvenanceDisplay post={displayPost} compact={true} />
 
             <div className={`flex flex-col md:flex-row md:items-center justify-between py-3 border-t border-gray-700/50 gap-3 ${isSupercharged ? 'relative z-10' : ''}`}>
               <div className="flex items-center gap-2 md:gap-4">
