@@ -19,28 +19,10 @@ export default function PaidEchoContentManager() {
   useEffect(() => {
     loadGatedContentTransactions();
 
-    // Subscribe to new PlatformWallet transactions in real-time
-    const unsubscribe = base44.entities.PlatformWallet.subscribe((event) => {
-      if (event.type === 'create' && event.data?.transaction_type === 'ep_purchase_qflow') {
-        setTransactions((prev) => {
-          // Add new transaction if it's gated content
-          if (event.data.source_description?.includes('Gated Content')) {
-            return [event.data, ...prev];
-          }
-          return prev;
-        });
+    // Auto-refresh every 5 seconds
+    const interval = setInterval(loadGatedContentTransactions, 5000);
 
-        // Update stats
-        setStats((prev) => ({
-          ...prev,
-          totalBalance: prev.totalBalance + (event.data.amount_qflow || 0),
-          totalRevenue: prev.totalRevenue + (event.data.amount_qflow || 0),
-          totalTransactions: prev.totalTransactions + 1
-        }));
-      }
-    });
-
-    return unsubscribe;
+    return () => clearInterval(interval);
   }, []);
 
   const loadGatedContentTransactions = async () => {
