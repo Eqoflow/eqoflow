@@ -5,11 +5,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X, Save, BookMarked } from "lucide-react";
+import { X, Save, BookMarked, FileKey, Shield, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Community } from '@/entities/Community';
 import { base44 } from "@/api/base44Client";
-import { FileKey, Shield } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export default function EditPostModal({ post, user, onSave, onClose }) {
