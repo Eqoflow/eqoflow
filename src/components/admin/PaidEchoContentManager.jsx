@@ -29,12 +29,14 @@ export default function PaidEchoContentManager() {
     try {
       setIsLoading(true);
       const allTransactions = await base44.entities.PlatformWallet.list('-created_date', 1000);
+      console.log('All PlatformWallet records:', allTransactions);
       
       // Filter client-side for gated content only
       const gatedTransactions = allTransactions.filter(t => 
         t.transaction_type === 'ep_purchase_qflow' && t.source_description?.includes('Gated Content')
       );
       
+      console.log('Filtered gated transactions:', gatedTransactions);
       setTransactions(gatedTransactions);
 
       // Calculate statistics from gated content only
