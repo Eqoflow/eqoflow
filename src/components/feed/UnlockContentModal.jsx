@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { Coins, Lock, AlertCircle, Loader2, Check } from "lucide-react";
-import { unlockGatedContent } from "@/functions/unlockGatedContent";
+import { base44 } from "@/api/base44Client";
 
 export default function UnlockContentModal({ post, user, onClose, onSuccess }) {
   const [isUnlocking, setIsUnlocking] = useState(false);
@@ -21,15 +21,16 @@ export default function UnlockContentModal({ post, user, onClose, onSuccess }) {
     setError(null);
 
     try {
-      const { data } = await unlockGatedContent({ postId: post.id });
+      const response = await base44.functions.invoke('unlockGatedContent', { postId: post.id });
       
-      if (data.success) {
-        onSuccess(data);
+      if (response?.data?.success) {
+        onSuccess(response.data);
       } else {
-        setError(data.error || 'Failed to unlock content');
+        setError(response?.data?.error || 'Failed to unlock content');
       }
     } catch (err) {
-      setError(err.message || 'An error occurred while unlocking content');
+      console.error('Unlock error:', err);
+      setError(err.response?.data?.error || err.message || 'An error occurred while unlocking content');
     } finally {
       setIsUnlocking(false);
     }
