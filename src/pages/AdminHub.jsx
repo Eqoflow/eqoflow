@@ -34,6 +34,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from 'framer-motion'; // Added motion
 import NillionMPCDeployment from './NillionMPCDeployment'; // Added NillionMPCDeployment
 import { base44 } from '@/api/base44Client'; // Changed import path for base44
+import PaidEchoContentManager from '../components/admin/PaidEchoContentManager';
 
 export default function AdminHub() {
   const [loading, setLoading] = useState(false);
