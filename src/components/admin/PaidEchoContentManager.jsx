@@ -29,10 +29,14 @@ export default function PaidEchoContentManager() {
         500
       );
       
+      console.log('All ep_purchase_qflow transactions:', allTransactions);
+      
       // Filter for gated content transactions
       const walletTransactions = allTransactions.filter(t => 
         t.source_description && t.source_description.includes('Gated Content')
       );
+      
+      console.log('Filtered gated content transactions:', walletTransactions);
       setTransactions(walletTransactions);
 
       // Calculate statistics
