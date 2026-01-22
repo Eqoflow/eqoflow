@@ -63,41 +63,35 @@ Deno.serve(async (req) => {
     console.log('[timestampOnBlockchain] Using RPC:', rpcUrl.includes('helius') ? 'Helius' : 'Public Solana');
     const connection = new Connection(rpcUrl, { commitment: 'confirmed' });
 
-    // Create memo transaction with content hash
-    const memoData = `EQOFLOW:${content_hash}:${post_id || 'content'}:${new Date().toISOString()}`;
+    // Create memo data
+    const memoData = `EQOFLOW:${content_hash}:${post_id || 'content'}:${Date.now()}`;
+    console.log('[timestampOnBlockchain] Creating memo:', memoData.substring(0, 50) + '...');
     
-    // Create a simple transfer transaction with memo
-    const transaction = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey: keypair.publicKey,
-        toPubkey: keypair.publicKey, // Send to self (minimal cost)
-        lamports: 1000 // 0.000001 SOL
-      })
-    );
-
-    // Add memo instruction
-    const memoInstruction = {
+    // Get recent blockhash first (parallel to improve speed)
+    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
+    console.log('[timestampOnBlockchain] Blockhash obtained');
+    
+    // Create simple memo-only transaction (no transfer needed)
+    const transaction = new Transaction();
+    transaction.add({
       keys: [],
       programId: new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr'),
       data: Buffer.from(memoData, 'utf8')
-    };
-    transaction.add(memoInstruction);
-
-    // Get recent blockhash
-    const { blockhash } = await connection.getLatestBlockhash('confirmed');
-    transaction.recentBlockhash = blockhash;
-    transaction.feePayer = keypair.publicKey;
-    console.log('[timestampOnBlockchain] Got blockhash:', blockhash.substring(0, 8) + '...');
-
-    // Sign and send transaction
-    transaction.sign(keypair);
-    
-    const signature = await connection.sendRawTransaction(transaction.serialize(), {
-      skipPreflight: false, // Check transaction validity
-      maxRetries: 3
     });
     
-    console.log('[timestampOnBlockchain] Transaction sent successfully:', signature);
+    transaction.recentBlockhash = blockhash;
+    transaction.feePayer = keypair.publicKey;
+    transaction.sign(keypair);
+    
+    console.log('[timestampOnBlockchain] Sending transaction...');
+    
+    // Send transaction (don't wait for confirmation)
+    const signature = await connection.sendRawTransaction(transaction.serialize(), {
+      skipPreflight: true, // Skip preflight for speed
+      maxRetries: 0 // Don't retry, just send once
+    });
+    
+    console.log('[timestampOnBlockchain] Transaction sent:', signature);
 
     // Update the post with blockchain transaction ID
     if (post_id) {
