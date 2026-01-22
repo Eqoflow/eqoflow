@@ -73,6 +73,15 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Add platform fee to platform wallet
+    const platformUsers = await base44.asServiceRole.entities.User.filter({ email: 'admin@eqoflow.app' });
+    if (platformUsers.length > 0) {
+      const platformCurrentBalance = parseFloat(platformUsers[0].token_balance) || 0;
+      await base44.asServiceRole.entities.User.update(platformUsers[0].id, {
+        token_balance: platformCurrentBalance + platformFee
+      });
+    }
+
     // Log platform fee as revenue
     await base44.asServiceRole.entities.PlatformRevenue.create({
       revenue_source: 'other',
