@@ -81,8 +81,12 @@ Deno.serve(async (req) => {
     transaction.sign(keypair);
     const signature = await connection.sendRawTransaction(transaction.serialize());
     
-    // Confirm transaction
-    await connection.confirmTransaction(signature, 'confirmed');
+    // Confirm transaction in background (don't wait to avoid timeout)
+    connection.confirmTransaction(signature, 'confirmed').then(() => {
+      console.log('[timestampOnBlockchain] Transaction confirmed on-chain:', signature);
+    }).catch((err) => {
+      console.error('[timestampOnBlockchain] Confirmation warning (non-blocking):', err.message);
+    });
 
     // Log the transaction for transparency
     await base44.entities.PlatformRevenue.create({
