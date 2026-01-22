@@ -23,10 +23,15 @@ export default function PaidEchoContentManager() {
   const loadGatedContentTransactions = async () => {
     try {
       setIsLoading(true);
-      const walletTransactions = await base44.entities.PlatformWallet.filter(
-        { source_description: { $regex: 'Gated Content' } },
+      const allTransactions = await base44.entities.PlatformWallet.filter(
+        { transaction_type: 'ep_purchase_qflow' },
         '-created_date',
-        100
+        500
+      );
+      
+      // Filter for gated content transactions
+      const walletTransactions = allTransactions.filter(t => 
+        t.source_description && t.source_description.includes('Gated Content')
       );
       setTransactions(walletTransactions);
 
