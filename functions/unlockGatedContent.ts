@@ -85,12 +85,11 @@ Deno.serve(async (req) => {
     // Log to PlatformWallet for gamify transactions display
     try {
       await base44.asServiceRole.entities.PlatformWallet.create({
-        transaction_type: 'gated_content_fee',
+        transaction_type: 'ep_purchase_qflow',
         amount_qflow: platformFee,
-        source_description: `Gated Content Unlock Fee`,
+        source_description: `Gated Content Unlock Fee from ${post.created_by}`,
         user_email: user.email,
-        notes: `Buyer: ${user.email} | Creator: ${post.created_by} | Post: ${postId}`,
-        related_post_id: postId
+        notes: `Buyer: ${user.email} | Creator: ${post.created_by} | Post: ${postId}`
       });
     } catch (e) {
       console.error("Failed to log to PlatformWallet:", e.message);
