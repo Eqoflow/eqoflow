@@ -8,12 +8,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { X, Save, BookMarked } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Community } from '@/entities/Community';
+import { base44 } from "@/api/base44Client";
+import { FileKey, Shield } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export default function EditPostModal({ post, user, onSave, onClose }) {
   const [content, setContent] = useState("");
   const [selectedCommunityId, setSelectedCommunityId] = useState('');
   const [userCommunities, setUserCommunities] = useState([]);
   const [postToX, setPostToX] = useState(false);
+  
+  // Content License state
+  const [selectedLicenseId, setSelectedLicenseId] = useState(null);
+  const [availableLicenses, setAvailableLicenses] = useState([]);
+  const [enableBlockchainTimestamp, setEnableBlockchainTimestamp] = useState(false);
 
   const fetchUserCommunities = useCallback(async () => {
     if (user) {
@@ -28,13 +36,25 @@ export default function EditPostModal({ post, user, onSave, onClose }) {
 
   useEffect(() => {
     fetchUserCommunities();
+    loadLicenses();
   }, [fetchUserCommunities]);
+
+  const loadLicenses = async () => {
+    try {
+      const licenses = await base44.entities.ContentLicense.filter({ is_active: true }, 'sort_order');
+      setAvailableLicenses(licenses);
+    } catch (error) {
+      console.error("Failed to load licenses:", error);
+    }
+  };
 
   useEffect(() => {
     if (post) {
       setContent(post.content);
       setSelectedCommunityId(post.community_id || '');
       setPostToX(post.post_to_x || false);
+      setSelectedLicenseId(post.license_id || null);
+      setEnableBlockchainTimestamp(false); // Can't re-timestamp existing posts
     }
   }, [post]);
 
@@ -43,6 +63,7 @@ export default function EditPostModal({ post, user, onSave, onClose }) {
       content,
       community_id: selectedCommunityId === '' ? null : selectedCommunityId,
       post_to_x: postToX,
+      license_id: selectedLicenseId
     };
 
     // If tagging a community, always share to main feed
@@ -113,6 +134,50 @@ export default function EditPostModal({ post, user, onSave, onClose }) {
                       This post will appear on your community page and drive traffic to "{userCommunities.find(c => c.id === selectedCommunityId)?.name}"
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Content License Selection */}
+              {availableLicenses.length > 0 && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <FileKey className="w-4 h-4 text-purple-400" />
+                    <span className="text-sm font-medium text-white">Content License</span>
+                  </div>
+                  <Select value={selectedLicenseId} onValueChange={setSelectedLicenseId}>
+                    <SelectTrigger className="bg-black/20 border-purple-500/20 text-white">
+                      <SelectValue placeholder="Select a license..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-black border-purple-500/20">
+                      {availableLicenses.map((license) => (
+                        <SelectItem key={license.id} value={license.id} className="text-white hover:bg-purple-500/10">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{license.name}</span>
+                            <span className="text-xs text-gray-400">({license.short_code})</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {selectedLicenseId && (
+                    <div className="text-xs text-gray-400 bg-purple-600/10 border border-purple-500/20 rounded-lg p-2">
+                      {availableLicenses.find(l => l.id === selectedLicenseId)?.description}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Blockchain Timestamp Info (if already timestamped) */}
+              {post?.blockchain_tx_id && (
+                <div className="p-3 bg-green-600/10 border border-green-500/20 rounded-lg">
+                  <div className="flex items-center gap-2 text-green-400">
+                    <Shield className="w-4 h-4" />
+                    <span className="text-sm font-medium">Blockchain Verified</span>
+                    <Check className="w-4 h-4" />
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">
+                    This content has been timestamped on the blockchain.
+                  </p>
                 </div>
               )}
 

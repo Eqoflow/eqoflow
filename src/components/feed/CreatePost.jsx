@@ -31,6 +31,8 @@ import NFTGateSetup from "../nft/NFTGateSetup";
 import { Community } from '@/entities/Community';
 import { getYoutubeVideoDetails } from '@/functions/getYoutubeVideoDetails';
 import GiphyPicker from "./GiphyPicker";
+import { base44 } from "@/api/base44Client";
+import { FileKey, Check } from "lucide-react";
 
 // Helper function to detect if an image is PNG
 const isPngImage = (url) => {
@@ -85,6 +87,11 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   // Giphy picker state
   const [showGiphyPicker, setShowGiphyPicker] = useState(false);
 
+  // Content License state
+  const [selectedLicenseId, setSelectedLicenseId] = useState(null);
+  const [availableLicenses, setAvailableLicenses] = useState([]);
+  const [enableBlockchainTimestamp, setEnableBlockchainTimestamp] = useState(false);
+
   const fetchUserCommunities = useCallback(async () => {
     if (user && user.email && !communityId) {
       try {
@@ -98,7 +105,23 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
 
   useEffect(() => {
     fetchUserCommunities();
+    loadLicenses();
   }, [fetchUserCommunities]);
+
+  const loadLicenses = async () => {
+    try {
+      const licenses = await base44.entities.ContentLicense.filter({ is_active: true }, 'sort_order');
+      setAvailableLicenses(licenses);
+      
+      // Set default license
+      const defaultLicense = licenses.find(l => l.is_default);
+      if (defaultLicense) {
+        setSelectedLicenseId(defaultLicense.id);
+      }
+    } catch (error) {
+      console.error("Failed to load licenses:", error);
+    }
+  };
 
   useEffect(() => {
     if (debounceTimeoutRef.current) {
@@ -387,7 +410,9 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       moderation_status: 'approved',
       youtube_video_id: youtubeVideoDetails?.videoId || null,
       youtube_thumbnail_url: youtubeVideoDetails?.thumbnail || null,
-      youtube_video_title: youtubeVideoDetails?.title || null
+      youtube_video_title: youtubeVideoDetails?.title || null,
+      license_id: selectedLicenseId,
+      enable_blockchain_timestamp: enableBlockchainTimestamp
     };
 
     if (communityId) {
@@ -416,6 +441,13 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       setShareToMainFeed(true);
       setYoutubeVideoDetails(null);
       setPostToX(false);
+      setEnableBlockchainTimestamp(false);
+      
+      // Reset license to default
+      const defaultLicense = availableLicenses.find(l => l.is_default);
+      if (defaultLicense) {
+        setSelectedLicenseId(defaultLicense.id);
+      }
     } catch (error) {
       showErrorMessage(error, 'Creating post');
     } finally {
@@ -789,6 +821,57 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
               </motion.div>
             }
           </AnimatePresence>
+
+          {/* Content License Selection */}
+          {!showPollInputs && availableLicenses.length > 0 &&
+          <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <FileKey className="w-4 h-4 text-purple-400" />
+                <span className="text-sm font-medium text-white">Content License</span>
+              </div>
+              <Select value={selectedLicenseId} onValueChange={setSelectedLicenseId}>
+                <SelectTrigger className="bg-black/20 border-purple-500/20 text-white">
+                  <SelectValue placeholder="Select a license..." />
+                </SelectTrigger>
+                <SelectContent className="bg-black border-purple-500/20">
+                  {availableLicenses.map((license) =>
+                    <SelectItem key={license.id} value={license.id} className="text-white hover:bg-purple-500/10">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{license.name}</span>
+                        <span className="text-xs text-gray-400">({license.short_code})</span>
+                      </div>
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+              {selectedLicenseId && (
+                <div className="text-xs text-gray-400 bg-purple-600/10 border border-purple-500/20 rounded-lg p-2">
+                  {availableLicenses.find(l => l.id === selectedLicenseId)?.description}
+                </div>
+              )}
+            </div>
+          }
+
+          {/* Blockchain Timestamping Toggle */}
+          {!showPollInputs &&
+          <div className="flex items-center justify-between p-3 bg-gradient-to-r from-purple-600/10 to-pink-600/10 border border-purple-500/20 rounded-lg">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-purple-400" />
+                  <Label htmlFor="blockchain-timestamp" className="text-sm font-medium text-white cursor-pointer">
+                    Blockchain Timestamp
+                  </Label>
+                  <Badge className="bg-purple-600/20 text-purple-300 text-xs">3 $eqoflo</Badge>
+                </div>
+                <p className="text-xs text-gray-400 mt-1">Immutable proof of creation on Solana blockchain</p>
+              </div>
+              <Switch
+              id="blockchain-timestamp"
+              checked={enableBlockchainTimestamp}
+              onCheckedChange={setEnableBlockchainTimestamp} />
+
+            </div>
+          }
 
           {/* X (Twitter) Cross-Posting Toggle */}
           {user?.x_access_token &&
