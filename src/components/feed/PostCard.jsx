@@ -28,7 +28,8 @@ import {
   UserPlus,
   UserCheck,
   BrainCircuit,
-  RefreshCw } from
+  RefreshCw,
+  Coins } from
 "lucide-react";
 import {
   DropdownMenu,
@@ -68,6 +69,7 @@ import { base44 } from "@/api/base44Client";
 import ImageSlideshow from './ImageSlideshow';
 import { maskEmail } from '../utils/maskData';
 import ProvenanceDisplay from '../provenance/ProvenanceDisplay';
+import UnlockContentModal from './UnlockContentModal';
 
 // This function finds URLs in a string and wraps them in an anchor tag.
 const linkify = (text) => {
@@ -161,6 +163,7 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
   const [localFollowerCount, setLocalFollowerCount] = useState(null);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [commentContent, setCommentContent] = useState("");
+  const [showUnlockModal, setShowUnlockModal] = useState(false);
 
   // NEW: Add state for masked author email
   const [maskedAuthorEmail, setMaskedAuthorEmail] = useState('');
@@ -606,6 +609,34 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
     setShowNFTUnlock(false);
   };
 
+  const handleUnlockSuccess = async (unlockData) => {
+    // Update local post state
+    const updatedPost = {
+      ...localPost,
+      unlocked_by: [...(localPost.unlocked_by || []), currentUser.email],
+      total_revenue: (localPost.total_revenue || 0) + localPost.eqoflo_price
+    };
+    setLocalPost(updatedPost);
+    if (onReactionChange) onReactionChange(updatedPost);
+
+    // Update user balance
+    if (onUserUpdate) {
+      const updatedUser = {
+        ...currentUser,
+        token_balance: unlockData.newBalance
+      };
+      onUserUpdate(updatedUser);
+    }
+
+    setShowUnlockModal(false);
+    setErrorMessage("Content unlocked successfully!");
+    setTimeout(() => setErrorMessage(null), 3000);
+  };
+
+  const isGatedContent = displayPost.eqoflo_price && displayPost.eqoflo_price > 0;
+  const hasUnlockedGatedContent = isGatedContent && displayPost.unlocked_by?.includes(currentUser?.email);
+  const isContentCreator = displayPost.created_by === currentUser?.email;
+
   const AuthorProfileLink = ({ children, post }) => {
     const params = new URLSearchParams();
     const usernameToUse = currentAuthor?.username;
@@ -1025,19 +1056,39 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
             <div className="mb-4">
               {hasTextContent &&
               <div>
-                  <p
-                  className="text-gray-200 whitespace-pre-wrap leading-relaxed text-sm md:text-base"
-                  dangerouslySetInnerHTML={{ __html: linkify(getDisplayContent()) }} />
-
-
-                  {needsTruncation(contentToDisplay) &&
-                <button
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="text-purple-400 hover:text-purple-300 text-sm font-medium mt-2 focus:outline-none">
-
-                      {isExpanded ? 'Show Less' : 'Read More'}
-                    </button>
-                }
+                  {/* Blur content if gated and not unlocked */}
+                  {isGatedContent && !hasUnlockedGatedContent && !isContentCreator ? (
+                    <div className="relative">
+                      <p
+                        className="text-gray-200 whitespace-pre-wrap leading-relaxed text-sm md:text-base blur-sm select-none pointer-events-none"
+                        dangerouslySetInnerHTML={{ __html: linkify(truncateContent(contentToDisplay, 100)) }}
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Button
+                          onClick={() => setShowUnlockModal(true)}
+                          className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white"
+                        >
+                          <Lock className="w-4 h-4 mr-2" />
+                          Unlock to Read
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <p
+                        className="text-gray-200 whitespace-pre-wrap leading-relaxed text-sm md:text-base"
+                        dangerouslySetInnerHTML={{ __html: linkify(getDisplayContent()) }}
+                      />
+                      {needsTruncation(contentToDisplay) &&
+                        <button
+                          onClick={() => setIsExpanded(!isExpanded)}
+                          className="text-purple-400 hover:text-purple-300 text-sm font-medium mt-2 focus:outline-none"
+                        >
+                          {isExpanded ? 'Show Less' : 'Read More'}
+                        </button>
+                      }
+                    </>
+                  )}
                 </div>
               }
 
@@ -1072,17 +1123,45 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
 
               {hasMedia &&
               <div className={`${hasTextContent || hasYouTubeVideo ? 'mt-4' : ''}`}>
-                  {displayPost.media_urls.length > 2 ?
-                <ImageSlideshow images={displayPost.media_urls} /> :
-
-                <div className={`grid gap-2 ${displayPost.media_urls.length === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                      {displayPost.media_urls.map((url, idx) =>
-                  <div key={idx} className="relative rounded-lg overflow-hidden first:col-span-1 last:col-span-1 only:col-span-full">
-                          {renderMedia(url)}
-                        </div>
-                  )}
+                  {/* Blur media if gated and not unlocked */}
+                  {isGatedContent && !hasUnlockedGatedContent && !isContentCreator ? (
+                    <div className="relative">
+                      <div className="blur-md select-none pointer-events-none">
+                        {displayPost.media_urls.length > 2 ?
+                          <ImageSlideshow images={displayPost.media_urls} /> :
+                          <div className={`grid gap-2 ${displayPost.media_urls.length === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                            {displayPost.media_urls.map((url, idx) =>
+                              <div key={idx} className="relative rounded-lg overflow-hidden first:col-span-1 last:col-span-1 only:col-span-full">
+                                {renderMedia(url)}
+                              </div>
+                            )}
+                          </div>
+                        }
+                      </div>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Button
+                          onClick={() => setShowUnlockModal(true)}
+                          className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white"
+                        >
+                          <Lock className="w-4 h-4 mr-2" />
+                          Unlock to View
+                        </Button>
+                      </div>
                     </div>
-                }
+                  ) : (
+                    <>
+                      {displayPost.media_urls.length > 2 ?
+                        <ImageSlideshow images={displayPost.media_urls} /> :
+                        <div className={`grid gap-2 ${displayPost.media_urls.length === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                          {displayPost.media_urls.map((url, idx) =>
+                            <div key={idx} className="relative rounded-lg overflow-hidden first:col-span-1 last:col-span-1 only:col-span-full">
+                              {renderMedia(url)}
+                            </div>
+                          )}
+                        </div>
+                      }
+                    </>
+                  )}
                 </div>
               }
 
@@ -1113,6 +1192,40 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
                     • {format(new Date(displayPost.x_posted_at), "MMM d 'at' h:mm a")}
                   </span>
                 )}
+              </div>
+            )}
+
+            {/* $eqoflo Gated Content */}
+            {isGatedContent && !hasUnlockedGatedContent && !isContentCreator && (
+              <div className="mb-4 p-4 bg-gradient-to-r from-amber-600/10 to-orange-600/10 border border-amber-500/20 rounded-lg">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Lock className="w-4 h-4 text-amber-400" />
+                      <span className="font-semibold text-amber-400 text-sm">Premium Content</span>
+                    </div>
+                    <p className="text-xs text-gray-400">
+                      Unlock this exclusive content for {displayPost.eqoflo_price} $eqoflo (≈${(displayPost.eqoflo_price * 0.02).toFixed(2)})
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => setShowUnlockModal(true)}
+                    size="sm"
+                    className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white flex-shrink-0"
+                  >
+                    <Coins className="w-3 h-3 mr-1" />
+                    Unlock
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {isGatedContent && hasUnlockedGatedContent && (
+              <div className="mb-4 p-3 bg-green-600/10 border border-green-500/20 rounded-lg">
+                <div className="flex items-center gap-2 text-green-400 text-sm">
+                  <Lock className="w-4 h-4" />
+                  <span>You've unlocked this premium content</span>
+                </div>
               </div>
             )}
 
@@ -1223,6 +1336,18 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
             </AnimatePresence>
           </CardContent>
         </Card>
+
+        {/* $eqoflo Unlock Modal */}
+        <AnimatePresence>
+          {showUnlockModal && currentUser && (
+            <UnlockContentModal
+              post={displayPost}
+              user={currentUser}
+              onClose={() => setShowUnlockModal(false)}
+              onSuccess={handleUnlockSuccess}
+            />
+          )}
+        </AnimatePresence>
       </motion.div>);
 
   }
