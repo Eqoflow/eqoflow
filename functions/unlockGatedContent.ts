@@ -87,7 +87,7 @@ Deno.serve(async (req) => {
       await base44.asServiceRole.entities.PlatformWallet.create({
         transaction_type: 'ep_purchase_qflow',
         amount_qflow: platformFee,
-        source_description: `Gated Content Unlock Fee from ${post.created_by}`,
+        source_description: `Gated Content Purchase Fee`,
         user_email: user.email,
         notes: `Buyer: ${user.email} | Creator: ${post.created_by} | Post: ${postId}`
       });
