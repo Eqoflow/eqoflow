@@ -89,7 +89,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const [showGiphyPicker, setShowGiphyPicker] = useState(false);
 
   // Content License state
-  const [selectedLicenseId, setSelectedLicenseId] = useState(null);
+  const [selectedLicenseIds, setSelectedLicenseIds] = useState([]);
   const [availableLicenses, setAvailableLicenses] = useState([]);
   const [enableBlockchainTimestamp, setEnableBlockchainTimestamp] = useState(false);
 
@@ -127,7 +127,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       // Set default license
       const defaultLicense = licenses.find(l => l.is_default);
       if (defaultLicense) {
-        setSelectedLicenseId(defaultLicense.id);
+        setSelectedLicenseIds([defaultLicense.id]);
       }
     } catch (error) {
       console.error("Failed to load licenses:", error);
@@ -422,7 +422,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       youtube_video_id: youtubeVideoDetails?.videoId || null,
       youtube_thumbnail_url: youtubeVideoDetails?.thumbnail || null,
       youtube_video_title: youtubeVideoDetails?.title || null,
-      license_id: selectedLicenseId,
+      license_ids: selectedLicenseIds.length > 0 ? selectedLicenseIds : null,
       enable_blockchain_timestamp: enableBlockchainTimestamp,
       eqoflo_price: enableGatedContent ? eqofloPrice : null,
       gated_content_title: enableGatedContent && gatedContentTitle.trim() ? gatedContentTitle.trim() : null,
@@ -467,7 +467,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       // Reset license to default
       const defaultLicense = availableLicenses.find(l => l.is_default);
       if (defaultLicense) {
-        setSelectedLicenseId(defaultLicense.id);
+        setSelectedLicenseIds([defaultLicense.id]);
       }
     } catch (error) {
       showErrorMessage(error, 'Creating post');
@@ -845,31 +845,37 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
 
           {/* Content License Selection */}
           {!showPollInputs && availableLicenses.length > 0 &&
-          <div className="space-y-2">
+          <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <FileKey className="w-4 h-4 text-purple-400" />
-                <span className="text-sm font-medium text-white">Content License</span>
+                <span className="text-sm font-medium text-white">Content Licenses</span>
+                <span className="text-xs text-gray-400">(select one or more)</span>
               </div>
-              <Select value={selectedLicenseId} onValueChange={setSelectedLicenseId}>
-                <SelectTrigger className="bg-black/20 border-purple-500/20 text-white">
-                  <SelectValue placeholder="Select a license..." />
-                </SelectTrigger>
-                <SelectContent className="bg-black border-purple-500/20">
-                  {availableLicenses.map((license) =>
-                    <SelectItem key={license.id} value={license.id} className="text-white hover:bg-purple-500/10">
+              <div className="space-y-2 bg-black/20 border border-purple-500/20 rounded-lg p-3">
+                {availableLicenses.map((license) =>
+                  <label key={license.id} className="flex items-start gap-3 cursor-pointer p-2 hover:bg-purple-500/10 rounded transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={selectedLicenseIds.includes(license.id)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedLicenseIds([...selectedLicenseIds, license.id]);
+                        } else {
+                          setSelectedLicenseIds(selectedLicenseIds.filter(id => id !== license.id));
+                        }
+                      }}
+                      className="mt-1 w-4 h-4 cursor-pointer"
+                    />
+                    <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium">{license.name}</span>
+                        <span className="font-medium text-white text-sm">{license.name}</span>
                         <span className="text-xs text-gray-400">({license.short_code})</span>
                       </div>
-                    </SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
-              {selectedLicenseId && (
-                <div className="text-xs text-gray-400 bg-purple-600/10 border border-purple-500/20 rounded-lg p-2">
-                  {availableLicenses.find(l => l.id === selectedLicenseId)?.description}
-                </div>
-              )}
+                      <p className="text-xs text-gray-400 mt-1">{license.description}</p>
+                    </div>
+                  </label>
+                )}
+              </div>
             </div>
           }
 
