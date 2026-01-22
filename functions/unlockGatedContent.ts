@@ -38,10 +38,8 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'You cannot unlock your own content' }, { status: 400 });
     }
 
-    // Get user's current balance
-    const userProfiles = await base44.asServiceRole.entities.UserProfileData.filter({ user_email: user.email });
-    const userProfile = userProfiles.length > 0 ? userProfiles[0] : null;
-    const currentBalance = parseFloat(userProfile?.token_balance) || 0;
+    // Get user's current balance from User entity
+    const currentBalance = parseFloat(user.token_balance) || 0;
     const requiredPrice = parseFloat(post.eqoflo_price) || 0;
 
     // Check if user has enough balance
@@ -59,29 +57,19 @@ Deno.serve(async (req) => {
 
     // Deduct from user's balance
     const newUserBalance = currentBalance - requiredPrice;
-    if (userProfile) {
-      await base44.asServiceRole.entities.UserProfileData.update(userProfile.id, {
-        token_balance: newUserBalance
-      });
-    } else {
-      await base44.asServiceRole.entities.UserProfileData.create({
-        user_email: user.email,
+    const users = await base44.asServiceRole.entities.User.filter({ email: user.email });
+    if (users.length > 0) {
+      await base44.asServiceRole.entities.User.update(users[0].id, {
         token_balance: newUserBalance
       });
     }
 
     // Add to creator's balance
-    const creatorProfiles = await base44.asServiceRole.entities.UserProfileData.filter({ user_email: post.created_by });
-    if (creatorProfiles.length > 0) {
-      const creatorProfile = creatorProfiles[0];
-      const creatorCurrentBalance = parseFloat(creatorProfile.token_balance) || 0;
-      await base44.asServiceRole.entities.UserProfileData.update(creatorProfile.id, {
+    const creatorUsers = await base44.asServiceRole.entities.User.filter({ email: post.created_by });
+    if (creatorUsers.length > 0) {
+      const creatorCurrentBalance = parseFloat(creatorUsers[0].token_balance) || 0;
+      await base44.asServiceRole.entities.User.update(creatorUsers[0].id, {
         token_balance: creatorCurrentBalance + creatorAmount
-      });
-    } else {
-      await base44.asServiceRole.entities.UserProfileData.create({
-        user_email: post.created_by,
-        token_balance: creatorAmount
       });
     }
 
