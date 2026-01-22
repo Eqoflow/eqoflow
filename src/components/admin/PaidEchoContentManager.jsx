@@ -24,7 +24,7 @@ export default function PaidEchoContentManager() {
     try {
       setIsLoading(true);
       const walletTransactions = await base44.entities.PlatformWallet.filter(
-        { transaction_type: 'gated_content_fee' },
+        { source_description: { $regex: 'Gated Content' } },
         '-created_date',
         100
       );
