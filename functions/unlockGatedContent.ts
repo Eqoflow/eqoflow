@@ -82,18 +82,17 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Log platform fee as revenue to show in gamify/admin hub (matching blockchain fee format)
+    // Log platform fee as revenue to show in gamify/admin hub
     try {
       await base44.asServiceRole.entities.PlatformRevenue.create({
-        revenue_type: 'gated_content_unlock_fee',
+        revenue_source: 'other',
         amount_usd: platformFee * 0.02,
-        amount_tokens: platformFee,
-        description: `Gated content unlock fee - ${platformFee} $eqoflo tokens from ${user.email} to creator ${post.created_by}`,
-        user_email: user.email,
-        transaction_id: postId
+        description: `Gated content unlock fee - ${platformFee} $eqoflo from gated content (Post: ${postId}, Buyer: ${user.email}, Creator: ${post.created_by})`,
+        creator_email: post.created_by,
+        related_transaction_id: postId
       });
     } catch (e) {
-      console.warn("Could not log revenue:", e.message);
+      console.error("Failed to log revenue:", e.message);
     }
 
     // Update post - add user to unlocked_by and update total_revenue
