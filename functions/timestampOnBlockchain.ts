@@ -67,11 +67,21 @@ Deno.serve(async (req) => {
     const memoData = `EQOFLOW:${content_hash}:${post_id || 'content'}:${Date.now()}`;
     console.log('[timestampOnBlockchain] Creating memo:', memoData.substring(0, 50) + '...');
     
-    // Get recent blockhash first (parallel to improve speed)
-    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
-    console.log('[timestampOnBlockchain] Blockhash obtained');
+    // Get recent blockhash
+    console.log('[timestampOnBlockchain] Fetching blockhash from:', rpcUrl.substring(0, 50) + '...');
+    let blockhash, lastValidBlockHeight;
+    try {
+      const blockHashResult = await connection.getLatestBlockhash('confirmed');
+      blockhash = blockHashResult.blockhash;
+      lastValidBlockHeight = blockHashResult.lastValidBlockHeight;
+      console.log('[timestampOnBlockchain] Blockhash obtained:', blockhash.substring(0, 10) + '...');
+    } catch (blockHashError) {
+      console.error('[timestampOnBlockchain] Failed to get blockhash:', blockHashError.message);
+      throw new Error('Failed to connect to Solana network');
+    }
     
-    // Create simple memo-only transaction (no transfer needed)
+    // Create simple memo-only transaction
+    console.log('[timestampOnBlockchain] Building transaction...');
     const transaction = new Transaction();
     transaction.add({
       keys: [],
@@ -82,16 +92,21 @@ Deno.serve(async (req) => {
     transaction.recentBlockhash = blockhash;
     transaction.feePayer = keypair.publicKey;
     transaction.sign(keypair);
+    console.log('[timestampOnBlockchain] Transaction signed');
     
-    console.log('[timestampOnBlockchain] Sending transaction...');
-    
-    // Send transaction (don't wait for confirmation)
-    const signature = await connection.sendRawTransaction(transaction.serialize(), {
-      skipPreflight: true, // Skip preflight for speed
-      maxRetries: 0 // Don't retry, just send once
-    });
-    
-    console.log('[timestampOnBlockchain] Transaction sent:', signature);
+    // Send transaction
+    console.log('[timestampOnBlockchain] Sending transaction to network...');
+    let signature;
+    try {
+      signature = await connection.sendRawTransaction(transaction.serialize(), {
+        skipPreflight: true,
+        maxRetries: 0
+      });
+      console.log('[timestampOnBlockchain] Transaction sent successfully:', signature);
+    } catch (sendError) {
+      console.error('[timestampOnBlockchain] Failed to send transaction:', sendError.message);
+      throw new Error('Failed to send blockchain transaction');
+    }
 
     // Update the post with blockchain transaction ID
     if (post_id) {
