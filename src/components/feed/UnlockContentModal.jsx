@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,13 +9,33 @@ import { base44 } from "@/api/base44Client";
 export default function UnlockContentModal({ post, user, onClose, onSuccess }) {
   const [isUnlocking, setIsUnlocking] = useState(false);
   const [error, setError] = useState(null);
+  const [actualBalance, setActualBalance] = useState(0);
+  const [isLoadingBalance, setIsLoadingBalance] = useState(true);
 
-  // Parse values carefully to ensure proper comparison
-  const userBalance = parseFloat(user?.token_balance) || 0;
+  // Fetch actual balance from UserProfileData
+  useEffect(() => {
+    const fetchBalance = async () => {
+      try {
+        const profiles = await base44.entities.UserProfileData.filter({ user_email: user.email });
+        if (profiles.length > 0) {
+          setActualBalance(parseFloat(profiles[0].token_balance) || 0);
+        }
+      } catch (err) {
+        console.error('Error fetching balance:', err);
+      } finally {
+        setIsLoadingBalance(false);
+      }
+    };
+    
+    if (user?.email) {
+      fetchBalance();
+    }
+  }, [user?.email]);
+
   const price = parseFloat(post?.eqoflo_price) || 0;
   const platformFee = Math.floor(price * 0.07);
   const creatorReceives = price - platformFee;
-  const hasEnoughBalance = userBalance >= price && price > 0;
+  const hasEnoughBalance = actualBalance >= price && price > 0;
 
   const handleUnlock = async () => {
     setIsUnlocking(true);
@@ -88,9 +108,13 @@ export default function UnlockContentModal({ post, user, onClose, onSuccess }) {
                 <span className="text-sm text-gray-400">Your Balance</span>
                 <div className="flex items-center gap-1">
                   <Coins className="w-4 h-4 text-amber-400" />
-                  <span className={`font-semibold ${hasEnoughBalance ? 'text-white' : 'text-red-400'}`}>
-                    {userBalance} $eqoflo
-                  </span>
+                  {isLoadingBalance ? (
+                    <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
+                  ) : (
+                    <span className={`font-semibold ${hasEnoughBalance ? 'text-white' : 'text-red-400'}`}>
+                      {actualBalance.toLocaleString()} $eqoflo
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -102,7 +126,7 @@ export default function UnlockContentModal({ post, user, onClose, onSuccess }) {
                 <div className="flex-1">
                   <p className="text-sm text-red-400 font-medium">Insufficient Balance</p>
                   <p className="text-xs text-red-300 mt-1">
-                    You need {price - userBalance} more $eqoflo to unlock this content
+                    You need {(price - actualBalance).toLocaleString()} more $eqoflo to unlock this content
                   </p>
                 </div>
               </div>
@@ -135,7 +159,7 @@ export default function UnlockContentModal({ post, user, onClose, onSuccess }) {
               </Button>
               <Button
                 onClick={handleUnlock}
-                disabled={!hasEnoughBalance || isUnlocking}
+                disabled={!hasEnoughBalance || isUnlocking || isLoadingBalance}
                 className="flex-1 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white"
               >
                 {isUnlocking ? (
