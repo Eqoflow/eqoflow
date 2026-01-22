@@ -147,9 +147,9 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
         const videoId = match ? match[1] : null;
 
         if (videoId && youtubeVideoDetails?.videoId !== videoId) {
-          setIsFetchingYTDetails(true);
-          getYoutubeVideoDetails({ videoId }).
-          then((response) => {
+           setIsFetchingYTDetails(true);
+           getYoutubeVideoDetails({ videoId })
+           .then((response) => {
             if (response.data) {
               setYoutubeVideoDetails({
                 videoId: videoId,
@@ -159,12 +159,12 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
             } else {
               setYoutubeVideoDetails(null);
             }
-          }).
-          catch((error) => {
+            })
+            .catch((error) => {
             console.error("Error fetching YouTube details:", error);
             setYoutubeVideoDetails(null);
-          }).
-          finally(() => {
+            })
+            .finally(() => {
             setIsFetchingYTDetails(false);
           });
         } else if (!videoId && youtubeVideoDetails) {
