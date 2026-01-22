@@ -64,7 +64,7 @@ export default function ProvenanceDisplay({ post, compact = false }) {
                 </Badge>
               </TooltipTrigger>
               <TooltipContent className="bg-black/90 border-purple-500/30 max-w-xs">
-                <p className="text-xs">{license.description}</p>
+                <p className="text-xs text-white">{license.description}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
