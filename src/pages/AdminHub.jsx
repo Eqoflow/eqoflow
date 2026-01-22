@@ -243,14 +243,6 @@ export default function AdminHub() {
     href: createPageUrl("MarketplaceMonitor"),
     iconColorClass: "text-purple-400",
     requiresSuperAdmin: true
-  },
-  {
-    title: "Paid Echo Content",
-    description: "Track all gated content unlock fees and platform revenue from Paid Echo transactions",
-    icon: Coins,
-    href: createPageUrl("PaidEchoContent"),
-    iconColorClass: "text-purple-400",
-    requiresSuperAdmin: true
   }];
 
 
