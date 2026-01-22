@@ -1065,7 +1065,7 @@ export default function Feed() {
   const handleNewPost = useCallback(async (postData) => {
     const tempId = `temp-${Date.now()}`;
 
-    const isPoll = postData.isPoll === true || postData.question && postData.options;
+    const isPoll = postData.isPoll === true || (postData.question && postData.options);
 
     console.log('[Feed.js] handleNewPost - isPoll:', isPoll, 'postData:', postData);
 
