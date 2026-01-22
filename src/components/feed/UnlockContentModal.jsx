@@ -12,14 +12,14 @@ export default function UnlockContentModal({ post, user, onClose, onSuccess }) {
   const [actualBalance, setActualBalance] = useState(0);
   const [isLoadingBalance, setIsLoadingBalance] = useState(true);
 
-  // Fetch actual balance from UserProfileData
+  // Fetch actual balance from User entity (token_balance is stored on User, not UserProfileData)
   useEffect(() => {
     const fetchBalance = async () => {
       try {
-        const profiles = await base44.entities.UserProfileData.filter({ user_email: user.email });
-        if (profiles.length > 0) {
-          setActualBalance(parseFloat(profiles[0].token_balance) || 0);
-        }
+        // Token balance is stored on the User entity, not UserProfileData
+        // The user object passed in should already have token_balance
+        const balance = parseFloat(user?.token_balance) || 0;
+        setActualBalance(balance);
       } catch (err) {
         console.error('Error fetching balance:', err);
       } finally {
@@ -27,10 +27,10 @@ export default function UnlockContentModal({ post, user, onClose, onSuccess }) {
       }
     };
     
-    if (user?.email) {
+    if (user) {
       fetchBalance();
     }
-  }, [user?.email]);
+  }, [user, user?.token_balance]);
 
   const price = parseFloat(post?.eqoflo_price) || 0;
   const platformFee = Math.floor(price * 0.07);
