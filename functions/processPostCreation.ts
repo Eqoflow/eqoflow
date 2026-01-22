@@ -58,35 +58,25 @@ Deno.serve(async (req) => {
     
     const updateData = { content_hash: contentHash };
 
-    // Optionally timestamp on blockchain
+    // Optionally timestamp on blockchain (async - don't wait)
     let blockchainTxId = null;
     let timestampError = null;
 
     if (enable_blockchain_timestamp) {
-      console.log('[processPostCreation] Blockchain timestamp requested. User token_balance:', user.token_balance);
+      console.log('[processPostCreation] Blockchain timestamp requested. Initiating async process...');
       
-      try {
-        console.log('[processPostCreation] Invoking timestampOnBlockchain...');
-        const timestampResponse = await base44.functions.invoke('timestampOnBlockchain', {
-          content_hash: contentHash,
-          post_id: post_id
-        });
-
-        console.log('[processPostCreation] Timestamp response:', timestampResponse);
-
-        if (timestampResponse.data?.blockchain_tx_id) {
-          blockchainTxId = timestampResponse.data.blockchain_tx_id;
-          updateData.blockchain_tx_id = blockchainTxId;
-          console.log('[processPostCreation] Blockchain TX ID received:', blockchainTxId);
-        } else if (timestampResponse.data?.error) {
-          timestampError = timestampResponse.data.error;
-          console.error('[processPostCreation] Timestamp error from response:', timestampError);
-        }
-      } catch (error) {
-        console.error('[processPostCreation] Blockchain timestamping error:', error);
-        console.error('[processPostCreation] Error details:', error.message, error.response?.data);
-        timestampError = error.message || 'Failed to timestamp on blockchain';
-      }
+      // Start blockchain timestamping in background (don't await)
+      base44.functions.invoke('timestampOnBlockchain', {
+        content_hash: contentHash,
+        post_id: post_id
+      }).then((timestampResponse) => {
+        console.log('[processPostCreation] Async blockchain timestamp completed:', timestampResponse.data);
+      }).catch((error) => {
+        console.error('[processPostCreation] Async blockchain timestamp failed:', error.message);
+      });
+      
+      // Immediately return to avoid timeout
+      timestampError = 'Blockchain timestamping in progress. Check back in a few moments.';
     }
 
     // Update the post with hash (and blockchain tx if successful)

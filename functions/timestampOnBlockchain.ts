@@ -99,10 +99,18 @@ Deno.serve(async (req) => {
     
     console.log('[timestampOnBlockchain] Transaction sent successfully:', signature);
 
+    // Update the post with blockchain transaction ID
+    if (post_id) {
+      await base44.asServiceRole.entities.Post.update(post_id, {
+        blockchain_tx_id: signature
+      });
+      console.log('[timestampOnBlockchain] Post updated with blockchain_tx_id:', signature);
+    }
+
     // Log the transaction for transparency
-    await base44.entities.PlatformRevenue.create({
+    await base44.asServiceRole.entities.PlatformRevenue.create({
       revenue_type: 'blockchain_timestamp_fee',
-      amount_usd: 0, // No USD value
+      amount_usd: 0,
       amount_tokens: EQOFLO_FEE,
       description: `Blockchain timestamping fee for post ${post_id || 'content'}`,
       user_email: user.email,
