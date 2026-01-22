@@ -98,6 +98,11 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const [eqofloPrice, setEqofloPrice] = useState(250); // Minimum $5 (250 * $0.02)
   const [gatedContentTitle, setGatedContentTitle] = useState("");
 
+  // Sell to Brands state
+  const [enableBrandContent, setEnableBrandContent] = useState(false);
+  const [brandContentPrice, setBrandContentPrice] = useState(500);
+  const [brandContentTitle, setBrandContentTitle] = useState("");
+
   const fetchUserCommunities = useCallback(async () => {
     if (user && user.email && !communityId) {
       try {
@@ -420,7 +425,9 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       license_id: selectedLicenseId,
       enable_blockchain_timestamp: enableBlockchainTimestamp,
       eqoflo_price: enableGatedContent ? eqofloPrice : null,
-      gated_content_title: enableGatedContent && gatedContentTitle.trim() ? gatedContentTitle.trim() : null
+      gated_content_title: enableGatedContent && gatedContentTitle.trim() ? gatedContentTitle.trim() : null,
+      brand_content_price: enableBrandContent ? brandContentPrice : null,
+      brand_content_title: enableBrandContent && brandContentTitle.trim() ? brandContentTitle.trim() : null
     };
 
     if (communityId) {
@@ -453,6 +460,9 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       setEnableGatedContent(false);
       setEqofloPrice(250);
       setGatedContentTitle("");
+      setEnableBrandContent(false);
+      setBrandContentPrice(500);
+      setBrandContentTitle("");
       
       // Reset license to default
       const defaultLicense = availableLicenses.find(l => l.is_default);
@@ -863,26 +873,26 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
             </div>
           }
 
-          {/* $eqoflo Gated Content */}
+          {/* Monetize with $eqoflo */}
           {!showPollInputs &&
-          <div className="space-y-3 p-4 bg-gradient-to-r from-amber-600/10 to-orange-600/10 border border-amber-500/20 rounded-lg">
+          <div className="space-y-3">
+            <div className="space-y-3 p-4 bg-gradient-to-r from-amber-600/10 to-orange-600/10 border border-amber-500/20 rounded-lg">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2">
                     <Coins className="w-4 h-4 text-amber-400" />
                     <Label htmlFor="gated-content" className="text-sm font-medium text-white cursor-pointer">
-                      Monetize with $eqoflo
+                      Unlock Premium Access
                     </Label>
                   </div>
-                  <p className="text-xs text-gray-400 mt-1">Set a price to unlock this content</p>
+                  <p className="text-xs text-gray-400 mt-1">Set a price for users to unlock this content</p>
                 </div>
                 <Switch
                 id="gated-content"
                 checked={enableGatedContent}
                 onCheckedChange={setEnableGatedContent} />
-
               </div>
-              
+
               {enableGatedContent &&
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -924,6 +934,66 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
                 </motion.div>
               }
             </div>
+
+            <div className="space-y-3 p-4 bg-gradient-to-r from-violet-600/10 to-fuchsia-600/10 border border-violet-500/20 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Coins className="w-4 h-4 text-violet-400" />
+                    <Label htmlFor="brand-content" className="text-sm font-medium text-white cursor-pointer">
+                      Sell your content to brands
+                    </Label>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">Allow brands to purchase distribution rights (ARR waived)</p>
+                </div>
+                <Switch
+                id="brand-content"
+                checked={enableBrandContent}
+                onCheckedChange={setEnableBrandContent} />
+              </div>
+
+              {enableBrandContent &&
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                className="space-y-3">
+                  <div>
+                    <Label className="text-sm text-white">Content Package Title *</Label>
+                    <Input
+                      type="text"
+                      value={brandContentTitle}
+                      onChange={(e) => setBrandContentTitle(e.target.value)}
+                      placeholder="e.g., Q1 Marketing Campaign Content, Brand Asset Bundle..."
+                      className="bg-black/20 border-violet-500/20 text-white mt-1"
+                      maxLength={100}
+                    />
+                    <p className="text-xs text-gray-400 mt-1">
+                      Buyers get full distribution rights with no legal restrictions (ARR waived)
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-sm text-white">Price (min 500 $eqoflo = $10)</Label>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Input
+                        type="number"
+                        min="500"
+                        step="100"
+                        value={brandContentPrice}
+                        onChange={(e) => setBrandContentPrice(Math.max(500, parseInt(e.target.value) || 500))}
+                        className="bg-black/20 border-violet-500/20 text-white"
+                      />
+                      <span className="text-sm text-gray-400 whitespace-nowrap">
+                        ≈ ${(brandContentPrice * 0.02).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-violet-400">
+                    Platform fee: 7% • You earn: {Math.round(brandContentPrice * 0.93)} $eqoflo per purchase
+                  </p>
+                </motion.div>
+              }
+            </div>
+          </div>
           }
 
           {/* Blockchain Timestamping Toggle */}
@@ -1091,6 +1161,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
               showPollInputs && (!pollQuestion.trim() || pollOptions.filter((opt) => opt.trim()).length < 2) ||
               !showPollInputs && !content.trim() && mediaFiles.length === 0 && !youtubeVideoDetails ||
               enableGatedContent && !gatedContentTitle.trim() ||
+              enableBrandContent && !brandContentTitle.trim() ||
               isSubmitting ||
               isUploading ||
               !!tagError
