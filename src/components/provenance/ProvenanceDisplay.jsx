@@ -49,16 +49,25 @@ export default function ProvenanceDisplay({ post, compact = false }) {
                 </div>
               </TooltipTrigger>
               <TooltipContent className="bg-black/90 border-green-500/30 max-w-xs">
-                <p className="text-xs text-green-400 font-mono break-all">{post.blockchain_tx_id}</p>
+                <p className="text-xs text-green-400 font-mono break-all">Blockchain timestamp: {post.blockchain_tx_id}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         )}
         {license && (
-          <Badge className="bg-purple-600/20 text-purple-400 border-purple-500/30 text-xs flex items-center gap-1">
-            <FileKey className="w-3 h-3" />
-            {license.short_code}
-          </Badge>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge className="bg-purple-600/20 text-purple-400 border-purple-500/30 text-xs flex items-center gap-1 cursor-help">
+                  <FileKey className="w-3 h-3" />
+                  {license.short_code}
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent className="bg-black/90 border-purple-500/30">
+                <p className="text-xs">{license.name}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
       </div>
     );
