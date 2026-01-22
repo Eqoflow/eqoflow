@@ -21,10 +21,11 @@ import {
   Bot,
   Briefcase,
   ArrowRight,
-  BarChart3, // Added BarChart3
-  ShoppingBag, // Added ShoppingBag
-  Settings, // Added Settings
-  BookOpen // Added BookOpen for EqoCourses Revenue
+  BarChart3,
+  ShoppingBag,
+  Settings,
+  BookOpen,
+  Coins
 } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
