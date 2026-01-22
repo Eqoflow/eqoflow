@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -240,6 +239,14 @@ export default function AdminHub() {
     description: "Monitor all Skills Marketplace transactions, escrow holdings, and buyer-seller communications",
     icon: Briefcase,
     href: createPageUrl("MarketplaceMonitor"),
+    iconColorClass: "text-purple-400",
+    requiresSuperAdmin: true
+  },
+  {
+    title: "Paid Echo Content",
+    description: "Track all gated content unlock fees and platform revenue from Paid Echo transactions",
+    icon: Coins,
+    href: createPageUrl("PaidEchoContent"),
     iconColorClass: "text-purple-400",
     requiresSuperAdmin: true
   }];
