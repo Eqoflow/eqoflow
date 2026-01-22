@@ -1200,12 +1200,12 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
               <div className="mb-4 p-4 bg-gradient-to-r from-amber-600/10 to-orange-600/10 border border-amber-500/20 rounded-lg">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2 mb-2">
                       <Lock className="w-4 h-4 text-amber-400" />
-                      <span className="font-semibold text-amber-400 text-sm">Premium Content</span>
+                      <span className="font-semibold text-white">{displayPost.gated_content_title || "Premium Content"}</span>
                     </div>
                     <p className="text-xs text-gray-400">
-                      Unlock this exclusive content for {displayPost.eqoflo_price} $eqoflo (≈${(displayPost.eqoflo_price * 0.02).toFixed(2)})
+                      Unlock for {displayPost.eqoflo_price} $eqoflo (≈${(displayPost.eqoflo_price * 0.02).toFixed(2)})
                     </p>
                   </div>
                   <Button

@@ -96,6 +96,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   // $eqoflo Gated Content state
   const [enableGatedContent, setEnableGatedContent] = useState(false);
   const [eqofloPrice, setEqofloPrice] = useState(250); // Minimum $5 (250 * $0.02)
+  const [gatedContentTitle, setGatedContentTitle] = useState("");
 
   const fetchUserCommunities = useCallback(async () => {
     if (user && user.email && !communityId) {
@@ -418,7 +419,8 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       youtube_video_title: youtubeVideoDetails?.title || null,
       license_id: selectedLicenseId,
       enable_blockchain_timestamp: enableBlockchainTimestamp,
-      eqoflo_price: enableGatedContent ? eqofloPrice : null
+      eqoflo_price: enableGatedContent ? eqofloPrice : null,
+      gated_content_title: enableGatedContent && gatedContentTitle.trim() ? gatedContentTitle.trim() : null
     };
 
     if (communityId) {
@@ -450,6 +452,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       setEnableBlockchainTimestamp(false);
       setEnableGatedContent(false);
       setEqofloPrice(250);
+      setGatedContentTitle("");
       
       // Reset license to default
       const defaultLicense = availableLicenses.find(l => l.is_default);
@@ -884,20 +887,36 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
-                className="space-y-2">
-                  <Label className="text-sm text-white">Price (min 250 $eqoflo = $5)</Label>
-                  <div className="flex items-center gap-2">
+                className="space-y-3">
+                  <div>
+                    <Label className="text-sm text-white">Content Title *</Label>
                     <Input
-                    type="number"
-                    min="250"
-                    step="50"
-                    value={eqofloPrice}
-                    onChange={(e) => setEqofloPrice(Math.max(250, parseInt(e.target.value) || 250))}
-                    className="bg-black/20 border-amber-500/20 text-white" />
-
-                    <span className="text-sm text-gray-400 whitespace-nowrap">
-                      ≈ ${(eqofloPrice * 0.02).toFixed(2)}
-                    </span>
+                      type="text"
+                      value={gatedContentTitle}
+                      onChange={(e) => setGatedContentTitle(e.target.value)}
+                      placeholder="e.g., Exclusive Trading Strategy, Premium Tutorial..."
+                      className="bg-black/20 border-amber-500/20 text-white mt-1"
+                      maxLength={100}
+                    />
+                    <p className="text-xs text-gray-400 mt-1">
+                      This title will be shown to users before they unlock your content
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-sm text-white">Price (min 250 $eqoflo = $5)</Label>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Input
+                        type="number"
+                        min="250"
+                        step="50"
+                        value={eqofloPrice}
+                        onChange={(e) => setEqofloPrice(Math.max(250, parseInt(e.target.value) || 250))}
+                        className="bg-black/20 border-amber-500/20 text-white"
+                      />
+                      <span className="text-sm text-gray-400 whitespace-nowrap">
+                        ≈ ${(eqofloPrice * 0.02).toFixed(2)}
+                      </span>
+                    </div>
                   </div>
                   <p className="text-xs text-amber-400">
                     Platform fee: 7% • You earn: {Math.round(eqofloPrice * 0.93)} $eqoflo per unlock
@@ -1071,6 +1090,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
               disabled={
               showPollInputs && (!pollQuestion.trim() || pollOptions.filter((opt) => opt.trim()).length < 2) ||
               !showPollInputs && !content.trim() && mediaFiles.length === 0 && !youtubeVideoDetails ||
+              enableGatedContent && !gatedContentTitle.trim() ||
               isSubmitting ||
               isUploading ||
               !!tagError
