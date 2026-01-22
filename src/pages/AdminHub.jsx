@@ -397,9 +397,12 @@ export default function AdminHub() {
           </TabsContent>
 
           {/* Marketplace Tab */}
-          <TabsContent value="marketplace">
-            {renderFeatureCards(marketplaceFeatures, hasSuperlAdminAccess)}
-          </TabsContent>
+           <TabsContent value="marketplace">
+             <div className="space-y-6">
+               <PaidEchoContentManager />
+               {renderFeatureCards(marketplaceFeatures, hasSuperlAdminAccess)}
+             </div>
+           </TabsContent>
 
           {/* System Tab */}
           <TabsContent value="system">
