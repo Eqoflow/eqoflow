@@ -83,16 +83,21 @@ Deno.serve(async (req) => {
     }
 
     // Log to PlatformWallet for gamify transactions display
+    const walletRecord = {
+      transaction_type: 'ep_purchase_qflow',
+      amount_qflow: platformFee,
+      source_description: `Gated Content Unlock Fee from ${post.created_by}`,
+      user_email: user.email,
+      notes: `Buyer: ${user.email} | Creator: ${post.created_by} | Post: ${postId}`
+    };
+
+    console.log('Creating PlatformWallet record:', walletRecord);
+
     try {
-      await base44.asServiceRole.entities.PlatformWallet.create({
-        transaction_type: 'ep_purchase_qflow',
-        amount_qflow: platformFee,
-        source_description: `Gated Content Unlock Fee from ${post.created_by}`,
-        user_email: user.email,
-        notes: `Buyer: ${user.email} | Creator: ${post.created_by} | Post: ${postId}`
-      });
+      const createdRecord = await base44.asServiceRole.entities.PlatformWallet.create(walletRecord);
+      console.log('PlatformWallet record created:', createdRecord);
     } catch (e) {
-      console.error("Failed to log to PlatformWallet:", e.message);
+      console.error("Failed to log to PlatformWallet:", e);
     }
 
     // Update post - add user to unlocked_by and update total_revenue
