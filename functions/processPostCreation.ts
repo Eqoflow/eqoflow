@@ -93,19 +93,18 @@ Deno.serve(async (req) => {
       
       console.log('[processPostCreation] Simulated blockchain TX ID:', blockchainTxId);
       
-      // Log revenue
+      // Log to platform wallet for admin visibility
       try {
-        await base44.asServiceRole.entities.PlatformRevenue.create({
-          revenue_type: 'blockchain_timestamp_fee',
-          amount_usd: 0,
-          amount_tokens: EQOFLO_FEE,
-          description: `Blockchain timestamping fee for post ${post_id}`,
+        await base44.asServiceRole.entities.PlatformWallet.create({
+          transaction_type: 'blockchain_timestamp_fee',
+          amount_qflow: EQOFLO_FEE,
+          source_description: 'Blockchain Timestamp Fee',
           user_email: user.email,
-          transaction_id: blockchainTxId
+          notes: `Post ${post_id} - TX: ${blockchainTxId}`
         });
-        console.log('[processPostCreation] Revenue logged');
-      } catch (revenueError) {
-        console.error('[processPostCreation] Failed to log revenue:', revenueError.message);
+        console.log('[processPostCreation] Fee logged to platform wallet');
+      } catch (walletError) {
+        console.error('[processPostCreation] Failed to log to platform wallet:', walletError.message);
       }
       
       // TODO: Replace with real blockchain timestamping once integration is complete
