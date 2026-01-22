@@ -75,12 +75,11 @@ Deno.serve(async (req) => {
 
     // Log platform fee as revenue
     await base44.asServiceRole.entities.PlatformRevenue.create({
-      source: 'gated_content',
-      amount: platformFee,
-      currency: 'eqoflo',
-      description: `Platform fee from gated content unlock (Post ID: ${postId})`,
-      user_email: user.email,
-      creator_email: post.created_by
+      revenue_source: 'other',
+      amount_usd: platformFee * 0.02,
+      description: `Platform fee from gated content unlock (${platformFee} $eqoflo)`,
+      creator_email: post.created_by,
+      related_transaction_id: postId
     });
 
     // Update post - add user to unlocked_by and update total_revenue
