@@ -633,10 +633,6 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
     setTimeout(() => setErrorMessage(null), 3000);
   };
 
-  const isGatedContent = displayPost.eqoflo_price && displayPost.eqoflo_price > 0;
-  const hasUnlockedGatedContent = isGatedContent && displayPost.unlocked_by?.includes(currentUser?.email);
-  const isContentCreator = displayPost.created_by === currentUser?.email;
-
   const AuthorProfileLink = ({ children, post }) => {
     const params = new URLSearchParams();
     const usernameToUse = currentAuthor?.username;
@@ -772,6 +768,10 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
   };
 
   const displayPost = localPost || post;
+
+  const isGatedContent = displayPost.eqoflo_price && displayPost.eqoflo_price > 0;
+  const hasUnlockedGatedContent = isGatedContent && displayPost.unlocked_by?.includes(currentUser?.email);
+  const isContentCreator = displayPost.created_by === currentUser?.email;
 
   const hasTextContent = displayPost.content && displayPost.content.trim().length > 0;
   const hasMedia = displayPost.media_urls && displayPost.media_urls.length > 0;
