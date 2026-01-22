@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Shield, FileKey, ExternalLink, Copy, Check, Clock } from "lucide-react";
+import { Shield, FileKey, ExternalLink, Copy, Check, Clock, X } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
 export default function ProvenanceDisplay({ post, compact = false }) {
