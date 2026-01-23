@@ -108,7 +108,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   // Solana wallet state
   const { publicKey, connected } = useWallet();
   const { timestampContent, isProcessing: isTimestamping } = useBlockchainTimestamp();
-  const isWalletConnected = connected && publicKey;
+  const isWalletConnected = (connected && publicKey) || user?.solana_wallet_address;
 
   const fetchUserCommunities = useCallback(async () => {
     if (user && user.email && !communityId) {
