@@ -6,10 +6,9 @@ import { Wallet, TrendingUp, Coins } from 'lucide-react';
 import TokenBalanceCard from './TokenBalanceCard';
 import FiatPaymentManager from './FiatPaymentManager';
 import StripeConnectManager from './StripeConnectManager';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { LogOut } from 'lucide-react';
 
 export default function WalletManager({ user, onUpdate }) {
-  const { connect, disconnect, publicKey, connected, wallet, select, wallets } = useWallet();
   const [selectedTab, setSelectedTab] = useState('overview');
   const [isConnecting, setIsConnecting] = useState(false);
 
@@ -28,26 +27,7 @@ export default function WalletManager({ user, onUpdate }) {
 
   const totalBalance = (user.token_balance || 0) + (user.tokens_on_hold || 0);
 
-  // Handle wallet connection success
-  useEffect(() => {
-    const linkWallet = async () => {
-      if (connected && publicKey && !user.solana_wallet_address && !isConnecting) {
-        setIsConnecting(true);
-        try {
-          const { linkSolanaWallet } = await import('@/functions/linkSolanaWallet');
-          await linkSolanaWallet({ publicKey: publicKey.toString() });
-          if (onUpdate) await onUpdate();
-        } catch (error) {
-          console.error('Error linking wallet:', error);
-          alert('Connected but failed to save wallet address. Please try again.');
-        } finally {
-          setIsConnecting(false);
-        }
-      }
-    };
-    
-    linkWallet();
-  }, [connected, publicKey, user.solana_wallet_address]);
+
 
   return (
     <div className="space-y-6">
@@ -138,26 +118,20 @@ export default function WalletManager({ user, onUpdate }) {
 
                       setIsConnecting(true);
                       try {
-                        // First select Phantom wallet
-                        const phantomWallet = wallets.find(w => 
-                          w.adapter.name === 'Phantom' || 
-                          w.adapter.name.toLowerCase().includes('phantom')
-                        );
+                        // Check for Phantom directly via window.solana
+                        if (window.solana && window.solana.isPhantom) {
+                          const resp = await window.solana.connect();
+                          const walletAddress = resp.publicKey.toString();
 
-                        if (!phantomWallet) {
-                          alert('Phantom wallet not found. Please install the Phantom browser extension.');
+                          // Link wallet to backend
+                          const { linkSolanaWallet } = await import('@/functions/linkSolanaWallet');
+                          await linkSolanaWallet({ publicKey: walletAddress });
+                          if (onUpdate) await onUpdate();
                           setIsConnecting(false);
-                          return;
+                        } else {
+                          alert('Phantom wallet not detected. Please install the Phantom browser extension.');
+                          setIsConnecting(false);
                         }
-
-                        // Select the wallet first
-                        select(phantomWallet.adapter.name);
-
-                        // Wait for selection to complete
-                        await new Promise(resolve => setTimeout(resolve, 300));
-
-                        // Now connect
-                        await connect();
                       } catch (error) {
                         console.error('Error connecting wallet:', error);
                         alert('Failed to connect wallet. Please try again and approve the connection in Phantom.');
