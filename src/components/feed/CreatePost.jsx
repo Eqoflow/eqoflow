@@ -1181,8 +1181,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
               isSubmitting ||
               isUploading ||
               isTimestamping ||
-              !!tagError ||
-              (enableBlockchainTimestamp && !isWalletConnected)
+              !!tagError
               }
               className="bg-gradient-to-r from-purple-600 to-pink-500 neon-glow hover:from-purple-700 hover:to-pink-600 text-white w-full md:w-auto">
               {isSubmitting || isTimestamping ?
