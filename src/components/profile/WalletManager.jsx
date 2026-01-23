@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,8 +9,9 @@ import StripeConnectManager from './StripeConnectManager';
 import { useWallet } from '@solana/wallet-adapter-react';
 
 export default function WalletManager({ user, onUpdate }) {
-  const { connect, disconnect, publicKey, connected } = useWallet();
+  const { connect, disconnect, publicKey, connected, wallet } = useWallet();
   const [selectedTab, setSelectedTab] = useState('overview');
+  const [isConnecting, setIsConnecting] = useState(false);
 
   // Safety check: if user is null or undefined, show loading state
   if (!user) {
@@ -26,6 +27,27 @@ export default function WalletManager({ user, onUpdate }) {
   }
 
   const totalBalance = (user.token_balance || 0) + (user.tokens_on_hold || 0);
+
+  // Handle wallet connection success
+  useEffect(() => {
+    const linkWallet = async () => {
+      if (connected && publicKey && !user.solana_wallet_address && !isConnecting) {
+        setIsConnecting(true);
+        try {
+          const { linkSolanaWallet } = await import('@/functions/linkSolanaWallet');
+          await linkSolanaWallet({ publicKey: publicKey.toString() });
+          if (onUpdate) await onUpdate();
+        } catch (error) {
+          console.error('Error linking wallet:', error);
+          alert('Connected but failed to save wallet address. Please try again.');
+        } finally {
+          setIsConnecting(false);
+        }
+      }
+    };
+    
+    linkWallet();
+  }, [connected, publicKey, user.solana_wallet_address]);
 
   return (
     <div className="space-y-6">
@@ -112,27 +134,28 @@ export default function WalletManager({ user, onUpdate }) {
                   </p>
                   <Button
                     onClick={async () => {
+                      if (isConnecting) return;
+
+                      setIsConnecting(true);
                       try {
+                        if (!wallet) {
+                          alert('Please install Phantom wallet browser extension first.');
+                          setIsConnecting(false);
+                          return;
+                        }
+
                         await connect();
-                        // Wait a moment for publicKey to be set
-                        setTimeout(async () => {
-                          if (publicKey) {
-                            const { linkSolanaWallet } = await import('@/functions/linkSolanaWallet');
-                            await linkSolanaWallet({ publicKey: publicKey.toString() });
-                            if (onUpdate) await onUpdate();
-                          } else {
-                            throw new Error('Wallet connected but public key not available');
-                          }
-                        }, 500);
                       } catch (error) {
                         console.error('Error connecting wallet:', error);
-                        alert('Failed to connect wallet. Please make sure Phantom is installed and try again.');
+                        alert('Failed to connect wallet. Please try again.');
+                        setIsConnecting(false);
                       }
                     }}
+                    disabled={isConnecting}
                     className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600"
                   >
                     <Wallet className="w-4 h-4 mr-2" />
-                    Connect Phantom Wallet
+                    {isConnecting ? 'Connecting...' : 'Connect Phantom Wallet'}
                   </Button>
                 </div>
               )}
