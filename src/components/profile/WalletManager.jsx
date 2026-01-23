@@ -83,15 +83,17 @@ export default function WalletManager({ user, onUpdate }) {
                   <Button
                     onClick={async () => {
                       try {
-                        const { unlinkSolanaWallet } = await import('@/functions/unlinkSolanaWallet');
-                        const response = await unlinkSolanaWallet();
-                        
-                        if (response?.data?.success) {
+                        // Disconnect wallet adapter first
+                        if (connected) {
                           await disconnect();
-                          if (onUpdate) await onUpdate();
-                        } else {
-                          throw new Error('Failed to unlink wallet from database');
                         }
+
+                        // Then update backend
+                        const { unlinkSolanaWallet } = await import('@/functions/unlinkSolanaWallet');
+                        await unlinkSolanaWallet();
+
+                        // Refresh user data
+                        if (onUpdate) await onUpdate();
                       } catch (error) {
                         console.error('Error disconnecting wallet:', error);
                         alert('Failed to disconnect wallet. Please try again.');
@@ -112,18 +114,19 @@ export default function WalletManager({ user, onUpdate }) {
                     onClick={async () => {
                       try {
                         await connect();
-                        if (publicKey) {
-                          const { linkSolanaWallet } = await import('@/functions/linkSolanaWallet');
-                          await linkSolanaWallet({ publicKey: publicKey.toString() });
-                          if (onUpdate) await onUpdate();
-                        }
+                        // Wait a moment for publicKey to be set
+                        setTimeout(async () => {
+                          if (publicKey) {
+                            const { linkSolanaWallet } = await import('@/functions/linkSolanaWallet');
+                            await linkSolanaWallet({ publicKey: publicKey.toString() });
+                            if (onUpdate) await onUpdate();
+                          } else {
+                            throw new Error('Wallet connected but public key not available');
+                          }
+                        }, 500);
                       } catch (error) {
                         console.error('Error connecting wallet:', error);
-                        if (error.name === 'WalletConnectionError') {
-                          alert('Connection request rejected. Please try again and approve in Phantom.');
-                        } else {
-                          alert('Failed to connect wallet. Please try again.');
-                        }
+                        alert('Failed to connect wallet. Please make sure Phantom is installed and try again.');
                       }
                     }}
                     className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600"
