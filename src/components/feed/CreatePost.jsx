@@ -396,6 +396,12 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
     if (enableBlockchainTimestamp) {
       if (!isWalletConnected) {
         try {
+          // Select Phantom wallet first
+          select('Phantom');
+          // Wait for wallet to be selected
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          // Then connect
           await connect();
           // Wait for connection to establish
           await new Promise(resolve => setTimeout(resolve, 1500));
