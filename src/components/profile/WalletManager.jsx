@@ -9,7 +9,7 @@ import StripeConnectManager from './StripeConnectManager';
 import { useWallet } from '@solana/wallet-adapter-react';
 
 export default function WalletManager({ user, onUpdate }) {
-  const { connect, disconnect, publicKey, connected, wallet } = useWallet();
+  const { connect, disconnect, publicKey, connected, wallet, select, wallets } = useWallet();
   const [selectedTab, setSelectedTab] = useState('overview');
   const [isConnecting, setIsConnecting] = useState(false);
 
@@ -138,6 +138,14 @@ export default function WalletManager({ user, onUpdate }) {
 
                       setIsConnecting(true);
                       try {
+                        // Find and select Phantom wallet
+                        const phantomWallet = wallets.find(w => w.adapter.name === 'Phantom');
+                        if (phantomWallet) {
+                          select(phantomWallet.adapter.name);
+                          // Wait a bit for selection to register
+                          await new Promise(resolve => setTimeout(resolve, 100));
+                        }
+
                         await connect();
                       } catch (error) {
                         console.error('Error connecting wallet:', error);
