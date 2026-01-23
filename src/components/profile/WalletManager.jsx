@@ -138,14 +138,25 @@ export default function WalletManager({ user, onUpdate }) {
 
                       setIsConnecting(true);
                       try {
-                        // Find and select Phantom wallet
-                        const phantomWallet = wallets.find(w => w.adapter.name === 'Phantom');
-                        if (phantomWallet) {
-                          select(phantomWallet.adapter.name);
-                          // Wait a bit for selection to register
-                          await new Promise(resolve => setTimeout(resolve, 100));
+                        // First select Phantom wallet
+                        const phantomWallet = wallets.find(w => 
+                          w.adapter.name === 'Phantom' || 
+                          w.adapter.name.toLowerCase().includes('phantom')
+                        );
+
+                        if (!phantomWallet) {
+                          alert('Phantom wallet not found. Please install the Phantom browser extension.');
+                          setIsConnecting(false);
+                          return;
                         }
 
+                        // Select the wallet first
+                        select(phantomWallet.adapter.name);
+
+                        // Wait for selection to complete
+                        await new Promise(resolve => setTimeout(resolve, 300));
+
+                        // Now connect
                         await connect();
                       } catch (error) {
                         console.error('Error connecting wallet:', error);
