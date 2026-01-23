@@ -392,13 +392,29 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       return;
     }
 
+    // Connect wallet if needed for blockchain timestamp
     if (enableBlockchainTimestamp && !isWalletConnected) {
       try {
         await connect();
+        // Wait a moment for connection to establish
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Check if connection was successful
+        if (!publicKey) {
+          setErrorMessage('Wallet connection cancelled. Please connect to use blockchain timestamping.');
+          setIsSubmitting(false);
+          return;
+        }
       } catch (err) {
-        setErrorMessage('Please connect your Phantom wallet to use blockchain timestamping.');
-        setIsSubmitting(false);
-        return;
+        // User cancelled or rejected connection
+        if (err.message?.includes('User rejected') || err.name === 'WalletNotSelectedError') {
+          setErrorMessage('Wallet connection cancelled. Post will be created without blockchain timestamp.');
+          setEnableBlockchainTimestamp(false);
+        } else {
+          setErrorMessage('Failed to connect wallet: ' + err.message);
+          setIsSubmitting(false);
+          return;
+        }
       }
     }
 
