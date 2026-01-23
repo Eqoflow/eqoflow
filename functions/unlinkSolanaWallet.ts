@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        await base44.asServiceRole.entities.User.update(user.id, {
+        await base44.asServiceRole.auth.updateUser(user.id, {
             solana_wallet_address: null,
             solana_wallet_linked_at: null
         });
