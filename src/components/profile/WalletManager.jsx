@@ -83,10 +83,15 @@ export default function WalletManager({ user, onUpdate }) {
                   <Button
                     onClick={async () => {
                       try {
-                        await disconnect();
                         const { unlinkSolanaWallet } = await import('@/functions/unlinkSolanaWallet');
-                        await unlinkSolanaWallet();
-                        if (onUpdate) await onUpdate();
+                        const response = await unlinkSolanaWallet();
+                        
+                        if (response?.data?.success) {
+                          await disconnect();
+                          if (onUpdate) await onUpdate();
+                        } else {
+                          throw new Error('Failed to unlink wallet from database');
+                        }
                       } catch (error) {
                         console.error('Error disconnecting wallet:', error);
                         alert('Failed to disconnect wallet. Please try again.');
