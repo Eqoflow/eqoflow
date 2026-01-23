@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -84,20 +83,6 @@ export default function ProvenanceDisplay({ post, compact = false }) {
         <div className="flex items-center gap-2">
           <Shield className="w-5 h-5 text-purple-400" />
           <h3 className="text-sm font-semibold text-white">Content Provenance</h3>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="cursor-help">
-                <Badge className="bg-purple-600/20 text-purple-400 border-purple-500/30 text-xs">
-                  ?
-                </Badge>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent className="bg-black/90 border-purple-500/30 max-w-xs">
-              <p className="text-xs text-white">
-                Content provenance includes a cryptographic hash to verify authenticity, optional blockchain timestamp for immutable proof of creation, and license terms defining usage rights.
-              </p>
-            </TooltipContent>
-          </Tooltip>
         </div>
         {isExpanded ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
       </button>
