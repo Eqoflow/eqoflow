@@ -106,7 +106,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const [brandContentTitle, setBrandContentTitle] = useState("");
 
   // Solana wallet state
-  const { publicKey, connected, connect, connecting } = useWallet();
+  const { publicKey, connected, connect, connecting, wallet } = useWallet();
   const { timestampContent, isProcessing: isTimestamping } = useBlockchainTimestamp();
   const isWalletConnected = connected && publicKey;
 
@@ -114,11 +114,16 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const handleBlockchainToggle = async (checked) => {
     if (checked && !connected && !connecting) {
       try {
+        if (!wallet) {
+          setErrorMessage('Phantom wallet not detected. Please install Phantom browser extension.');
+          setTimeout(() => setErrorMessage(null), 4000);
+          return;
+        }
         await connect();
         setEnableBlockchainTimestamp(true);
       } catch (err) {
         console.error('Failed to connect wallet:', err);
-        setErrorMessage('Please connect your Phantom wallet to use blockchain timestamping.');
+        setErrorMessage(err.message || 'Failed to connect Phantom wallet. Please try again.');
         setTimeout(() => setErrorMessage(null), 4000);
       }
     } else {
