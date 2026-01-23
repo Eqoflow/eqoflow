@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { Transaction, PublicKey } from '@solana/web3.js';
+import { Transaction, PublicKey, TransactionInstruction } from '@solana/web3.js';
 import { timestampOnBlockchain } from '@/functions/timestampOnBlockchain';
 
 export function useBlockchainTimestamp() {
@@ -30,12 +30,13 @@ export function useBlockchainTimestamp() {
         feePayer: publicKey,
       });
 
-      // Add memo instruction
-      transaction.add({
+      // Add memo instruction (convert string to Uint8Array for browser compatibility)
+      const memoInstruction = new TransactionInstruction({
         keys: [],
         programId: new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr'),
-        data: Buffer.from(memoData, 'utf8'),
+        data: new TextEncoder().encode(memoData),
       });
+      transaction.add(memoInstruction);
 
       // Send transaction and wait for signature
       const signature = await sendTransaction(transaction, connection, {
