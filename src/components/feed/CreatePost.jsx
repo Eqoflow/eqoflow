@@ -106,8 +106,8 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const [brandContentTitle, setBrandContentTitle] = useState("");
 
   // Solana wallet state
-  const { publicKey, connected } = useWallet();
   const { timestampContent, isProcessing: isTimestamping } = useBlockchainTimestamp();
+  const isWalletConnected = user?.solana_wallet_address && user.solana_wallet_address.trim() !== '';
 
   const fetchUserCommunities = useCallback(async () => {
     if (user && user.email && !communityId) {
@@ -386,7 +386,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       return;
     }
 
-    if (enableBlockchainTimestamp && !connected) {
+    if (enableBlockchainTimestamp && !isWalletConnected) {
       setErrorMessage('Please connect your Phantom wallet to use blockchain timestamping.');
       setIsSubmitting(false);
       return;
@@ -435,7 +435,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       const newPost = await onSubmit(postData);
 
       // Handle blockchain timestamping if enabled
-      if (enableBlockchainTimestamp && newPost?.id && newPost?.content_hash && connected) {
+      if (enableBlockchainTimestamp && newPost?.id && newPost?.content_hash && isWalletConnected) {
         try {
           const result = await timestampContent(newPost.content_hash, newPost.id);
           if (result.success) {
@@ -1011,7 +1011,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
                   <Badge className="bg-purple-600/20 text-purple-300 text-xs">3 $eqoflo</Badge>
                 </div>
                 <p className="text-xs text-gray-400 mt-1">
-                  {connected 
+                  {isWalletConnected 
                     ? 'Immutable proof of creation on Solana blockchain'
                     : 'Connect Phantom wallet in Profile to enable'
                   }
@@ -1021,7 +1021,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
               id="blockchain-timestamp"
               checked={enableBlockchainTimestamp}
               onCheckedChange={setEnableBlockchainTimestamp}
-              disabled={!connected} />
+              disabled={!isWalletConnected} />
 
             </div>
           }
@@ -1175,7 +1175,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
               isUploading ||
               isTimestamping ||
               !!tagError ||
-              (enableBlockchainTimestamp && !connected)
+              (enableBlockchainTimestamp && !isWalletConnected)
               }
               className="bg-gradient-to-r from-purple-600 to-pink-500 neon-glow hover:from-purple-700 hover:to-pink-600 text-white w-full md:w-auto">
               {isSubmitting || isTimestamping ?
