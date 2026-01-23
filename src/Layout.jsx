@@ -9,8 +9,7 @@ import { NotificationProvider } from "./components/contexts/NotificationContext"
 import { getAdminActionCounts } from "@/functions/getAdminActionCounts";
 import { processReferral } from "@/functions/processReferral";
 import { AnimatePresence, motion } from "framer-motion";
-
-// Service workers cannot be registered inline - platform limitation
+import SolanaWalletProvider from './components/blockchain/SolanaWalletProvider';
 
 // Simple className utility function to replace clsx/twMerge
 function cn(...classes) {
@@ -934,365 +933,367 @@ export default function Layout({ children, currentPageName }) {
   return (
     <UserContext.Provider value={userContextValue}>
       <NotificationProvider>
-        <TooltipProvider>
-          <style>
-            {`
-              @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        <SolanaWalletProvider>
+          <TooltipProvider>
+            <style>
+              {`
+                @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
 
-              :root {
-                --gradient-cosmic: linear-gradient(135deg, #1a0b2e 0%, ${userColorScheme.accent} 50%, #000000 100%);
-                --gradient-dark: linear-gradient(135deg, #000000 0%, #1a0b2e 50%, ${userColorScheme.accent} 100%);
-                --gradient-primary: linear-gradient(135deg, ${userColorScheme.accent} 0%, ${userColorScheme.primary} 100%);
-                --glass-bg: rgba(${parseInt(userColorScheme.primary.slice(1, 3), 16)}, ${parseInt(userColorScheme.primary.slice(3, 5), 16)}, ${parseInt(userColorScheme.primary.slice(5, 7), 16)}, 0.1);
-                --glass-border: rgba(${parseInt(userColorScheme.primary.slice(1, 3), 16)}, ${parseInt(userColorScheme.primary.slice(3, 5), 16)}, ${parseInt(userColorScheme.primary.slice(5, 7), 16)}, 0.2);
-                --neon-primary: ${userColorScheme.primary};
-                --neon-secondary: ${userColorScheme.secondary};
-                --cosmic-black: #000000;
-                --deep-primary: ${userColorScheme.accent};
-                --medium-primary: ${userColorScheme.primary};
-                --active-nav-item-border: rgba(${parseInt(userColorScheme.primary.slice(1, 3), 16)}, ${parseInt(userColorScheme.primary.slice(3, 5), 16)}, ${parseInt(userColorScheme.primary.slice(5, 7), 16)}, 0.25);
-              }
+                :root {
+                  --gradient-cosmic: linear-gradient(135deg, #1a0b2e 0%, ${userColorScheme.accent} 50%, #000000 100%);
+                  --gradient-dark: linear-gradient(135deg, #000000 0%, #1a0b2e 50%, ${userColorScheme.accent} 100%);
+                  --gradient-primary: linear-gradient(135deg, ${userColorScheme.accent} 0%, ${userColorScheme.primary} 100%);
+                  --glass-bg: rgba(${parseInt(userColorScheme.primary.slice(1, 3), 16)}, ${parseInt(userColorScheme.primary.slice(3, 5), 16)}, ${parseInt(userColorScheme.primary.slice(5, 7), 16)}, 0.1);
+                  --glass-border: rgba(${parseInt(userColorScheme.primary.slice(1, 3), 16)}, ${parseInt(userColorScheme.primary.slice(3, 5), 16)}, ${parseInt(userColorScheme.primary.slice(5, 7), 16)}, 0.2);
+                  --neon-primary: ${userColorScheme.primary};
+                  --neon-secondary: ${userColorScheme.secondary};
+                  --cosmic-black: #000000;
+                  --deep-primary: ${userColorScheme.accent};
+                  --medium-primary: ${userColorScheme.primary};
+                  --active-nav-item-border: rgba(${parseInt(userColorScheme.primary.slice(1, 3), 16)}, ${parseInt(userColorScheme.primary.slice(3, 5), 16)}, ${parseInt(userColorScheme.primary.slice(5, 7), 16)}, 0.25);
+                }
 
-              @keyframes tap-animation {
-                0% { transform: rotate(0deg); }
-                20% { transform: rotate(15deg); }
-                40% { transform: rotate(-10deg); }
-                60% { transform: rotate(5deg); }
-                80% { transform: rotate(-2deg); }
-                100% { transform: rotate(0deg); }
-              }
+                @keyframes tap-animation {
+                  0% { transform: rotate(0deg); }
+                  20% { transform: rotate(15deg); }
+                  40% { transform: rotate(-10deg); }
+                  60% { transform: rotate(5deg); }
+                  80% { transform: rotate(-2deg); }
+                  100% { transform: rotate(0deg); }
+                }
 
-              .animate-hammer {
-                  animation: tap-animation 2s ease-in-out infinite;
-                  transform-origin: bottom right;
-              }
+                .animate-hammer {
+                    animation: tap-animation 2s ease-in-out infinite;
+                    transform-origin: bottom right;
+                }
 
-              html, body {
-                background: #000000 !important;
-                background-color: #000000 !important;
-              }
+                html, body {
+                  background: #000000 !important;
+                  background-color: #000000 !important;
+                }
 
-              body {
-                background-image:
-                  radial-gradient(circle at 20% 80%, rgba(${parseInt(userColorScheme.primary.slice(1, 3), 16)}, ${parseInt(userColorScheme.primary.slice(3, 5), 16)}, ${parseInt(userColorScheme.primary.slice(5, 7), 16)}, 0.15) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 20%, rgba(${parseInt(userColorScheme.accent.slice(1, 3), 16)}, ${parseInt(userColorScheme.accent.slice(3, 5), 16)}, ${parseInt(userColorScheme.accent.slice(5, 7), 16)}, 0.2) 0%, transparent 50%),
-                    radial-gradient(circle at 40% 40%, rgba(26, 11, 46, 0.3) 0%, transparent 50%) !important;
-                min-height: 100vh;
-              }
+                body {
+                  background-image:
+                    radial-gradient(circle at 20% 80%, rgba(${parseInt(userColorScheme.primary.slice(1, 3), 16)}, ${parseInt(userColorScheme.primary.slice(3, 5), 16)}, ${parseInt(userColorScheme.primary.slice(5, 7), 16)}, 0.15) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 20%, rgba(${parseInt(userColorScheme.accent.slice(1, 3), 16)}, ${parseInt(userColorScheme.accent.slice(3, 5), 16)}, ${parseInt(userColorScheme.accent.slice(5, 7), 16)}, 0.2) 0%, transparent 50%),
+                      radial-gradient(circle at 40% 40%, rgba(26, 11, 46, 0.3) 0%, transparent 50%) !important;
+                  min-height: 100vh;
+                }
 
-              #root {
-                background: #000000 !important;
-                min-height: 100vh;
-              }
+                #root {
+                  background: #000000 !important;
+                  min-height: 100vh;
+                }
 
-              *, *::before, *::after {
-                transition: background-color 0s !important;
-              }
+                *, *::before, *::after {
+                  transition: background-color 0s !important;
+                }
 
-              .glass-morphism {
-                background: rgba(0, 0, 0, 0.4);
-                backdrop-filter: blur(20px);
-                border: 1px solid var(--glass-border);
-              }
+                .glass-morphism {
+                  background: rgba(0, 0, 0, 0.4);
+                  backdrop-filter: blur(20px);
+                  border: 1px solid var(--glass-border);
+                }
 
-              .neon-glow {
-                box-shadow: 0 0 30px rgba(${parseInt(userColorScheme.primary.slice(1, 3), 16)}, ${parseInt(userColorScheme.primary.slice(3, 5), 16)}, ${parseInt(userColorScheme.primary.slice(5, 7), 16)}, 0.3), 0 0 60px rgba(${parseInt(userColorScheme.primary.slice(1, 3), 16)}, ${parseInt(userColorScheme.primary.slice(3, 5), 16)}, ${parseInt(userColorScheme.primary.slice(5, 7), 16)}, 0.1);
-              }
+                .neon-glow {
+                  box-shadow: 0 0 30px rgba(${parseInt(userColorScheme.primary.slice(1, 3), 16)}, ${parseInt(userColorScheme.primary.slice(3, 5), 16)}, ${parseInt(userColorScheme.primary.slice(5, 7), 16)}, 0.3), 0 0 60px rgba(${parseInt(userColorScheme.primary.slice(1, 3), 16)}, ${parseInt(userColorScheme.primary.slice(3, 5), 16)}, ${parseInt(userColorScheme.primary.slice(5, 7), 16)}, 0.1);
+                }
 
-              .shadow-inner-purple {
-                box-shadow: inset 0 0 10px rgba(${parseInt(userColorScheme.primary.slice(1, 3), 16)}, ${parseInt(userColorScheme.primary.slice(3, 5), 16)}, ${parseInt(userColorScheme.primary.slice(5, 7), 16)}, 0.4);
-              }
+                .shadow-inner-purple {
+                  box-shadow: inset 0 0 10px rgba(${parseInt(userColorScheme.primary.slice(1, 3), 16)}, ${parseInt(userColorScheme.primary.slice(3, 5), 16)}, ${parseInt(userColorScheme.primary.slice(5, 7), 16)}, 0.4);
+                }
 
-              .hover-lift {
-                transition: all 0.3s ease;
-              }
+                .hover-lift {
+                  transition: all 0.3s ease;
+                }
 
-              .hover-lift:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 10px 40px rgba(${parseInt(userColorScheme.primary.slice(1, 3), 16)}, ${parseInt(userColorScheme.primary.slice(3, 5), 16)}, ${parseInt(userColorScheme.primary.slice(5, 7), 16)}, 0.2);
-              }
+                .hover-lift:hover {
+                  transform: translateY(-4px);
+                  box-shadow: 0 10px 40px rgba(${parseInt(userColorScheme.primary.slice(1, 3), 16)}, ${parseInt(userColorScheme.primary.slice(3, 5), 16)}, ${parseInt(userColorScheme.primary.slice(5, 7), 16)}, 0.2);
+                }
 
-              .dark-card {
-                background: rgba(15, 23, 42, 0.3) !important;
-                backdrop-filter: blur(10px) saturate(150%);
-                border: 1px solid var(--glass-border) !important;
-              }
+                .dark-card {
+                  background: rgba(15, 23, 42, 0.3) !important;
+                  backdrop-filter: blur(10px) saturate(150%);
+                  border: 1px solid var(--glass-border) !important;
+                }
 
-              .btn-primary, .bg-gradient-to-r.from-purple-600, .bg-gradient-to-r.from-purple-500,
-              button[class*="bg-gradient-to-r"][class*="from-purple"],
-              button[class*="bg-purple"], .bg-purple-600, .bg-purple-500 {
-                background: linear-gradient(to right, var(--neon-primary), var(--neon-secondary)) !important;
-              }
+                .btn-primary, .bg-gradient-to-r.from-purple-600, .bg-gradient-to-r.from-purple-500,
+                button[class*="bg-gradient-to-r"][class*="from-purple"],
+                button[class*="bg-purple"], .bg-purple-600, .bg-purple-500 {
+                  background: linear-gradient(to right, var(--neon-primary), var(--neon-secondary)) !important;
+                }
 
-              button[class*="hover:bg-purple"], .hover\\:bg-purple-700:hover, .hover\\:bg-purple-600:hover {
-                background: linear-gradient(to right, var(--deep-primary), var(--medium-primary)) !important;
-              }
+                button[class*="hover:bg-purple"], .hover\\:bg-purple-700:hover, .hover\\:bg-purple-600:hover {
+                  background: linear-gradient(to right, var(--deep-primary), var(--medium-primary)) !important;
+                }
 
-              [data-state="active"] {
-                background: linear-gradient(to right, ${userColorScheme.primary}, ${userColorScheme.secondary}) !important;
-              }
+                [data-state="active"] {
+                  background: linear-gradient(to right, ${userColorScheme.primary}, ${userColorScheme.secondary}) !important;
+                }
 
-              .border-purple-500, .border-purple-600, [class*="border-purple"] {
-                border-color: ${userColorScheme.primary} !important;
-              }
+                .border-purple-500, .border-purple-600, [class*="border-purple"] {
+                  border-color: ${userColorScheme.primary} !important;
+                }
 
-              .text-purple-400, .text-purple-300, .text-purple-500, [class*="text-purple"] {
-                color: ${userColorScheme.primary} !important;
-              }
+                .text-purple-400, .text-purple-300, .text-purple-500, [class*="text-purple"] {
+                  color: ${userColorScheme.primary} !important;
+                }
 
-              .bg-purple-600\\/20, .bg-purple-500\\/20, [class*="bg-purple"][class*="/"] {
-                background-color: ${userColorScheme.primary}33 !important;
-              }
+                .bg-purple-600\\/20, .bg-purple-500\\/20, [class*="bg-purple"][class*="/"] {
+                  background-color: ${userColorScheme.primary}33 !important;
+                }
 
-              .sidebar-dark {
-                background: #000000 !important;
-                border-color: rgba(255, 255, 255, 0.05) !important;
-              }
+                .sidebar-dark {
+                  background: #000000 !important;
+                  border-color: rgba(255, 255, 255, 0.05) !important;
+                }
 
-              .sidebar-dark button {
-                color: white !important;
-              }
+                .sidebar-dark button {
+                  color: white !important;
+                }
 
-              .sidebar-dark .text-gray-200,
-              .sidebar-dark .text-gray-300,
-              .sidebar-dark .text-gray-400 {
-                color: rgba(156, 163, 175, 0.8) !important;
-              }
+                .sidebar-dark .text-gray-200,
+                .sidebar-dark .text-gray-300,
+                .sidebar-dark .text-gray-400 {
+                  color: rgba(156, 163, 175, 0.8) !important;
+                }
 
-              [data-sidebar] {
-                background: #000000 !important;
-                border-color: rgba(255, 255, 255, 0.05) !important;
-              }
+                [data-sidebar] {
+                  background: #000000 !important;
+                  border-color: rgba(255, 255, 255, 0.05) !important;
+                }
 
-              .dark-card [role="tablist"] button {
-                color: white !important;
-              }
+                .dark-card [role="tablist"] button {
+                  color: white !important;
+                }
 
-              .dark-card [role="tablist"] button[data-state="active"] {
-                color: white !important;
-              }
+                .dark-card [role="tablist"] button[data-state="active"] {
+                  color: white !important;
+                }
 
-              .dark-card [role="tablist"] button[data-state="inactive"] {
-                color: white !important;
-              }
+                .dark-card [role="tablist"] button[data-state="inactive"] {
+                  color: white !important;
+                }
 
-              .dark-card [role="tablist"] button[data-state="inactive"]:hover {
-                color: white !important;
-              }
+                .dark-card [role="tablist"] button[data-state="inactive"]:hover {
+                  color: white !important;
+                }
 
-              .header-icon-btn {
-                position: relative;
-                color: rgb(156, 163, 175) !important;
-                background-color: transparent !important;
-                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                border-radius: 0.5rem !important;
-              }
+                .header-icon-btn {
+                  position: relative;
+                  color: rgb(156, 163, 175) !important;
+                  background-color: transparent !important;
+                  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                  border-radius: 0.5rem !important;
+                }
 
-              .header-icon-btn:hover {
-                color: white !important;
-                background-color: rgba(55, 65, 81, 0.5) !important;
-                transform: translateY(-1px) !important;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-              }
+                .header-icon-btn:hover {
+                  color: white !important;
+                  background-color: rgba(55, 65, 81, 0.5) !important;
+                  transform: translateY(-1px) !important;
+                  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+                }
 
-              .header-icon-btn:active {
-                transform: translateY(0) !important;
-              }
+                .header-icon-btn:active {
+                  transform: translateY(0) !important;
+                }
 
-              .header-icon-btn.wallet-connected:hover {
-                background-color: rgba(16, 185, 129, 0.1) !important;
-                color: rgb(52, 211, 153) !important;
-              }
+                .header-icon-btn.wallet-connected:hover {
+                  background-color: rgba(16, 185, 129, 0.1) !important;
+                  color: rgb(52, 211, 153) !important;
+                }
 
-              .header-icon-btn.wallet-disconnected:hover {
-                background-color: rgba(147, 51, 234, 0.1) !important;
-                color: rgb(168, 85, 247) !important;
-              }
+                .header-icon-btn.wallet-disconnected:hover {
+                  background-color: rgba(147, 51, 234, 0.1) !important;
+                  color: rgb(168, 85, 247) !important;
+                }
 
-              ::-webkit-scrollbar {
-                width: 8px;
-                height: 8px;
-              }
+                ::-webkit-scrollbar {
+                  width: 8px;
+                  height: 8px;
+                }
 
-              ::-webkit-scrollbar-track {
-                background: rgba(0,0,0,0.3);
-                border-radius: 10px;
-              }
+                ::-webkit-scrollbar-track {
+                  background: rgba(0,0,0,0.3);
+                  border-radius: 10px;
+                }
 
-              ::-webkit-scrollbar-thumb {
-                background: var(--neon-primary);
-                border-radius: 10px;
-                border: 1px solid var(--glass-border);
-              }
+                ::-webkit-scrollbar-thumb {
+                  background: var(--neon-primary);
+                  border-radius: 10px;
+                  border: 1px solid var(--glass-border);
+                }
 
-              ::-webkit-scrollbar-thumb:hover {
-                background: var(--neon-secondary);
-              }
+                ::-webkit-scrollbar-thumb:hover {
+                  background: var(--neon-secondary);
+                }
 
-              .super-charged-card {
-                background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(245, 158, 11, 0.15) 50%, rgba(217, 119, 6, 0.1) 100%);
-                border: 2px solid rgba(251, 191, 36, 0.3);
-                box-shadow: 0 0 20px rgba(251, 191, 36, 0.2), 0 0 40px rgba(251, 191, 36, 0.1);
-                position: relative;
-              }
+                .super-charged-card {
+                  background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(245, 158, 11, 0.15) 50%, rgba(217, 119, 6, 0.1) 100%);
+                  border: 2px solid rgba(251, 191, 36, 0.3);
+                  box-shadow: 0 0 20px rgba(251, 191, 36, 0.2), 0 0 40px rgba(251, 191, 36, 0.1);
+                  position: relative;
+                }
 
-              .super-charged-card:hover {
-                box-shadow: 0 0 30px rgba(251, 191, 36, 0.4), 0 0 60px rgba(251, 191, 36, 0.2);
-                border-color: rgba(251, 191, 36, 0.5);
-              }
+                .super-charged-card:hover {
+                  box-shadow: 0 0 30px rgba(251, 191, 36, 0.4), 0 0 60px rgba(251, 191, 36, 0.2);
+                  border-color: rgba(251, 191, 36, 0.5);
+                }
 
-              .super-charged-card::before {
-                content: '';
-                position: absolute;
-                inset: -2px;
-                border-radius: inherit;
-                padding: 2px;
-                background: linear-gradient(45deg, #fbbf24, #f59e0b, #d97706, #fbbf24);
-                -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-                mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-                -webkit-mask-composite: xor;
-                mask-composite: exclude;
-                opacity: 0.3;
-                animation: superGlow 3s linear infinite;
-              }
+                .super-charged-card::before {
+                  content: '';
+                  position: absolute;
+                  inset: -2px;
+                  border-radius: inherit;
+                  padding: 2px;
+                  background: linear-gradient(45deg, #fbbf24, #f59e0b, #d97706, #fbbf24);
+                  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                  -webkit-mask-composite: xor;
+                  mask-composite: exclude;
+                  opacity: 0.3;
+                  animation: superGlow 3s linear infinite;
+                }
 
-              @keyframes superGlow {
-                0%, 100% { opacity: 0.3; }
-                50% { opacity: 0.6; }
-              }
-            `}
-          </style>
+                @keyframes superGlow {
+                  0%, 100% { opacity: 0.3; }
+                  50% { opacity: 0.6; }
+                }
+              `}
+            </style>
 
-          <SidebarProvider>
-            <div className="min-h-screen w-full text-white bg-black md:flex">
-              <Sidebar className="sidebar-dark border-r border-[var(--glass-border)]">
-                <SidebarNavigationContent
-                  user={user}
-                  location={location}
-                  userColorScheme={userColorScheme}
-                  adminActionCount={adminActionCount}
-                  handleLogout={handleLogout}
-                  isEmailVisible={isEmailVisible}
-                  handleToggleEmailVisibility={handleToggleEmailVisibility} />
+            <SidebarProvider>
+              <div className="min-h-screen w-full text-white bg-black md:flex">
+                <Sidebar className="sidebar-dark border-r border-[var(--glass-border)]">
+                  <SidebarNavigationContent
+                    user={user}
+                    location={location}
+                    userColorScheme={userColorScheme}
+                    adminActionCount={adminActionCount}
+                    handleLogout={handleLogout}
+                    isEmailVisible={isEmailVisible}
+                    handleToggleEmailVisibility={handleToggleEmailVisibility} />
 
-              </Sidebar>
+                </Sidebar>
 
-              <div className="flex-1 flex flex-col bg-black">
-                <main className="flex-1 flex flex-col relative overflow-y-auto">
-                  <header className="bg-[#000000] px-4 py-3 sticky top-0 z-40 border-b border-[var(--glass-border)] md:hidden">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <SidebarTrigger className="p-2 rounded-lg transition-colors duration-200 text-white" style={{
-                          backgroundColor: hexToRgba(userColorScheme.primary, 0.10)
-                        }}>
-                          <Menu className="w-5 h-5 text-white" />
-                        </SidebarTrigger>
-                        <div className="flex-1 flex items-center justify-center">
-                          <img
-                            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/687e8a7d9ad971203c39d072/d31ff4d3d_1000044465.png"
-                            alt="EqoFlow Logo"
-                            className="h-16 object-contain" />
+                <div className="flex-1 flex flex-col bg-black">
+                  <main className="flex-1 flex flex-col relative overflow-y-auto">
+                    <header className="bg-[#000000] px-4 py-3 sticky top-0 z-40 border-b border-[var(--glass-border)] md:hidden">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <SidebarTrigger className="p-2 rounded-lg transition-colors duration-200 text-white" style={{
+                            backgroundColor: hexToRgba(userColorScheme.primary, 0.10)
+                          }}>
+                            <Menu className="w-5 h-5 text-white" />
+                          </SidebarTrigger>
+                          <div className="flex-1 flex items-center justify-center">
+                            <img
+                              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/687e8a7d9ad971203c39d072/d31ff4d3d_1000044465.png"
+                              alt="EqoFlow Logo"
+                              className="h-16 object-contain" />
+                          </div>
+                          <div className="w-9 h-9" />
                         </div>
-                        <div className="w-9 h-9" />
+
+                        <div className="flex items-center justify-center gap-2">
+                          <NotificationBell user={user} isMobile={true} />
+                          <MessageButton />
+                          <WalletButton user={user} onUpdate={handleUserUpdate} />
+                          <Link to={createPageUrl("Profile")}>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="relative text-gray-400 hover:text-white hover:bg-gray-700/50">
+
+                              <div
+                                className="w-6 h-6 rounded-full flex items-center justify-center"
+                                style={getAvatarBackgroundStyle(user?.avatar_url)}>
+
+                                {user?.avatar_url ?
+                                <img
+                                  src={user.avatar_url}
+                                  alt="Profile"
+                                  className="w-full h-full rounded-full object-cover" /> :
+                                <UserIcon className="w-4 h-4 text-white" />
+                                }
+                              </div>
+                            </Button>
+                          </Link>
+                        </div>
                       </div>
+                    </header>
 
-                      <div className="flex items-center justify-center gap-2">
-                        <NotificationBell user={user} isMobile={true} />
-                        <MessageButton />
-                        <WalletButton user={user} onUpdate={handleUserUpdate} />
-                        <Link to={createPageUrl("Profile")}>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="relative text-gray-400 hover:text-white hover:bg-gray-700/50">
+                    <div className="hidden md:flex items-center gap-2 absolute top-4 right-6 z-30">
+                      <HeaderIconDrawer user={user} onUpdate={handleUserUpdate} />
 
-                            <div
-                              className="w-6 h-6 rounded-full flex items-center justify-center"
-                              style={getAvatarBackgroundStyle(user?.avatar_url)}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Link to={createPageUrl("Profile")}>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="relative header-icon-btn rounded-full w-9 h-9"
+                              aria-label="View Profile">
 
-                              {user?.avatar_url ?
-                              <img
-                                src={user.avatar_url}
-                                alt="Profile"
-                                className="w-full h-full rounded-full object-cover" /> :
-                              <UserIcon className="w-4 h-4 text-white" />
-                              }
-                            </div>
-                          </Button>
-                        </Link>
-                      </div>
+                              <div
+                                className="w-full h-full rounded-full flex items-center justify-center"
+                                style={getAvatarBackgroundStyle(user?.avatar_url)}>
+                                {user?.avatar_url ?
+                                <img
+                                  src={user.avatar_url}
+                                  alt="Profile"
+                                  className="w-full h-full rounded-full object-cover" /> :
+                                <UserIcon className="w-5 h-5 text-white" />
+                                }
+                              </div>
+                            </Button>
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-black/80 border-white/10 text-white">
+                          <p>View Profile</p>
+                        </TooltipContent>
+                      </Tooltip>
+
+                      <MessageButton />
+
+                      <NotificationBell user={user} isMobile={false} />
+
+                      <AnimatePresence>
+                        {currentPageName === 'Discovery' &&
+                        <motion.div
+                          key="refresh-button"
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 20 }}
+                          transition={{ duration: 0.2 }}>
+
+                            <Button
+                            onClick={() => window.location.reload()}
+                            variant="outline"
+                            className="border-purple-500/30 text-white hover:bg-purple-500/10">
+
+                              <RefreshCw className="w-4 h-4 mr-2" />
+                              Refresh
+                            </Button>
+                          </motion.div>
+                        }
+                      </AnimatePresence>
                     </div>
-                  </header>
 
-                  <div className="hidden md:flex items-center gap-2 absolute top-4 right-6 z-30">
-                    <HeaderIconDrawer user={user} onUpdate={handleUserUpdate} />
-
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Link to={createPageUrl("Profile")}>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="relative header-icon-btn rounded-full w-9 h-9"
-                            aria-label="View Profile">
-
-                            <div
-                              className="w-full h-full rounded-full flex items-center justify-center"
-                              style={getAvatarBackgroundStyle(user?.avatar_url)}>
-                              {user?.avatar_url ?
-                              <img
-                                src={user.avatar_url}
-                                alt="Profile"
-                                className="w-full h-full rounded-full object-cover" /> :
-                              <UserIcon className="w-5 h-5 text-white" />
-                              }
-                            </div>
-                          </Button>
-                        </Link>
-                      </TooltipTrigger>
-                      <TooltipContent className="bg-black/80 border-white/10 text-white">
-                        <p>View Profile</p>
-                      </TooltipContent>
-                    </Tooltip>
-
-                    <MessageButton />
-
-                    <NotificationBell user={user} isMobile={false} />
-
-                    <AnimatePresence>
-                      {currentPageName === 'Discovery' &&
-                      <motion.div
-                        key="refresh-button"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 20 }}
-                        transition={{ duration: 0.2 }}>
-
-                          <Button
-                          onClick={() => window.location.reload()}
-                          variant="outline"
-                          className="border-purple-500/30 text-white hover:bg-purple-500/10">
-
-                            <RefreshCw className="w-4 h-4 mr-2" />
-                            Refresh
-                          </Button>
-                        </motion.div>
-                      }
-                    </AnimatePresence>
-                  </div>
-
-                  <div className="p-3 md:p-6 flex-1">
-                    {children}
-                  </div>
-                </main>
+                    <div className="p-3 md:p-6 flex-1">
+                      {children}
+                    </div>
+                  </main>
+                </div>
               </div>
-            </div>
-          </SidebarProvider>
+            </SidebarProvider>
 
-          <div className="fixed bottom-4 right-4 z-50">
-            {user && <FeedbackWidget user={user} pageName={currentPageName} />}
-          </div>
-        </TooltipProvider>
+            <div className="fixed bottom-4 right-4 z-50">
+              {user && <FeedbackWidget user={user} pageName={currentPageName} />}
+            </div>
+          </TooltipProvider>
+        </SolanaWalletProvider>
       </NotificationProvider>
     </UserContext.Provider>);
 
