@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Wallet, TrendingUp, Coins } from 'lucide-react';
+import { Wallet, TrendingUp, Coins, LogOut } from 'lucide-react';
 import TokenBalanceCard from './TokenBalanceCard';
 import FiatPaymentManager from './FiatPaymentManager';
 import StripeConnectManager from './StripeConnectManager';
-import { LogOut } from 'lucide-react';
+import { linkSolanaWallet } from '@/functions/linkSolanaWallet';
+import { unlinkSolanaWallet } from '@/functions/unlinkSolanaWallet';
 
 export default function WalletManager({ user, onUpdate }) {
   const [selectedTab, setSelectedTab] = useState('overview');
@@ -91,7 +92,6 @@ export default function WalletManager({ user, onUpdate }) {
                         }
 
                         // Update backend
-                        const { unlinkSolanaWallet } = await import('@/functions/unlinkSolanaWallet');
                         await unlinkSolanaWallet();
 
                         // Refresh user data
@@ -133,7 +133,6 @@ export default function WalletManager({ user, onUpdate }) {
                         const walletAddress = response.publicKey.toString();
                         console.log('Wallet address:', walletAddress);
 
-                        const { linkSolanaWallet } = await import('@/functions/linkSolanaWallet');
                         const result = await linkSolanaWallet({ publicKey: walletAddress });
                         console.log('Backend link result:', result);
 
