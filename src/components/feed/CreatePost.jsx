@@ -1020,8 +1020,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
               <Switch
               id="blockchain-timestamp"
               checked={enableBlockchainTimestamp}
-              onCheckedChange={handleBlockchainToggle}
-              disabled={connecting} />
+              onCheckedChange={handleBlockchainToggle} />
 
             </div>
           }
