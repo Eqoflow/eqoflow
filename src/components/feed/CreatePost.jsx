@@ -112,24 +112,15 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
 
   // Auto-connect wallet when blockchain timestamp is enabled
   const handleBlockchainToggle = async (checked) => {
-    if (checked) {
-      if (!connected && !connecting) {
-        try {
-          await connect();
-          // Wait for connection to establish
-          setTimeout(() => {
-            setEnableBlockchainTimestamp(true);
-          }, 500);
-        } catch (err) {
-          console.error('Wallet connection cancelled:', err);
-          setEnableBlockchainTimestamp(false);
-        }
-      } else {
-        // Already connected
-        setEnableBlockchainTimestamp(true);
+    setEnableBlockchainTimestamp(checked);
+    
+    if (checked && !connected && !connecting) {
+      try {
+        await connect();
+      } catch (err) {
+        console.error('Wallet connection cancelled:', err);
+        setEnableBlockchainTimestamp(false);
       }
-    } else {
-      setEnableBlockchainTimestamp(false);
     }
   };
 
