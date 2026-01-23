@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.5.0';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 Deno.serve(async (req) => {
     try {
@@ -6,18 +6,9 @@ Deno.serve(async (req) => {
         
         const base44 = createClientFromRequest(req);
 
-        // Check if user is authenticated
-        if (!(await base44.auth.isAuthenticated())) {
-            return new Response(JSON.stringify({ success: false, error: 'User not authenticated' }), {
-                status: 401,
-                headers: { "Content-Type": "application/json" }
-            });
-        }
-        
-        // Get user
         const user = await base44.auth.me();
         if (!user) {
-            throw new Error('User not found after authentication check.');
+            return Response.json({ success: false, error: 'Unauthorized' }, { status: 401 });
         }
 
         const { publicKey } = await req.json();
@@ -39,13 +30,10 @@ Deno.serve(async (req) => {
         
         console.log('User record updated successfully.');
 
-        return new Response(JSON.stringify({
+        return Response.json({
             success: true,
             message: 'Wallet successfully linked!',
             walletAddress: publicKey
-        }), {
-            status: 200,
-            headers: { "Content-Type": "application/json" }
         });
 
     } catch (error) {
@@ -55,12 +43,9 @@ Deno.serve(async (req) => {
             name: error.name
         });
         
-        return new Response(JSON.stringify({
+        return Response.json({
             success: false,
             error: `Internal server error: ${error.message}`
-        }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" }
-        });
+        }, { status: 500 });
     }
 });
