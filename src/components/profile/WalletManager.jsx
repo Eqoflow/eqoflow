@@ -119,23 +119,30 @@ export default function WalletManager({ user, onUpdate }) {
 
                       setIsConnecting(true);
                       try {
-                        // Check for Phantom directly via window.solana
-                        if (window.solana && window.solana.isPhantom) {
-                          const resp = await window.solana.connect();
-                          const walletAddress = resp.publicKey.toString();
-
-                          // Link wallet to backend
-                          const { linkSolanaWallet } = await import('@/functions/linkSolanaWallet');
-                          await linkSolanaWallet({ publicKey: walletAddress });
-                          if (onUpdate) await onUpdate();
-                          setIsConnecting(false);
-                        } else {
-                          alert('Phantom wallet not detected. Please install the Phantom browser extension.');
-                          setIsConnecting(false);
+                        console.log('Checking for Phantom wallet...');
+                        
+                        if (!window.solana || !window.solana.isPhantom) {
+                          alert('Phantom wallet not found! Please install the Phantom extension and refresh the page.');
+                          return;
                         }
+
+                        console.log('Phantom detected, requesting connection...');
+                        const response = await window.solana.connect();
+                        console.log('Phantom connected:', response);
+
+                        const walletAddress = response.publicKey.toString();
+                        console.log('Wallet address:', walletAddress);
+
+                        const { linkSolanaWallet } = await import('@/functions/linkSolanaWallet');
+                        const result = await linkSolanaWallet({ publicKey: walletAddress });
+                        console.log('Backend link result:', result);
+
+                        if (onUpdate) await onUpdate();
+                        alert('Wallet successfully connected!');
                       } catch (error) {
-                        console.error('Error connecting wallet:', error);
-                        alert('Failed to connect wallet. Please try again and approve the connection in Phantom.');
+                        console.error('Wallet connection error:', error);
+                        alert(`Failed to connect: ${error.message || 'Unknown error'}`);
+                      } finally {
                         setIsConnecting(false);
                       }
                     }}
