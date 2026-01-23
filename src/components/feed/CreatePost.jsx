@@ -106,12 +106,15 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const [brandContentTitle, setBrandContentTitle] = useState("");
 
   // Solana wallet state
-  const { publicKey, connected, connect, connecting, select } = useWallet();
+  const { publicKey, connected, connecting } = useWallet();
   const { timestampContent, isProcessing: isTimestamping } = useBlockchainTimestamp();
   const isWalletConnected = connected && publicKey;
 
-  // Auto-connect wallet when blockchain timestamp is enabled
   const handleBlockchainToggle = (checked) => {
+    if (checked && !isWalletConnected) {
+      setErrorMessage('Please connect your Phantom wallet first using the wallet button in the header.');
+      return;
+    }
     setEnableBlockchainTimestamp(checked);
   };
 
