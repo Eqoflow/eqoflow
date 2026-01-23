@@ -106,9 +106,25 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const [brandContentTitle, setBrandContentTitle] = useState("");
 
   // Solana wallet state
-  const { publicKey, connected } = useWallet();
+  const { publicKey, connected, connect, connecting } = useWallet();
   const { timestampContent, isProcessing: isTimestamping } = useBlockchainTimestamp();
-  const isWalletConnected = (connected && publicKey) || user?.solana_wallet_address;
+  const isWalletConnected = connected && publicKey;
+
+  // Auto-connect wallet when blockchain timestamp is enabled
+  const handleBlockchainToggle = async (checked) => {
+    if (checked && !connected && !connecting) {
+      try {
+        await connect();
+        setEnableBlockchainTimestamp(true);
+      } catch (err) {
+        console.error('Failed to connect wallet:', err);
+        setErrorMessage('Please connect your Phantom wallet to use blockchain timestamping.');
+        setTimeout(() => setErrorMessage(null), 4000);
+      }
+    } else {
+      setEnableBlockchainTimestamp(checked);
+    }
+  };
 
   const fetchUserCommunities = useCallback(async () => {
     if (user && user.email && !communityId) {
@@ -1007,17 +1023,19 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
                   <Badge className="bg-purple-600/20 text-purple-300 text-xs">3 $eqoflo</Badge>
                 </div>
                 <p className="text-xs text-gray-400 mt-1">
-                  {isWalletConnected 
-                    ? 'Immutable proof of creation on Solana blockchain'
-                    : 'Connect Phantom wallet in Profile to enable'
+                  {connecting 
+                    ? 'Connecting to Phantom wallet...'
+                    : isWalletConnected 
+                      ? 'Immutable proof of creation on Solana blockchain'
+                      : 'Toggle to connect Phantom wallet and enable'
                   }
                 </p>
               </div>
               <Switch
               id="blockchain-timestamp"
               checked={enableBlockchainTimestamp}
-              onCheckedChange={setEnableBlockchainTimestamp}
-              disabled={!isWalletConnected} />
+              onCheckedChange={handleBlockchainToggle}
+              disabled={connecting} />
 
             </div>
           }
