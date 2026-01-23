@@ -23,10 +23,19 @@ Deno.serve(async (req) => {
             solana_wallet_linked_at: new Date().toISOString()
         };
         
-        console.log('Attempting to update user record with data:', updateData);
+        console.log('Attempting to update user profile with data:', updateData);
         
-        // Use service role to ensure permissions to update User entity
-        await base44.asServiceRole.entities.User.update(user.id, updateData);
+        // Update UserProfileData instead of User
+        const profiles = await base44.entities.UserProfileData.filter({ user_email: user.email });
+        if (profiles && profiles.length > 0) {
+            await base44.entities.UserProfileData.update(profiles[0].id, updateData);
+        } else {
+            // Create profile if it doesn't exist
+            await base44.entities.UserProfileData.create({
+                user_email: user.email,
+                ...updateData
+            });
+        }
         
         console.log('User record updated successfully.');
 
