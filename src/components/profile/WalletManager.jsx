@@ -85,12 +85,12 @@ export default function WalletManager({ user, onUpdate }) {
                   <Button
                     onClick={async () => {
                       try {
-                        // Disconnect wallet adapter first
-                        if (connected) {
-                          await disconnect();
+                        // Disconnect from Phantom
+                        if (window.solana && window.solana.isPhantom) {
+                          await window.solana.disconnect();
                         }
 
-                        // Then update backend
+                        // Update backend
                         const { unlinkSolanaWallet } = await import('@/functions/unlinkSolanaWallet');
                         await unlinkSolanaWallet();
 
@@ -104,6 +104,7 @@ export default function WalletManager({ user, onUpdate }) {
                     variant="outline"
                     className="w-full border-red-500/30 text-red-400 hover:bg-red-500/10"
                   >
+                    <LogOut className="w-4 h-4 mr-2" />
                     Disconnect Phantom Wallet
                   </Button>
                 </div>
