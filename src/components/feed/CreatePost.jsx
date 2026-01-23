@@ -106,8 +106,9 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const [brandContentTitle, setBrandContentTitle] = useState("");
 
   // Solana wallet state
+  const { publicKey, connected } = useWallet();
   const { timestampContent, isProcessing: isTimestamping } = useBlockchainTimestamp();
-  const isWalletConnected = user?.solana_wallet_address && user.solana_wallet_address.trim() !== '';
+  const isWalletConnected = connected && publicKey;
 
   const fetchUserCommunities = useCallback(async () => {
     if (user && user.email && !communityId) {
@@ -412,7 +413,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       youtube_video_id: youtubeVideoDetails?.videoId || null,
       youtube_thumbnail_url: youtubeVideoDetails?.thumbnail || null,
       youtube_video_title: youtubeVideoDetails?.title || null,
-      license_ids: selectedLicenseIds.length > 0 ? selectedLicenseIds : null,
+      license_id: selectedLicenseIds.length > 0 ? selectedLicenseIds[0] : null,
       eqoflo_price: enableGatedContent ? eqofloPrice : null,
       gated_content_title: enableGatedContent && gatedContentTitle.trim() ? gatedContentTitle.trim() : null,
       brand_content_price: enableBrandContent ? brandContentPrice : null,
@@ -467,11 +468,6 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       setEnableBrandContent(false);
       setBrandContentPrice(500);
       setBrandContentTitle("");
-      
-      const defaultLicense = availableLicenses.find(l => l.is_default);
-      if (defaultLicense) {
-        setSelectedLicenseIds([defaultLicense.id]);
-      }
     } catch (error) {
       showErrorMessage(error, 'Creating post');
     } finally {

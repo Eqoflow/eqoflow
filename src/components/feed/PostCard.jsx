@@ -1230,7 +1230,9 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
             )}
 
             {/* Content Provenance Display */}
-            <ProvenanceDisplay post={displayPost} compact={true} />
+            {(displayPost.content_hash || displayPost.blockchain_tx_id || displayPost.license_id) && (
+              <ProvenanceDisplay post={displayPost} compact={false} />
+            )}
 
             <div className={`flex flex-col md:flex-row md:items-center justify-between py-3 border-t border-gray-700/50 gap-3 ${isSupercharged ? 'relative z-10' : ''}`}>
               <div className="flex items-center gap-2 md:gap-4">
