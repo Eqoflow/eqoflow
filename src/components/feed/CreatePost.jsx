@@ -391,11 +391,13 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       return;
     }
 
-    // Verify wallet is connected if blockchain timestamp is enabled
-    if (enableBlockchainTimestamp && !isWalletConnected) {
-      setErrorMessage('Please connect your Phantom wallet first using the wallet button in the header.');
-      setIsSubmitting(false);
-      return;
+    // Check wallet connection if blockchain timestamp enabled
+    if (enableBlockchainTimestamp) {
+      if (!isWalletConnected) {
+        setErrorMessage('Connect your Phantom wallet first via the wallet button to use blockchain timestamps.');
+        setIsSubmitting(false);
+        return;
+      }
     }
 
     const postData = {
