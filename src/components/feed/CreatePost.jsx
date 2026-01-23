@@ -33,7 +33,9 @@ import { Community } from '@/entities/Community';
 import { getYoutubeVideoDetails } from '@/functions/getYoutubeVideoDetails';
 import GiphyPicker from "./GiphyPicker";
 import { base44 } from "@/api/base44Client";
-import { FileKey, Check } from "lucide-react";
+import { FileKey } from "lucide-react";
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useBlockchainTimestamp } from '../blockchain/useBlockchainTimestamp';
 
 // Helper function to detect if an image is PNG
 const isPngImage = (url) => {
@@ -95,13 +97,17 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
 
   // $eqoflo Gated Content state
   const [enableGatedContent, setEnableGatedContent] = useState(false);
-  const [eqofloPrice, setEqofloPrice] = useState(250); // Minimum $5 (250 * $0.02)
+  const [eqofloPrice, setEqofloPrice] = useState(250);
   const [gatedContentTitle, setGatedContentTitle] = useState("");
 
   // Sell to Brands state
   const [enableBrandContent, setEnableBrandContent] = useState(false);
   const [brandContentPrice, setBrandContentPrice] = useState(500);
   const [brandContentTitle, setBrandContentTitle] = useState("");
+
+  // Solana wallet state
+  const { publicKey, connected } = useWallet();
+  const { timestampContent, isProcessing: isTimestamping } = useBlockchainTimestamp();
 
   const fetchUserCommunities = useCallback(async () => {
     if (user && user.email && !communityId) {
@@ -124,7 +130,6 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       const licenses = await base44.entities.ContentLicense.filter({ is_active: true }, 'sort_order');
       setAvailableLicenses(licenses);
       
-      // Set default license
       const defaultLicense = licenses.find(l => l.is_default);
       if (defaultLicense) {
         setSelectedLicenseIds([defaultLicense.id]);
@@ -139,7 +144,6 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       clearTimeout(debounceTimeoutRef.current);
     }
 
-    // Only process YouTube links if NOT creating a poll
     if (!showPollInputs) {
       debounceTimeoutRef.current = setTimeout(() => {
         const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
@@ -172,7 +176,6 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
         }
       }, 500);
     } else {
-      // Clear YouTube details if creating a poll
       setYoutubeVideoDetails(null);
       setIsFetchingYTDetails(false);
     }
@@ -187,12 +190,12 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const showErrorMessage = (error, context = '') => {
     console.error(`${context} error:`, error);
 
-    let message = "Something went wrong. QuantumFlow is in beta and we're working to improve stability. Please try again in a moment.";
+    let message = "Something went wrong. EqoFlow is in beta and we're working to improve stability. Please try again in a moment.";
 
     if (error?.response?.status === 429) {
       message = "Too many requests. We're in beta and optimizing our systems. Please wait before trying again.";
     } else if (error?.message?.includes('network') || error?.message?.includes('fetch')) {
-      message = "Network issue detected. QuantumFlow is in beta - please check your connection and retry.";
+      message = "Network issue detected. EqoFlow is in beta - please check your connection and retry.";
     }
 
     setErrorMessage(message);
@@ -257,13 +260,11 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
     const newShowPoll = !showPollInputs;
     setShowPollInputs(newShowPoll);
 
-    // Clear media if activating poll
     if (newShowPoll) {
       setMediaFiles([]);
       setYoutubeVideoDetails(null);
     }
 
-    // Clear poll data if deactivating poll
     if (!newShowPoll) {
       setPollQuestion('');
       setPollOptions(['', '']);
@@ -274,48 +275,32 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log('[CreatePost] handleSubmit - mediaFiles at submission:', mediaFiles);
-    console.log('[CreatePost] mediaFiles.length:', mediaFiles.length);
-
     setIsSubmitting(true);
     setErrorMessage(null);
 
-    // FIXED: More thorough validation before falling back to email
     const getAuthorFullName = () => {
-      // Check full_name first
       if (user?.full_name && user.full_name.trim() !== '' && !user.full_name.includes('@')) {
         return user.full_name;
       }
-
-      // Check name field
       if (user?.name && user.name.trim() !== '' && !user.name.includes('@')) {
         return user.name;
       }
-
-      // Check username
       if (user?.username && user.username.trim() !== '' && !user.username.includes('@')) {
         return user.username;
       }
-
-      // Last resort: extract from email
       if (user?.email && user.email.includes('@')) {
         return user.email.split('@')[0];
       }
-
       return 'Anonymous User';
     };
 
     const getAuthorUsername = () => {
-      // Check username first
       if (user?.username && user.username.trim() !== '' && !user.username.includes('@')) {
         return user.username;
       }
-
-      // Fall back to email extract only if needed
       if (user?.email && user.email.includes('@')) {
         return user.email.split('@')[0];
       }
-
       return 'unknown';
     };
 
@@ -372,7 +357,6 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
 
         await onSubmit(pollData);
 
-        // Reset form
         setContent("");
         setPollQuestion('');
         setPollOptions(['', '']);
@@ -402,6 +386,12 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       return;
     }
 
+    if (enableBlockchainTimestamp && !connected) {
+      setErrorMessage('Please connect your Phantom wallet to use blockchain timestamping.');
+      setIsSubmitting(false);
+      return;
+    }
+
     const postData = {
       content: textContent,
       media_urls: mediaFiles.map((f) => f.url),
@@ -423,7 +413,6 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       youtube_thumbnail_url: youtubeVideoDetails?.thumbnail || null,
       youtube_video_title: youtubeVideoDetails?.title || null,
       license_ids: selectedLicenseIds.length > 0 ? selectedLicenseIds : null,
-      enable_blockchain_timestamp: enableBlockchainTimestamp,
       eqoflo_price: enableGatedContent ? eqofloPrice : null,
       gated_content_title: enableGatedContent && gatedContentTitle.trim() ? gatedContentTitle.trim() : null,
       brand_content_price: enableBrandContent ? brandContentPrice : null,
@@ -443,7 +432,22 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
     }
 
     try {
-      await onSubmit(postData);
+      const newPost = await onSubmit(postData);
+
+      // Handle blockchain timestamping if enabled
+      if (enableBlockchainTimestamp && newPost?.id && newPost?.content_hash && connected) {
+        try {
+          const result = await timestampContent(newPost.content_hash, newPost.id);
+          if (result.success) {
+            setErrorMessage('Post echoed and blockchain timestamp confirmed! ✓');
+            setTimeout(() => setErrorMessage(null), 4000);
+          }
+        } catch (timestampError) {
+          console.error('Blockchain timestamp error:', timestampError);
+          setErrorMessage('Post created, but blockchain timestamp failed: ' + timestampError.message);
+          setTimeout(() => setErrorMessage(null), 6000);
+        }
+      }
 
       setContent("");
       setMediaFiles([]);
@@ -464,7 +468,6 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       setBrandContentPrice(500);
       setBrandContentTitle("");
       
-      // Reset license to default
       const defaultLicense = availableLicenses.find(l => l.is_default);
       if (defaultLicense) {
         setSelectedLicenseIds([defaultLicense.id]);
@@ -514,17 +517,11 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   };
 
   const handleGiphySelect = (gifUrl) => {
-    console.log('Giphy GIF selected:', gifUrl);
-    console.log('Current mediaFiles before:', mediaFiles);
-    
-    // Use functional update to ensure we get the latest state
     setMediaFiles(prevFiles => {
       const newFiles = [...prevFiles, { url: gifUrl, type: 'image', name: 'giphy.gif' }];
-      console.log('New mediaFiles after:', newFiles);
       return newFiles;
     });
     
-    // Close the picker after a brief delay to ensure state update completes
     setTimeout(() => {
       setShowGiphyPicker(false);
     }, 100);
@@ -1013,12 +1010,18 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
                   </Label>
                   <Badge className="bg-purple-600/20 text-purple-300 text-xs">3 $eqoflo</Badge>
                 </div>
-                <p className="text-xs text-gray-400 mt-1">Immutable proof of creation on Solana blockchain</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {connected 
+                    ? 'Immutable proof of creation on Solana blockchain'
+                    : 'Connect Phantom wallet in Profile to enable'
+                  }
+                </p>
               </div>
               <Switch
               id="blockchain-timestamp"
               checked={enableBlockchainTimestamp}
-              onCheckedChange={setEnableBlockchainTimestamp} />
+              onCheckedChange={setEnableBlockchainTimestamp}
+              disabled={!connected} />
 
             </div>
           }
@@ -1170,13 +1173,15 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
               enableBrandContent && !brandContentTitle.trim() ||
               isSubmitting ||
               isUploading ||
-              !!tagError
+              isTimestamping ||
+              !!tagError ||
+              (enableBlockchainTimestamp && !connected)
               }
               className="bg-gradient-to-r from-purple-600 to-pink-500 neon-glow hover:from-purple-700 hover:to-pink-600 text-white w-full md:w-auto">
-              {isSubmitting ?
+              {isSubmitting || isTimestamping ?
               <div className="flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin text-white" />
-                  <span className="text-white">Broadcasting...</span>
+                  <span className="text-white">{isTimestamping ? 'Timestamping...' : 'Broadcasting...'}</span>
                 </div> :
               isUploading ?
               <div className="flex items-center gap-2">
