@@ -1,14 +1,16 @@
+
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Shield, FileKey, ExternalLink, Copy, Check, Clock, X } from "lucide-react";
+import { Shield, FileKey, ExternalLink, Copy, Check, Clock, X, ChevronDown, ChevronUp } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
 export default function ProvenanceDisplay({ post, compact = false }) {
   const [license, setLicense] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   if (!post) return null;
 
@@ -74,113 +76,138 @@ export default function ProvenanceDisplay({ post, compact = false }) {
   }
 
   return (
-    <Card className="bg-black/20 border-purple-500/20 p-4 space-y-3">
-      <div className="flex items-center gap-2">
-        <Shield className="w-5 h-5 text-purple-400" />
-        <h3 className="text-sm font-semibold text-white">Content Provenance</h3>
-      </div>
+    <Card className="bg-black/20 border-purple-500/20 overflow-hidden">
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          <Shield className="w-5 h-5 text-purple-400" />
+          <h3 className="text-sm font-semibold text-white">Content Provenance</h3>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="cursor-help">
+                <Badge className="bg-purple-600/20 text-purple-400 border-purple-500/30 text-xs">
+                  ?
+                </Badge>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent className="bg-black/90 border-purple-500/30 max-w-xs">
+              <p className="text-xs text-white">
+                Content provenance includes a cryptographic hash to verify authenticity, optional blockchain timestamp for immutable proof of creation, and license terms defining usage rights.
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+        {isExpanded ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+      </button>
 
-      {/* Content Hash */}
-      {post.content_hash && (
-        <div className="space-y-1">
-          <p className="text-xs text-gray-400">Content Hash (SHA-256)</p>
-          <div className="flex items-center gap-2">
-            <code className="text-xs text-purple-300 bg-black/30 px-2 py-1 rounded font-mono flex-1 truncate">
-              {post.content_hash}
-            </code>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => copyToClipboard(post.content_hash)}
-              className="h-8 w-8 text-gray-400 hover:text-white"
-            >
-              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-            </Button>
+      {isExpanded && (
+        <div className="px-4 pb-4 space-y-3 border-t border-purple-500/10">
+
+          {/* Content Hash */}
+          {post.content_hash && (
+            <div className="space-y-1">
+              <p className="text-xs text-gray-400">Content Hash (SHA-256)</p>
+              <div className="flex items-center gap-2">
+                <code className="text-xs text-purple-300 bg-black/30 px-2 py-1 rounded font-mono flex-1 truncate">
+                  {post.content_hash}
+                </code>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => copyToClipboard(post.content_hash)}
+                  className="h-8 w-8 text-gray-400 hover:text-white"
+                >
+                  {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Blockchain Transaction */}
+          {post.blockchain_tx_id && (
+            <div className="space-y-1">
+              <p className="text-xs text-gray-400 flex items-center gap-1">
+                <Check className="w-3 h-3 text-green-400" />
+                Blockchain Timestamp (Solana)
+              </p>
+              <div className="flex items-center gap-2">
+                <code className="text-xs text-green-300 bg-black/30 px-2 py-1 rounded font-mono flex-1 truncate">
+                  {post.blockchain_tx_id}
+                </code>
+                <a
+                  href={`https://explorer.solana.com/tx/${post.blockchain_tx_id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-gray-400 hover:text-white"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </Button>
+                </a>
+              </div>
+              <p className="text-xs text-green-400/70 mt-1">
+                Timestamped: {new Date(post.updated_date || post.created_date).toLocaleString()}
+              </p>
+            </div>
+          )}
+
+          {/* License */}
+          {license && (
+            <div className="space-y-1">
+              <p className="text-xs text-gray-400">Content License</p>
+              <div className="flex items-center gap-2">
+                <FileKey className="w-4 h-4 text-purple-400" />
+                <span className="text-sm text-white font-medium">{license.name}</span>
+                <Badge className="bg-purple-600/20 text-purple-300 text-xs">{license.short_code}</Badge>
+              </div>
+              <p className="text-xs text-gray-400 mt-2">{license.description}</p>
+
+              {/* License Terms */}
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                {license.terms?.commercial_use && (
+                  <div className="flex items-center gap-1 text-xs text-green-400">
+                    <Check className="w-3 h-3" />
+                    Commercial Use
+                  </div>
+                )}
+                {license.terms?.modification && (
+                  <div className="flex items-center gap-1 text-xs text-green-400">
+                    <Check className="w-3 h-3" />
+                    Modifications
+                  </div>
+                )}
+                {license.terms?.distribution && (
+                  <div className="flex items-center gap-1 text-xs text-green-400">
+                    <Check className="w-3 h-3" />
+                    Distribution
+                  </div>
+                )}
+                {license.terms?.attribution_required && (
+                  <div className="flex items-center gap-1 text-xs text-purple-400">
+                    <Shield className="w-3 h-3" />
+                    Attribution Required
+                  </div>
+                )}
+                {!license.terms?.ai_training && (
+                  <div className="flex items-center gap-1 text-xs text-red-400">
+                    <X className="w-3 h-3" />
+                    No AI Training
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="text-xs text-gray-500 pt-2 border-t border-gray-700">
+            Created: {new Date(post.created_date).toLocaleString()}
           </div>
         </div>
       )}
-
-      {/* Blockchain Transaction */}
-      {post.blockchain_tx_id && (
-        <div className="space-y-1">
-          <p className="text-xs text-gray-400 flex items-center gap-1">
-            <Check className="w-3 h-3 text-green-400" />
-            Blockchain Timestamp (Solana)
-          </p>
-          <div className="flex items-center gap-2">
-            <code className="text-xs text-green-300 bg-black/30 px-2 py-1 rounded font-mono flex-1 truncate">
-              {post.blockchain_tx_id}
-            </code>
-            <a
-              href={`https://explorer.solana.com/tx/${post.blockchain_tx_id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-gray-400 hover:text-white"
-              >
-                <ExternalLink className="w-4 h-4" />
-              </Button>
-            </a>
-          </div>
-          <p className="text-xs text-green-400/70 mt-1">
-            Timestamped: {new Date(post.updated_date || post.created_date).toLocaleString()}
-          </p>
-        </div>
-      )}
-
-      {/* License */}
-      {license && (
-        <div className="space-y-1">
-          <p className="text-xs text-gray-400">Content License</p>
-          <div className="flex items-center gap-2">
-            <FileKey className="w-4 h-4 text-purple-400" />
-            <span className="text-sm text-white font-medium">{license.name}</span>
-            <Badge className="bg-purple-600/20 text-purple-300 text-xs">{license.short_code}</Badge>
-          </div>
-          <p className="text-xs text-gray-400 mt-2">{license.description}</p>
-          
-          {/* License Terms */}
-          <div className="grid grid-cols-2 gap-2 mt-2">
-            {license.terms?.commercial_use && (
-              <div className="flex items-center gap-1 text-xs text-green-400">
-                <Check className="w-3 h-3" />
-                Commercial Use
-              </div>
-            )}
-            {license.terms?.modification && (
-              <div className="flex items-center gap-1 text-xs text-green-400">
-                <Check className="w-3 h-3" />
-                Modifications
-              </div>
-            )}
-            {license.terms?.distribution && (
-              <div className="flex items-center gap-1 text-xs text-green-400">
-                <Check className="w-3 h-3" />
-                Distribution
-              </div>
-            )}
-            {license.terms?.attribution_required && (
-              <div className="flex items-center gap-1 text-xs text-purple-400">
-                <Shield className="w-3 h-3" />
-                Attribution Required
-              </div>
-            )}
-            {!license.terms?.ai_training && (
-              <div className="flex items-center gap-1 text-xs text-red-400">
-                <X className="w-3 h-3" />
-                No AI Training
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      <div className="text-xs text-gray-500 pt-2 border-t border-gray-700">
-        Created: {new Date(post.created_date).toLocaleString()}
-      </div>
     </Card>
   );
 }
