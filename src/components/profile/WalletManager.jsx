@@ -138,16 +138,10 @@ export default function WalletManager({ user, onUpdate }) {
 
                       setIsConnecting(true);
                       try {
-                        if (!wallet) {
-                          alert('Please install Phantom wallet browser extension first.');
-                          setIsConnecting(false);
-                          return;
-                        }
-
                         await connect();
                       } catch (error) {
                         console.error('Error connecting wallet:', error);
-                        alert('Failed to connect wallet. Please try again.');
+                        alert('Failed to connect wallet. Please try again and approve the connection in Phantom.');
                         setIsConnecting(false);
                       }
                     }}
