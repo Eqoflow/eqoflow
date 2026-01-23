@@ -1012,16 +1012,11 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
                     Blockchain Timestamp
                   </Label>
                   <Badge className="bg-purple-600/20 text-purple-300 text-xs">3 $eqoflo</Badge>
-                </div>
-                <p className="text-xs text-gray-400 mt-1">
-                  {connecting 
-                    ? 'Connecting to Phantom wallet...'
-                    : isWalletConnected 
-                      ? 'Immutable proof of creation on Solana blockchain'
-                      : 'Toggle to connect Phantom wallet and enable'
-                  }
-                </p>
-              </div>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Immutable proof of creation on Solana blockchain
+                  </p>
+                  </div>
               <Switch
               id="blockchain-timestamp"
               checked={enableBlockchainTimestamp}
