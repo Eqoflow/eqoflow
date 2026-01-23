@@ -106,7 +106,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const [brandContentTitle, setBrandContentTitle] = useState("");
 
   // Solana wallet state
-  const { publicKey, connected, connect, connecting } = useWallet();
+  const { publicKey, connected, connect, connecting, select } = useWallet();
   const { timestampContent, isProcessing: isTimestamping } = useBlockchainTimestamp();
   const isWalletConnected = connected && publicKey;
 
