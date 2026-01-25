@@ -1271,16 +1271,19 @@ export default function Feed() {
 
             if (provenanceResponse?.data?.content_hash) {
               console.log('[Feed.js] Content provenance processed:', provenanceResponse.data);
-
-              // Update the newPost object with provenance data
               newPost.content_hash = provenanceResponse.data.content_hash;
-              if (provenanceResponse.data.blockchain_tx_id) {
-                newPost.blockchain_tx_id = provenanceResponse.data.blockchain_tx_id;
-              }
 
-              // Show success message if blockchain timestamped
-              if (provenanceResponse.data.blockchain_tx_id) {
-                setErrorMessage("✓ Post created and timestamped on blockchain! 3 $eqoflo deducted.");
+              // If blockchain timestamp is required, trigger Phantom wallet authorization
+              if (provenanceResponse.data.requires_phantom_auth && provenanceResponse.data.content_hash) {
+                console.log('[Feed.js] Triggering Phantom wallet for blockchain timestamp...');
+                
+                // This will be handled by CreatePost component's timestampContent call
+                // Set a flag on the newPost so CreatePost knows to trigger Phantom
+                newPost._requires_blockchain_timestamp = true;
+              } else if (provenanceResponse.data.blockchain_tx_id) {
+                // Backend already handled timestamp (shouldn't happen anymore)
+                newPost.blockchain_tx_id = provenanceResponse.data.blockchain_tx_id;
+                setErrorMessage("✓ Post created and timestamped on blockchain!");
                 setTimeout(() => setErrorMessage(null), 5000);
               } else {
                 setErrorMessage("✓ Post created with content hash!");
@@ -1288,9 +1291,9 @@ export default function Feed() {
               }
             }
 
-            if (provenanceResponse?.data?.timestamp_error) {
-              console.error('[Feed.js] Blockchain timestamp error:', provenanceResponse.data.timestamp_error);
-              setErrorMessage('⚠️ ' + provenanceResponse.data.timestamp_error);
+            if (provenanceResponse?.data?.error) {
+              console.error('[Feed.js] Provenance error:', provenanceResponse.data.error);
+              setErrorMessage('⚠️ ' + provenanceResponse.data.error);
               setTimeout(() => setErrorMessage(null), 6000);
             }
           } catch (provenanceError) {

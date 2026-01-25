@@ -433,12 +433,13 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
     try {
       const newPost = await onSubmit(postData);
 
-      // If blockchain timestamp was requested, trigger real Phantom transaction
-      if (enableBlockchainTimestamp && newPost?.id && newPost?.content_hash) {
+      // Check if post requires blockchain timestamping via Phantom
+      if (newPost?._requires_blockchain_timestamp && newPost?.content_hash) {
+        console.log('[CreatePost] Post requires Phantom authorization for timestamp');
         try {
           const result = await timestampContent(newPost.content_hash, newPost.id);
           if (result.success) {
-            setErrorMessage('✓ Post created and timestamped on blockchain!');
+            setErrorMessage('✓ Post timestamped on blockchain! 3 $eqoflo deducted.');
             setTimeout(() => setErrorMessage(null), 4000);
           }
         } catch (timestampError) {

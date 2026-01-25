@@ -24,7 +24,6 @@ import EqoChamberRevenue from './pages/EqoChamberRevenue';
 import EqoCoursesRevenue from './pages/EqoCoursesRevenue';
 import EqoPlus from './pages/EqoPlus';
 import EqoQuest from './pages/EqoQuest';
-import Feed from './pages/Feed';
 import FraudMonitor from './pages/FraudMonitor';
 import GamifyTokens from './pages/GamifyTokens';
 import ITOLandingPage from './pages/ITOLandingPage';
@@ -71,6 +70,7 @@ import UserPayroll from './pages/UserPayroll';
 import VirtualSpaces from './pages/VirtualSpaces';
 import Wallet from './pages/Wallet';
 import WelcomeBonusManager from './pages/WelcomeBonusManager';
+import Feed from './pages/Feed';
 import __Layout from './Layout.jsx';
 
 
@@ -101,7 +101,6 @@ export const PAGES = {
     "EqoCoursesRevenue": EqoCoursesRevenue,
     "EqoPlus": EqoPlus,
     "EqoQuest": EqoQuest,
-    "Feed": Feed,
     "FraudMonitor": FraudMonitor,
     "GamifyTokens": GamifyTokens,
     "ITOLandingPage": ITOLandingPage,
@@ -148,6 +147,7 @@ export const PAGES = {
     "VirtualSpaces": VirtualSpaces,
     "Wallet": Wallet,
     "WelcomeBonusManager": WelcomeBonusManager,
+    "Feed": Feed,
 }
 
 export const pagesConfig = {

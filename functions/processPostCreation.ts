@@ -55,15 +55,36 @@ Deno.serve(async (req) => {
     
     console.log('[processPostCreation] Content hash generated:', contentHash);
     
-    // Update the post with content hash only (blockchain timestamp handled client-side)
+    // Update the post with content hash
     console.log('[processPostCreation] Updating post with content hash...');
     await base44.asServiceRole.entities.Post.update(post_id, { content_hash: contentHash });
     console.log('[processPostCreation] Post updated successfully');
 
+    // If blockchain timestamp requested, verify balance and signal client to trigger Phantom
+    let requiresPhantomAuth = false;
+    const EQOFLO_FEE = 3;
+    
+    if (enable_blockchain_timestamp) {
+      const currentBalance = user.token_balance || 0;
+      console.log('[processPostCreation] Blockchain timestamp requested. Balance:', currentBalance);
+      
+      if (currentBalance < EQOFLO_FEE) {
+        console.error('[processPostCreation] Insufficient balance for timestamp');
+        return Response.json({ 
+          error: `Insufficient $eqoflo balance. ${EQOFLO_FEE} $eqoflo required for blockchain timestamping.`,
+          required: EQOFLO_FEE,
+          current_balance: currentBalance
+        }, { status: 402 });
+      }
+      
+      requiresPhantomAuth = true;
+    }
+
     return Response.json({
       success: true,
       content_hash: contentHash,
-      blockchain_timestamp_enabled: false // Always false - client handles blockchain timestamp
+      blockchain_timestamp_enabled: enable_blockchain_timestamp,
+      requires_phantom_auth: requiresPhantomAuth
     });
 
   } catch (error) {
