@@ -5,29 +5,35 @@ import { timestampOnBlockchain } from '@/functions/timestampOnBlockchain';
 
 export function useBlockchainTimestamp() {
   const { connection } = useConnection();
-  const { publicKey, sendTransaction, connected, connect } = useWallet();
+  const wallet = useWallet();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
 
   const timestampContent = async (contentHash, postId) => {
-    // Ensure wallet is connected – if not, prompt user now
-    if (!connected || !publicKey) {
-      try {
-        await connect();
-      } catch (err) {
-        throw new Error('User cancelled wallet connection or connection failed.');
-      }
-    }
-
-    // After connect, verify we have publicKey
-    if (!publicKey) {
-      throw new Error('Wallet connection did not provide a public key.');
-    }
-
     setIsProcessing(true);
     setError(null);
 
     try {
+      // Ensure wallet is connected – if not, prompt user now
+      if (!wallet.connected || !wallet.publicKey) {
+        try {
+          await wallet.connect();
+          // After connect(), wait a moment for wallet state to update
+          await new Promise(resolve => setTimeout(resolve, 500));
+        } catch (err) {
+          setIsProcessing(false);
+          throw new Error('User cancelled wallet connection or connection failed.');
+        }
+      }
+
+      // Re-check publicKey after connection attempt
+      if (!wallet.publicKey) {
+        setIsProcessing(false);
+        throw new Error('Wallet connection did not provide a public key.');
+      }
+
+      console.log('Creating blockchain timestamp for:', contentHash, 'with wallet:', wallet.publicKey.toBase58());
+
       // Create memo data
       const memoData = `EQOFLOW:${contentHash}:${postId || 'content'}:${Date.now()}`;
       
@@ -37,7 +43,7 @@ export function useBlockchainTimestamp() {
       // Create transaction with memo instruction
       const transaction = new Transaction({
         recentBlockhash: blockhash,
-        feePayer: publicKey,
+        feePayer: wallet.publicKey,
       });
 
       // Add memo instruction (convert string to Uint8Array for browser compatibility)
@@ -48,8 +54,10 @@ export function useBlockchainTimestamp() {
       });
       transaction.add(memoInstruction);
 
+      console.log('Sending transaction to wallet for approval...');
+
       // Send transaction and wait for signature
-      const signature = await sendTransaction(transaction, connection, {
+      const signature = await wallet.sendTransaction(transaction, connection, {
         skipPreflight: false,
         maxRetries: 3,
       });
