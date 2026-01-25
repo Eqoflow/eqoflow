@@ -453,8 +453,14 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
           }
         } catch (timestampError) {
           console.error('[CreatePost] ❌ Timestamp failed or cancelled:', timestampError);
-          setErrorMessage('Post created, but timestamp was cancelled or failed.');
-          setTimeout(() => setErrorMessage(null), 5000);
+
+          // Show specific error message if no wallet selected
+          if (timestampError.message?.includes('No wallet selected')) {
+            setErrorMessage('Post created. Please connect your Phantom wallet using the wallet button, then try timestamping again.');
+          } else {
+            setErrorMessage('Post created, but timestamp was cancelled or failed.');
+          }
+          setTimeout(() => setErrorMessage(null), 6000);
         }
       } else if (enableBlockchainTimestamp) {
         console.log('[CreatePost] ⚠️ Blockchain timestamp was enabled but conditions not met');

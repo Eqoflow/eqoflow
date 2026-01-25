@@ -16,9 +16,23 @@ export function useBlockchainTimestamp() {
     try {
       console.log('🔐 [useBlockchainTimestamp] Starting timestamp process...');
       console.log('🔐 [useBlockchainTimestamp] Content hash:', contentHash, 'Post ID:', postId);
-      console.log('🔐 [useBlockchainTimestamp] Initial wallet state:', { connected: wallet.connected, hasPublicKey: !!wallet.publicKey });
+      console.log('🔐 [useBlockchainTimestamp] Initial wallet state:', { 
+        connected: wallet.connected, 
+        hasPublicKey: !!wallet.publicKey,
+        walletName: wallet?.adapter?.name,
+        walletExists: !!wallet
+      });
 
-      // Ensure wallet is connected – if not, prompt user now
+      // 1) Require a selected wallet first
+      if (!wallet || !wallet.adapter) {
+        console.error('🔐 [useBlockchainTimestamp] No wallet selected');
+        setIsProcessing(false);
+        throw new Error('No wallet selected. Please connect Phantom using the wallet button before timestamping.');
+      }
+
+      console.log('🔐 [useBlockchainTimestamp] Wallet selected:', wallet.adapter.name);
+
+      // 2) If not yet connected, now it's safe to call connect()
       if (!wallet.connected || !wallet.publicKey) {
         console.log('🔐 [useBlockchainTimestamp] Wallet not connected, triggering connect()...');
         try {
@@ -34,7 +48,7 @@ export function useBlockchainTimestamp() {
         }
       }
 
-      // Re-check publicKey after connection attempt
+      // 3) Re-check publicKey after connection attempt
       if (!wallet.publicKey) {
         console.error('🔐 [useBlockchainTimestamp] No publicKey available after connection attempt');
         setIsProcessing(false);
