@@ -105,11 +105,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const [brandContentTitle, setBrandContentTitle] = useState("");
 
   // Solana wallet state
-  const { timestampContent, isProcessing: isTimestamping, isWalletConnected } = useBlockchainTimestamp();
-
-  useEffect(() => {
-    console.log('📝 CreatePost isWalletConnected from hook:', isWalletConnected);
-  }, [isWalletConnected]);
+  const { timestampContent, isProcessing: isTimestamping } = useBlockchainTimestamp();
 
   const handleBlockchainToggle = (checked) => {
     setEnableBlockchainTimestamp(checked);
@@ -392,14 +388,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       return;
     }
 
-    // Check wallet connection if blockchain timestamp enabled
-    if (enableBlockchainTimestamp) {
-      if (!isWalletConnected) {
-        setErrorMessage('Connect your Phantom wallet first via the wallet button to use blockchain timestamps.');
-        setIsSubmitting(false);
-        return;
-      }
-    }
+
 
     const postData = {
       content: textContent,
@@ -444,7 +433,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       const newPost = await onSubmit(postData);
 
       // Handle blockchain timestamping if enabled
-      if (enableBlockchainTimestamp && newPost?.id && newPost?.content_hash && isWalletConnected) {
+      if (enableBlockchainTimestamp && newPost?.id && newPost?.content_hash) {
         try {
           const result = await timestampContent(newPost.content_hash, newPost.id);
           if (result.success) {

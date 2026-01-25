@@ -5,22 +5,23 @@ import { timestampOnBlockchain } from '@/functions/timestampOnBlockchain';
 
 export function useBlockchainTimestamp() {
   const { connection } = useConnection();
-  const { publicKey, sendTransaction, connected } = useWallet();
-  const isWalletConnected = !!connected && !!publicKey;
+  const { publicKey, sendTransaction, connected, connect } = useWallet();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    console.log('🔗 useBlockchainTimestamp wallet state:', {
-      connected,
-      publicKey: publicKey?.toBase58() || 'null',
-      isWalletConnected
-    });
-  }, [connected, publicKey, isWalletConnected]);
-
   const timestampContent = async (contentHash, postId) => {
+    // Ensure wallet is connected – if not, prompt user now
+    if (!connected || !publicKey) {
+      try {
+        await connect();
+      } catch (err) {
+        throw new Error('User cancelled wallet connection or connection failed.');
+      }
+    }
+
+    // After connect, verify we have publicKey
     if (!publicKey) {
-      throw new Error('Wallet not connected. Please connect your Phantom wallet.');
+      throw new Error('Wallet connection did not provide a public key.');
     }
 
     setIsProcessing(true);
@@ -93,6 +94,5 @@ export function useBlockchainTimestamp() {
     timestampContent,
     isProcessing,
     error,
-    isWalletConnected,
   };
 }
