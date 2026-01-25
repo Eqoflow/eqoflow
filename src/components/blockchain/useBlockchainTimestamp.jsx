@@ -5,7 +5,8 @@ import { timestampOnBlockchain } from '@/functions/timestampOnBlockchain';
 
 export function useBlockchainTimestamp() {
   const { connection } = useConnection();
-  const { publicKey, sendTransaction } = useWallet();
+  const { publicKey, sendTransaction, connected } = useWallet();
+  const isWalletConnected = !!connected && !!publicKey;
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
 

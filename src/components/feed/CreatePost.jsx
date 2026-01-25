@@ -34,7 +34,6 @@ import { getYoutubeVideoDetails } from '@/functions/getYoutubeVideoDetails';
 import GiphyPicker from "./GiphyPicker";
 import { base44 } from "@/api/base44Client";
 import { FileKey } from "lucide-react";
-import { useWallet } from '@solana/wallet-adapter-react';
 import { useBlockchainTimestamp } from '../blockchain/useBlockchainTimestamp';
 
 // Helper function to detect if an image is PNG
@@ -106,9 +105,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const [brandContentTitle, setBrandContentTitle] = useState("");
 
   // Solana wallet state
-  const { publicKey, connected } = useWallet();
-  const { timestampContent, isProcessing: isTimestamping } = useBlockchainTimestamp();
-  const isWalletConnected = connected && publicKey;
+  const { timestampContent, isProcessing: isTimestamping, isWalletConnected } = useBlockchainTimestamp();
 
   const handleBlockchainToggle = (checked) => {
     setEnableBlockchainTimestamp(checked);
