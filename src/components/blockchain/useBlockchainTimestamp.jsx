@@ -14,13 +14,20 @@ export function useBlockchainTimestamp() {
     setError(null);
 
     try {
+      console.log('🔐 Starting timestamp process...');
+      console.log('Initial wallet state:', { connected: wallet.connected, hasPublicKey: !!wallet.publicKey });
+
       // Ensure wallet is connected – if not, prompt user now
       if (!wallet.connected || !wallet.publicKey) {
+        console.log('Wallet not connected, triggering connect()...');
         try {
           await wallet.connect();
-          // After connect(), wait a moment for wallet state to update
-          await new Promise(resolve => setTimeout(resolve, 500));
+          console.log('Connect() completed, waiting for state update...');
+          // After connect(), wait for wallet state to propagate
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          console.log('After wait, wallet state:', { connected: wallet.connected, hasPublicKey: !!wallet.publicKey });
         } catch (err) {
+          console.error('Connect failed:', err);
           setIsProcessing(false);
           throw new Error('User cancelled wallet connection or connection failed.');
         }
@@ -28,11 +35,12 @@ export function useBlockchainTimestamp() {
 
       // Re-check publicKey after connection attempt
       if (!wallet.publicKey) {
+        console.error('No publicKey available after connection attempt');
         setIsProcessing(false);
         throw new Error('Wallet connection did not provide a public key.');
       }
 
-      console.log('Creating blockchain timestamp for:', contentHash, 'with wallet:', wallet.publicKey.toBase58());
+      console.log('✅ Wallet ready, creating transaction for:', wallet.publicKey.toBase58());
 
       // Create memo data
       const memoData = `EQOFLOW:${contentHash}:${postId || 'content'}:${Date.now()}`;
@@ -54,15 +62,20 @@ export function useBlockchainTimestamp() {
       });
       transaction.add(memoInstruction);
 
-      console.log('Sending transaction to wallet for approval...');
+      console.log('📤 Sending transaction to wallet for approval...');
+      console.log('Transaction details:', {
+        feePayer: transaction.feePayer.toBase58(),
+        recentBlockhash: transaction.recentBlockhash,
+        instructions: transaction.instructions.length
+      });
 
-      // Send transaction and wait for signature
+      // Send transaction and wait for signature - this should trigger Phantom popup
       const signature = await wallet.sendTransaction(transaction, connection, {
         skipPreflight: false,
         maxRetries: 3,
       });
 
-      console.log('Transaction sent, signature:', signature);
+      console.log('✅ Transaction approved! Signature:', signature);
 
       // Wait for confirmation
       const confirmation = await connection.confirmTransaction(signature, 'confirmed');
