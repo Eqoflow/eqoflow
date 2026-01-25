@@ -108,6 +108,7 @@ export default function Feed() {
     const saved = localStorage.getItem('showTrendingCommunities');
     return saved !== null ? JSON.parse(saved) : true;
   });
+  const [pendingBlockchainTimestamp, setPendingBlockchainTimestamp] = useState(null);
 
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
@@ -1284,7 +1285,15 @@ export default function Feed() {
                 blockchain_timestamp_enabled: newPost.blockchain_timestamp_enabled
               });
 
-              if (!provenanceResponse.data.blockchain_timestamp_enabled) {
+              // Store pending blockchain timestamp data for CreatePost to access
+              if (provenanceResponse.data.requires_phantom_auth) {
+                console.log('[Feed.js] Setting pendingBlockchainTimestamp state...');
+                setPendingBlockchainTimestamp({
+                  id: newPost.id,
+                  content_hash: provenanceResponse.data.content_hash,
+                  requires_phantom_auth: true
+                });
+              } else if (!provenanceResponse.data.blockchain_timestamp_enabled) {
                 setErrorMessage("✓ Post created with content hash!");
                 setTimeout(() => setErrorMessage(null), 3000);
               }
@@ -2104,9 +2113,14 @@ export default function Feed() {
 
       <CreatePostModal
         isOpen={showCreatePostModal}
-        onClose={() => setShowCreatePostModal(false)}
+        onClose={() => {
+          setShowCreatePostModal(false);
+          setPendingBlockchainTimestamp(null); // Clear pending data on close
+        }}
         onSubmit={handleNewPost}
-        user={user} />
+        user={user}
+        pendingBlockchainTimestamp={pendingBlockchainTimestamp}
+        onClearPendingTimestamp={() => setPendingBlockchainTimestamp(null)} />
 
 
       {showWelcomeModal && user && user.has_completed_onboarding === false &&
