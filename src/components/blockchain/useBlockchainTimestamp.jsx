@@ -23,37 +23,15 @@ export function useBlockchainTimestamp() {
         walletExists: !!wallet
       });
 
-      // 1) Require a selected wallet first
-      if (!wallet || !wallet.adapter) {
-        console.error('🔐 [useBlockchainTimestamp] No wallet selected');
-        setIsProcessing(false);
-        throw new Error('No wallet selected. Please connect Phantom using the wallet button before timestamping.');
-      }
-
-      console.log('🔐 [useBlockchainTimestamp] Wallet selected:', wallet.adapter.name);
-
-      // 2) If not yet connected, now it's safe to call connect()
+      // Use connected + publicKey as source of truth
+      // If we have both, the wallet is properly connected regardless of walletName
       if (!wallet.connected || !wallet.publicKey) {
-        console.log('🔐 [useBlockchainTimestamp] Wallet not connected, triggering connect()...');
-        try {
-          await wallet.connect();
-          console.log('🔐 [useBlockchainTimestamp] Connect() completed, waiting for state update...');
-          // After connect(), wait for wallet state to propagate
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          console.log('🔐 [useBlockchainTimestamp] After wait, wallet state:', { connected: wallet.connected, hasPublicKey: !!wallet.publicKey });
-        } catch (err) {
-          console.error('🔐 [useBlockchainTimestamp] Connect failed:', err);
-          setIsProcessing(false);
-          throw new Error('User cancelled wallet connection or connection failed.');
-        }
+        console.error('🔐 [useBlockchainTimestamp] Wallet not connected or no public key');
+        setIsProcessing(false);
+        throw new Error('Wallet not connected. Please connect Phantom using the wallet button before timestamping.');
       }
 
-      // 3) Re-check publicKey after connection attempt
-      if (!wallet.publicKey) {
-        console.error('🔐 [useBlockchainTimestamp] No publicKey available after connection attempt');
-        setIsProcessing(false);
-        throw new Error('Wallet connection did not provide a public key.');
-      }
+      console.log('🔐 [useBlockchainTimestamp] Wallet is connected with public key:', wallet.publicKey.toBase58());
 
       console.log('✅ [useBlockchainTimestamp] Wallet ready, creating transaction for:', wallet.publicKey.toBase58());
 
