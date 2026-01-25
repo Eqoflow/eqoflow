@@ -1271,16 +1271,20 @@ export default function Feed() {
 
             if (provenanceResponse?.data?.content_hash) {
               console.log('[Feed.js] Content provenance processed:', provenanceResponse.data);
+              
+              // Enrich newPost with provenance data
               newPost.content_hash = provenanceResponse.data.content_hash;
+              newPost.blockchain_timestamp_enabled = provenanceResponse.data.blockchain_timestamp_enabled;
+              newPost.requires_phantom_auth = provenanceResponse.data.requires_phantom_auth;
 
-              // If blockchain timestamp is required, signal CreatePost to trigger Phantom
-              if (provenanceResponse.data.requires_phantom_auth && provenanceResponse.data.content_hash) {
-                console.log('[Feed.js] Backend verified balance. Signaling CreatePost to trigger Phantom...');
-                
-                // Set flag so CreatePost component knows to trigger Phantom transaction
-                newPost._requires_blockchain_timestamp = true;
-                newPost.content_hash = provenanceResponse.data.content_hash;
-              } else if (!provenanceResponse.data.blockchain_timestamp_enabled) {
+              console.log('[Feed.js] Enriched newPost object before return:', {
+                id: newPost.id,
+                content_hash: newPost.content_hash,
+                requires_phantom_auth: newPost.requires_phantom_auth,
+                blockchain_timestamp_enabled: newPost.blockchain_timestamp_enabled
+              });
+
+              if (!provenanceResponse.data.blockchain_timestamp_enabled) {
                 setErrorMessage("✓ Post created with content hash!");
                 setTimeout(() => setErrorMessage(null), 3000);
               }
@@ -1298,6 +1302,9 @@ export default function Feed() {
             setTimeout(() => setErrorMessage(null), 6000);
           }
         }
+        
+        console.log('[Feed.js] About to return newPost:', newPost);
+        console.log('[Feed.js] newPost.requires_phantom_auth:', newPost.requires_phantom_auth);
 
         // Post to X if toggle was enabled
         if (postData.post_to_x && newPost.id) {
