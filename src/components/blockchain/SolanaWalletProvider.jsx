@@ -2,11 +2,8 @@ import React, { useMemo } from 'react';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 
-// Build Helius RPC URL using the existing HELIUS_API_KEY secret
-const HELIUS_KEY = import.meta.env.VITE_HELIUS_API_KEY;
-const SOLANA_RPC_URL = HELIUS_KEY 
-  ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_KEY}`
-  : 'https://api.mainnet-beta.solana.com';
+// Use configured Helius RPC endpoint
+const SOLANA_RPC_URL = import.meta.env.VITE_HELIUS_RPC_URL || 'https://mainnet.helius-rpc.com/?api-key=52439c67-aead-4d94-9680-3ee0550f33bb';
 
 export default function SolanaWalletProvider({ children }) {
   const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
