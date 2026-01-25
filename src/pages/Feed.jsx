@@ -1231,7 +1231,7 @@ export default function Feed() {
           content: postData.content || "",
           media_urls: postData.media_urls || [],
           tags: postData.tags || [],
-          privacy_level: "public",
+          privacy_level: postData.privacy_level || "public",
           is_repost: false,
           original_post_id: postData.original_post_id,
           original_author: postData.original_author,
@@ -1247,6 +1247,8 @@ export default function Feed() {
           youtube_video_title: postData.youtube_video_title
         };
         
+        const enableBlockchainTimestamp = postData.enable_blockchain_timestamp;
+        
         console.log('[Feed.js] Data being saved to DB:', dataToSave);
         console.log('[Feed.js] media_urls in dataToSave:', dataToSave.media_urls);
         
@@ -1255,16 +1257,16 @@ export default function Feed() {
         console.log('[Feed.js] Post created successfully. newPost.media_urls:', newPost.media_urls);
         console.log('[Feed.js] Full newPost object:', newPost);
 
-        // Process content provenance (hashing only - blockchain done by CreatePost component)
-        console.log('[Feed.js] Post created. postData.license_id:', postData.license_id);
+        // Process content provenance (hashing)
+        console.log('[Feed.js] Post created. enable_blockchain_timestamp:', enableBlockchainTimestamp, 'postData.license_id:', postData.license_id);
 
-        if (postData.license_id) {
+        if (enableBlockchainTimestamp || postData.license_id) {
           try {
             console.log('[Feed.js] Invoking processPostCreation with post_id:', newPost.id);
 
             const provenanceResponse = await base44.functions.invoke('processPostCreation', {
               post_id: newPost.id,
-              enable_blockchain_timestamp: false // Hash only, blockchain handled by CreatePost
+              enable_blockchain_timestamp: false
             });
 
             console.log('[Feed.js] processPostCreation response:', provenanceResponse);
@@ -1274,7 +1276,7 @@ export default function Feed() {
               newPost.content_hash = provenanceResponse.data.content_hash;
             }
           } catch (provenanceError) {
-            console.error('[Feed.js] Failed to generate content hash:', provenanceError);
+            console.error('[Feed.js] Failed to process content provenance:', provenanceError);
           }
         }
 
