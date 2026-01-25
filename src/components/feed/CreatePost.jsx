@@ -430,21 +430,31 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
     }
 
     try {
+      console.log('🚀 Submitting post with enableBlockchainTimestamp:', enableBlockchainTimestamp);
       const newPost = await onSubmit(postData);
+      console.log('✅ Post created. newPost:', newPost);
 
       // Handle blockchain timestamping if enabled
       if (enableBlockchainTimestamp && newPost?.id && newPost?.content_hash) {
+        console.log('🔐 Starting blockchain timestamp for post:', newPost.id, 'hash:', newPost.content_hash);
         try {
           const result = await timestampContent(newPost.content_hash, newPost.id);
+          console.log('✅ Timestamp result:', result);
           if (result.success) {
             setErrorMessage('Post echoed and blockchain timestamp confirmed! ✓');
             setTimeout(() => setErrorMessage(null), 4000);
           }
         } catch (timestampError) {
-          console.error('Blockchain timestamp error:', timestampError);
+          console.error('❌ Blockchain timestamp error:', timestampError);
           setErrorMessage('Post created, but blockchain timestamp failed: ' + timestampError.message);
           setTimeout(() => setErrorMessage(null), 6000);
         }
+      } else if (enableBlockchainTimestamp) {
+        console.log('⚠️ Blockchain timestamp was enabled but missing data:', {
+          hasPost: !!newPost,
+          hasId: !!newPost?.id,
+          hasHash: !!newPost?.content_hash
+        });
       }
 
       setContent("");
