@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Transaction, PublicKey, TransactionInstruction } from '@solana/web3.js';
 import { timestampOnBlockchain } from '@/functions/timestampOnBlockchain';
@@ -9,6 +9,14 @@ export function useBlockchainTimestamp() {
   const isWalletConnected = !!connected && !!publicKey;
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    console.log('🔗 useBlockchainTimestamp wallet state:', {
+      connected,
+      publicKey: publicKey?.toBase58() || 'null',
+      isWalletConnected
+    });
+  }, [connected, publicKey, isWalletConnected]);
 
   const timestampContent = async (contentHash, postId) => {
     if (!publicKey) {

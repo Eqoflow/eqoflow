@@ -107,6 +107,10 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   // Solana wallet state
   const { timestampContent, isProcessing: isTimestamping, isWalletConnected } = useBlockchainTimestamp();
 
+  useEffect(() => {
+    console.log('📝 CreatePost isWalletConnected from hook:', isWalletConnected);
+  }, [isWalletConnected]);
+
   const handleBlockchainToggle = (checked) => {
     setEnableBlockchainTimestamp(checked);
   };
