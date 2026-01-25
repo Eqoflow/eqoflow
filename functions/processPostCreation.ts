@@ -55,74 +55,15 @@ Deno.serve(async (req) => {
     
     console.log('[processPostCreation] Content hash generated:', contentHash);
     
-    const updateData = { content_hash: contentHash };
-
-    // Simulate blockchain timestamp (replace with real blockchain later)
-    let blockchainTxId = null;
-    let timestampError = null;
-    const EQOFLO_FEE = 3;
-
-    if (enable_blockchain_timestamp) {
-      console.log('[processPostCreation] Simulating blockchain timestamp...');
-      
-      // Check user's $eqoflo balance
-      const currentBalance = user.token_balance || 0;
-      console.log('[processPostCreation] User balance:', currentBalance, '/ Required:', EQOFLO_FEE);
-
-      if (currentBalance < EQOFLO_FEE) {
-        console.error('[processPostCreation] Insufficient balance');
-        return Response.json({ 
-          error: `Insufficient $eqoflo balance. ${EQOFLO_FEE} $eqoflo required for blockchain timestamping.`,
-          required: EQOFLO_FEE,
-          current_balance: currentBalance
-        }, { status: 402 });
-      }
-
-      // Deduct $eqoflo fee
-      console.log('[processPostCreation] Deducting fee...');
-      const newBalance = currentBalance - EQOFLO_FEE;
-      await base44.asServiceRole.entities.User.update(user.id, {
-        token_balance: newBalance
-      });
-      console.log('[processPostCreation] Fee deducted. New balance:', newBalance);
-      
-      // Generate simulated Solana transaction signature
-      const chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-      blockchainTxId = Array.from({ length: 88 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-      updateData.blockchain_tx_id = blockchainTxId;
-      
-      console.log('[processPostCreation] Simulated blockchain TX ID:', blockchainTxId);
-      
-      // Log to platform wallet for admin visibility
-      try {
-        await base44.asServiceRole.entities.PlatformWallet.create({
-          transaction_type: 'blockchain_timestamp_fee',
-          amount_qflow: EQOFLO_FEE,
-          source_description: 'Blockchain Timestamp Fee',
-          user_email: user.email,
-          notes: `Post ${post_id} - TX: ${blockchainTxId}`
-        });
-        console.log('[processPostCreation] Fee logged to platform wallet');
-      } catch (walletError) {
-        console.error('[processPostCreation] Failed to log to platform wallet:', walletError.message);
-      }
-      
-      // TODO: Replace with real blockchain timestamping once integration is complete
-      // await base44.functions.invoke('timestampOnBlockchain', { content_hash: contentHash, post_id: post_id });
-    }
-
-    // Update the post with hash (and blockchain tx if successful)
-    console.log('[processPostCreation] Updating post with data:', updateData);
-    await base44.asServiceRole.entities.Post.update(post_id, updateData);
+    // Update the post with content hash only (blockchain timestamp handled client-side)
+    console.log('[processPostCreation] Updating post with content hash...');
+    await base44.asServiceRole.entities.Post.update(post_id, { content_hash: contentHash });
     console.log('[processPostCreation] Post updated successfully');
 
     return Response.json({
       success: true,
       content_hash: contentHash,
-      blockchain_tx_id: blockchainTxId,
-      blockchain_timestamp_enabled: enable_blockchain_timestamp,
-      timestamp_error: timestampError,
-      explorer_url: blockchainTxId ? `https://explorer.solana.com/tx/${blockchainTxId}` : null
+      blockchain_timestamp_enabled: false // Always false - client handles blockchain timestamp
     });
 
   } catch (error) {
