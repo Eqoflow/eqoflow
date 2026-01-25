@@ -104,8 +104,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const [brandContentPrice, setBrandContentPrice] = useState(500);
   const [brandContentTitle, setBrandContentTitle] = useState("");
 
-  // Solana wallet state
-  const { timestampContent, isProcessing: isTimestamping } = useBlockchainTimestamp();
+
 
   const handleBlockchainToggle = (checked) => {
     setEnableBlockchainTimestamp(checked);
@@ -414,7 +413,8 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       eqoflo_price: enableGatedContent ? eqofloPrice : null,
       gated_content_title: enableGatedContent && gatedContentTitle.trim() ? gatedContentTitle.trim() : null,
       brand_content_price: enableBrandContent ? brandContentPrice : null,
-      brand_content_title: enableBrandContent && brandContentTitle.trim() ? brandContentTitle.trim() : null
+      brand_content_title: enableBrandContent && brandContentTitle.trim() ? brandContentTitle.trim() : null,
+      enable_blockchain_timestamp: enableBlockchainTimestamp
     };
 
     if (communityId) {
@@ -430,32 +430,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
     }
 
     try {
-      console.log('🚀 Submitting post with enableBlockchainTimestamp:', enableBlockchainTimestamp);
       const newPost = await onSubmit(postData);
-      console.log('✅ Post created. newPost:', newPost);
-
-      // Handle blockchain timestamping if enabled
-      if (enableBlockchainTimestamp && newPost?.id && newPost?.content_hash) {
-        console.log('🔐 Starting blockchain timestamp for post:', newPost.id, 'hash:', newPost.content_hash);
-        try {
-          const result = await timestampContent(newPost.content_hash, newPost.id);
-          console.log('✅ Timestamp result:', result);
-          if (result.success) {
-            setErrorMessage('Post echoed and blockchain timestamp confirmed! ✓');
-            setTimeout(() => setErrorMessage(null), 4000);
-          }
-        } catch (timestampError) {
-          console.error('❌ Blockchain timestamp error:', timestampError);
-          setErrorMessage('Post created, but blockchain timestamp failed: ' + timestampError.message);
-          setTimeout(() => setErrorMessage(null), 6000);
-        }
-      } else if (enableBlockchainTimestamp) {
-        console.log('⚠️ Blockchain timestamp was enabled but missing data:', {
-          hasPost: !!newPost,
-          hasId: !!newPost?.id,
-          hasHash: !!newPost?.content_hash
-        });
-      }
 
       setContent("");
       setMediaFiles([]);
@@ -1172,14 +1147,13 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
               enableBrandContent && !brandContentTitle.trim() ||
               isSubmitting ||
               isUploading ||
-              isTimestamping ||
               !!tagError
               }
               className="bg-gradient-to-r from-purple-600 to-pink-500 neon-glow hover:from-purple-700 hover:to-pink-600 text-white w-full md:w-auto">
-              {isSubmitting || isTimestamping ?
+              {isSubmitting ?
               <div className="flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin text-white" />
-                  <span className="text-white">{isTimestamping ? 'Timestamping...' : 'Broadcasting...'}</span>
+                  <span className="text-white">Broadcasting...</span>
                 </div> :
               isUploading ?
               <div className="flex items-center gap-2">
