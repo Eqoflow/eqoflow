@@ -34,7 +34,9 @@ import { getYoutubeVideoDetails } from '@/functions/getYoutubeVideoDetails';
 import GiphyPicker from "./GiphyPicker";
 import { base44 } from "@/api/base44Client";
 import { FileKey } from "lucide-react";
-import { useBlockchainTimestamp } from '../blockchain/useBlockchainTimestamp';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { Transaction, PublicKey, TransactionInstruction } from '@solana/web3.js';
+import { timestampOnBlockchain } from '@/functions/timestampOnBlockchain';
 
 // Helper function to detect if an image is PNG
 const isPngImage = (url) => {
@@ -104,7 +106,9 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const [brandContentPrice, setBrandContentPrice] = useState(500);
   const [brandContentTitle, setBrandContentTitle] = useState("");
 
-
+  // Solana wallet hooks
+  const { connection } = useConnection();
+  const wallet = useWallet();
 
   const handleBlockchainToggle = (checked) => {
     setEnableBlockchainTimestamp(checked);
@@ -431,6 +435,71 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
 
     try {
       const newPost = await onSubmit(postData);
+
+      // Handle blockchain timestamping if enabled
+      if (enableBlockchainTimestamp && newPost?.id && newPost?.content_hash) {
+        try {
+          // Connect wallet if not already connected
+          if (!wallet.connected || !wallet.publicKey) {
+            await wallet.connect();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+
+          if (!wallet.publicKey) {
+            throw new Error('Wallet connection failed - no public key available');
+          }
+
+          // Create memo data
+          const memoData = `EQOFLOW:${newPost.content_hash}:${newPost.id}:${Date.now()}`;
+
+          // Get recent blockhash
+          const { blockhash } = await connection.getLatestBlockhash('confirmed');
+
+          // Create transaction with memo instruction
+          const transaction = new Transaction({
+            recentBlockhash: blockhash,
+            feePayer: wallet.publicKey,
+          });
+
+          // Add memo instruction
+          const memoInstruction = new TransactionInstruction({
+            keys: [],
+            programId: new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr'),
+            data: new TextEncoder().encode(memoData),
+          });
+          transaction.add(memoInstruction);
+
+          // Send transaction to Phantom for approval
+          const signature = await wallet.sendTransaction(transaction, connection, {
+            skipPreflight: false,
+            maxRetries: 3,
+          });
+
+          // Wait for confirmation
+          const confirmation = await connection.confirmTransaction(signature, 'confirmed');
+
+          if (confirmation.value.err) {
+            throw new Error('Transaction failed on blockchain');
+          }
+
+          // Call backend to deduct fee and update post
+          const response = await timestampOnBlockchain({
+            blockchain_tx_id: signature,
+            post_id: newPost.id,
+          });
+
+          if (response.data?.success) {
+            setErrorMessage('✓ Post created and blockchain timestamp confirmed! 3 $eqoflo deducted.');
+            setTimeout(() => setErrorMessage(null), 5000);
+          } else {
+            throw new Error(response.data?.error || 'Failed to process timestamp fee');
+          }
+        } catch (blockchainError) {
+          console.error('Blockchain timestamp error:', blockchainError);
+          setErrorMessage('⚠️ Post created but blockchain timestamp failed: ' + blockchainError.message);
+          setTimeout(() => setErrorMessage(null), 6000);
+        }
+      }
 
       setContent("");
       setMediaFiles([]);

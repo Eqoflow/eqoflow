@@ -1255,49 +1255,26 @@ export default function Feed() {
         console.log('[Feed.js] Post created successfully. newPost.media_urls:', newPost.media_urls);
         console.log('[Feed.js] Full newPost object:', newPost);
 
-        // Process content provenance (hashing and optional blockchain timestamping)
-        console.log('[Feed.js] Post created. postData.enable_blockchain_timestamp:', postData.enable_blockchain_timestamp, 'postData.license_id:', postData.license_id);
+        // Process content provenance (hashing only - blockchain done by CreatePost component)
+        console.log('[Feed.js] Post created. postData.license_id:', postData.license_id);
 
-        if (postData.enable_blockchain_timestamp || postData.license_id) {
+        if (postData.license_id) {
           try {
             console.log('[Feed.js] Invoking processPostCreation with post_id:', newPost.id);
 
             const provenanceResponse = await base44.functions.invoke('processPostCreation', {
               post_id: newPost.id,
-              enable_blockchain_timestamp: postData.enable_blockchain_timestamp || false
+              enable_blockchain_timestamp: false // Hash only, blockchain handled by CreatePost
             });
 
             console.log('[Feed.js] processPostCreation response:', provenanceResponse);
 
             if (provenanceResponse?.data?.content_hash) {
-              console.log('[Feed.js] Content provenance processed:', provenanceResponse.data);
-
-              // Update the newPost object with provenance data
+              console.log('[Feed.js] Content hash generated:', provenanceResponse.data.content_hash);
               newPost.content_hash = provenanceResponse.data.content_hash;
-              if (provenanceResponse.data.blockchain_tx_id) {
-                newPost.blockchain_tx_id = provenanceResponse.data.blockchain_tx_id;
-              }
-
-              // Show success message if blockchain timestamped
-              if (provenanceResponse.data.blockchain_tx_id) {
-                setErrorMessage("✓ Post created and timestamped on blockchain! 3 $eqoflo deducted.");
-                setTimeout(() => setErrorMessage(null), 5000);
-              } else {
-                setErrorMessage("✓ Post created with content hash!");
-                setTimeout(() => setErrorMessage(null), 3000);
-              }
-            }
-
-            if (provenanceResponse?.data?.timestamp_error) {
-              console.error('[Feed.js] Blockchain timestamp error:', provenanceResponse.data.timestamp_error);
-              setErrorMessage('⚠️ ' + provenanceResponse.data.timestamp_error);
-              setTimeout(() => setErrorMessage(null), 6000);
             }
           } catch (provenanceError) {
-            console.error('[Feed.js] Failed to process content provenance:', provenanceError);
-            console.error('[Feed.js] Error details:', provenanceError.response || provenanceError.message);
-            setErrorMessage('⚠️ Content created but provenance processing failed: ' + (provenanceError.message || 'Unknown error'));
-            setTimeout(() => setErrorMessage(null), 6000);
+            console.error('[Feed.js] Failed to generate content hash:', provenanceError);
           }
         }
 
