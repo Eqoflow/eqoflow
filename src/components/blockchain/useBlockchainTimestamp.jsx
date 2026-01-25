@@ -85,6 +85,6 @@ export function useBlockchainTimestamp() {
     timestampContent,
     isProcessing,
     error,
-    isWalletConnected: !!publicKey,
+    isWalletConnected,
   };
 }
