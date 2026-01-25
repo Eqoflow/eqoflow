@@ -510,7 +510,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
             });
 
             if (response.data?.success) {
-              setErrorMessage('✓ Blockchain timestamp confirmed! 3 $eqoflo deducted. View on Solana Explorer.');
+              setErrorMessage('✓ Blockchain timestamp confirmed! 3 $eqoflo deducted.');
               setTimeout(() => setErrorMessage(null), 5000);
             } else {
               throw new Error(response.data?.error || 'Failed to process timestamp fee');
@@ -518,7 +518,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
           } catch (blockchainError) {
             console.error('[CreatePost] Blockchain timestamp error:', blockchainError);
 
-            if (blockchainError.message?.includes('User rejected')) {
+            if (blockchainError.message?.includes('User rejected') || blockchainError.message?.includes('cancelled')) {
               setErrorMessage('⚠️ Blockchain timestamp cancelled - post created without timestamp');
             } else {
               setErrorMessage('⚠️ Post created but blockchain timestamp failed: ' + blockchainError.message);
@@ -532,6 +532,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
         }
       }
 
+      // Clear form AFTER blockchain timestamp completes (or fails)
       setContent("");
       setMediaFiles([]);
       setTags([]);
