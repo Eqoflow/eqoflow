@@ -50,7 +50,7 @@ const getAvatarBackgroundStyle = (avatarUrl) => {
   return { background: 'linear-gradient(to right, #8b5cf6, #ec4899)' };
 };
 
-export default function CreatePost({ onSubmit, user, communityId = null, isCreatorOfCommunity = false, initialContent = "", articleTitle = "", pendingBlockchainTimestamp = null, onClearPendingTimestamp = null }) {
+export default function CreatePost({ onSubmit, user, communityId = null, isCreatorOfCommunity = false, initialContent = "", articleTitle = "" }) {
   const [content, setContent] = useState(initialContent);
   const [tags, setTags] = useState([]);
   const [currentTag, setCurrentTag] = useState("");
@@ -431,48 +431,37 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
     }
 
     try {
-      await onSubmit(postData);
-      console.log('[CreatePost] 📬 onSubmit completed');
-
-      // Wait a moment for pendingBlockchainTimestamp state to be set by Feed.js
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      console.log('[CreatePost] 📬 Checking pendingBlockchainTimestamp:', pendingBlockchainTimestamp);
+      const newPost = await onSubmit(postData);
+      console.log('[CreatePost] 📬 onSubmit completed. Received newPost:', newPost);
+      console.log('[CreatePost] 📬 newPost type:', typeof newPost);
+      console.log('[CreatePost] 📬 newPost keys:', newPost ? Object.keys(newPost) : 'N/A');
 
       // Check if post requires blockchain timestamping via Phantom
-      if (pendingBlockchainTimestamp?.requires_phantom_auth && pendingBlockchainTimestamp?.content_hash && pendingBlockchainTimestamp?.id) {
+      if (newPost?.requires_phantom_auth && newPost?.content_hash && newPost?.id) {
         console.log('[CreatePost] 🔐 Phantom authorization required!');
-        console.log('[CreatePost] 🔐 Content hash:', pendingBlockchainTimestamp.content_hash);
-        console.log('[CreatePost] 🔐 Post ID:', pendingBlockchainTimestamp.id);
+        console.log('[CreatePost] 🔐 Content hash:', newPost.content_hash);
+        console.log('[CreatePost] 🔐 Post ID:', newPost.id);
         console.log('[CreatePost] 🔐 Calling timestampContent...');
 
         try {
-          const result = await timestampContent(pendingBlockchainTimestamp.content_hash, pendingBlockchainTimestamp.id);
+          const result = await timestampContent(newPost.content_hash, newPost.id);
           console.log('[CreatePost] ✅ Timestamp successful! Result:', result);
 
           if (result.success) {
             setErrorMessage('✓ Post timestamped on blockchain! 3 $eqoflo deducted.');
             setTimeout(() => setErrorMessage(null), 4000);
           }
-
-          // Clear the pending timestamp after processing
-          if (onClearPendingTimestamp) {
-            onClearPendingTimestamp();
-          }
         } catch (timestampError) {
           console.error('[CreatePost] ❌ Timestamp failed or cancelled:', timestampError);
           setErrorMessage('Post created, but timestamp was cancelled or failed.');
           setTimeout(() => setErrorMessage(null), 5000);
-
-          // Clear the pending timestamp even on error
-          if (onClearPendingTimestamp) {
-            onClearPendingTimestamp();
-          }
         }
       } else if (enableBlockchainTimestamp) {
-        console.log('[CreatePost] ⚠️ Blockchain timestamp was enabled but pendingBlockchainTimestamp not set');
-        console.log('[CreatePost] ⚠️ pendingBlockchainTimestamp:', pendingBlockchainTimestamp);
-        console.log('[CreatePost] ⚠️ enableBlockchainTimestamp:', enableBlockchainTimestamp);
+        console.log('[CreatePost] ⚠️ Blockchain timestamp was enabled but conditions not met');
+        console.log('[CreatePost] ⚠️ newPost:', newPost);
+        console.log('[CreatePost] ⚠️ requires_phantom_auth:', newPost?.requires_phantom_auth);
+        console.log('[CreatePost] ⚠️ content_hash:', newPost?.content_hash);
+        console.log('[CreatePost] ⚠️ id:', newPost?.id);
       }
 
       setContent("");
