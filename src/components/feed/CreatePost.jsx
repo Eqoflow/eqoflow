@@ -104,7 +104,8 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const [brandContentPrice, setBrandContentPrice] = useState(500);
   const [brandContentTitle, setBrandContentTitle] = useState("");
 
-
+  // Initialize blockchain hook
+  const { timestampContent, isProcessing: isTimestamping } = useBlockchainTimestamp();
 
   const handleBlockchainToggle = (checked) => {
     setEnableBlockchainTimestamp(checked);
@@ -431,6 +432,21 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
 
     try {
       const newPost = await onSubmit(postData);
+
+      // If blockchain timestamp was requested, trigger real Phantom transaction
+      if (enableBlockchainTimestamp && newPost?.id && newPost?.content_hash) {
+        try {
+          const result = await timestampContent(newPost.content_hash, newPost.id);
+          if (result.success) {
+            setErrorMessage('✓ Post created and timestamped on blockchain!');
+            setTimeout(() => setErrorMessage(null), 4000);
+          }
+        } catch (timestampError) {
+          console.error('Blockchain timestamp error:', timestampError);
+          setErrorMessage('Post created, but timestamp cancelled or failed.');
+          setTimeout(() => setErrorMessage(null), 5000);
+        }
+      }
 
       setContent("");
       setMediaFiles([]);
@@ -1147,13 +1163,14 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
               enableBrandContent && !brandContentTitle.trim() ||
               isSubmitting ||
               isUploading ||
+              isTimestamping ||
               !!tagError
               }
               className="bg-gradient-to-r from-purple-600 to-pink-500 neon-glow hover:from-purple-700 hover:to-pink-600 text-white w-full md:w-auto">
-              {isSubmitting ?
+              {isSubmitting || isTimestamping ?
               <div className="flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin text-white" />
-                  <span className="text-white">Broadcasting...</span>
+                  <span className="text-white">{isTimestamping ? 'Approve in Phantom...' : 'Broadcasting...'}</span>
                 </div> :
               isUploading ?
               <div className="flex items-center gap-2">
