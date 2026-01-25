@@ -14,20 +14,21 @@ export function useBlockchainTimestamp() {
     setError(null);
 
     try {
-      console.log('🔐 Starting timestamp process...');
-      console.log('Initial wallet state:', { connected: wallet.connected, hasPublicKey: !!wallet.publicKey });
+      console.log('🔐 [useBlockchainTimestamp] Starting timestamp process...');
+      console.log('🔐 [useBlockchainTimestamp] Content hash:', contentHash, 'Post ID:', postId);
+      console.log('🔐 [useBlockchainTimestamp] Initial wallet state:', { connected: wallet.connected, hasPublicKey: !!wallet.publicKey });
 
       // Ensure wallet is connected – if not, prompt user now
       if (!wallet.connected || !wallet.publicKey) {
-        console.log('Wallet not connected, triggering connect()...');
+        console.log('🔐 [useBlockchainTimestamp] Wallet not connected, triggering connect()...');
         try {
           await wallet.connect();
-          console.log('Connect() completed, waiting for state update...');
+          console.log('🔐 [useBlockchainTimestamp] Connect() completed, waiting for state update...');
           // After connect(), wait for wallet state to propagate
           await new Promise(resolve => setTimeout(resolve, 1000));
-          console.log('After wait, wallet state:', { connected: wallet.connected, hasPublicKey: !!wallet.publicKey });
+          console.log('🔐 [useBlockchainTimestamp] After wait, wallet state:', { connected: wallet.connected, hasPublicKey: !!wallet.publicKey });
         } catch (err) {
-          console.error('Connect failed:', err);
+          console.error('🔐 [useBlockchainTimestamp] Connect failed:', err);
           setIsProcessing(false);
           throw new Error('User cancelled wallet connection or connection failed.');
         }
@@ -35,17 +36,18 @@ export function useBlockchainTimestamp() {
 
       // Re-check publicKey after connection attempt
       if (!wallet.publicKey) {
-        console.error('No publicKey available after connection attempt');
+        console.error('🔐 [useBlockchainTimestamp] No publicKey available after connection attempt');
         setIsProcessing(false);
         throw new Error('Wallet connection did not provide a public key.');
       }
 
-      console.log('✅ Wallet ready, creating transaction for:', wallet.publicKey.toBase58());
+      console.log('✅ [useBlockchainTimestamp] Wallet ready, creating transaction for:', wallet.publicKey.toBase58());
 
-      // Create memo data
-      const memoData = `EQOFLOW:${contentHash}:${postId || 'content'}:${Date.now()}`;
+      // Create memo data with content hash
+      const memoData = `EQOFLOW:${contentHash}:${postId}:${Date.now()}`;
       
       // Get recent blockhash
+      console.log('🔐 [useBlockchainTimestamp] Getting recent blockhash...');
       const { blockhash } = await connection.getLatestBlockhash('confirmed');
       
       // Create transaction with memo instruction
@@ -62,35 +64,41 @@ export function useBlockchainTimestamp() {
       });
       transaction.add(memoInstruction);
 
-      console.log('📤 Sending transaction to wallet for approval...');
-      console.log('Transaction details:', {
+      console.log('📤 [useBlockchainTimestamp] Sending transaction to Phantom for approval...');
+      console.log('📤 [useBlockchainTimestamp] Transaction details:', {
         feePayer: transaction.feePayer.toBase58(),
         recentBlockhash: transaction.recentBlockhash,
-        instructions: transaction.instructions.length
+        instructions: transaction.instructions.length,
+        memoData: memoData.substring(0, 50) + '...'
       });
 
-      // Send transaction and wait for signature - this should trigger Phantom popup
+      // THIS IS THE CRITICAL CALL - sends transaction to Phantom for user approval
       const signature = await wallet.sendTransaction(transaction, connection, {
         skipPreflight: false,
         maxRetries: 3,
       });
 
-      console.log('✅ Transaction approved! Signature:', signature);
+      console.log('✅ [useBlockchainTimestamp] Transaction approved by user! Signature:', signature);
 
-      // Wait for confirmation
+      // Wait for confirmation on blockchain
+      console.log('⏳ [useBlockchainTimestamp] Waiting for blockchain confirmation...');
       const confirmation = await connection.confirmTransaction(signature, 'confirmed');
       
       if (confirmation.value.err) {
+        console.error('❌ [useBlockchainTimestamp] Transaction failed on blockchain:', confirmation.value.err);
         throw new Error('Transaction failed on blockchain');
       }
 
-      console.log('Transaction confirmed on blockchain');
+      console.log('✅ [useBlockchainTimestamp] Transaction confirmed on blockchain');
 
-      // Call backend to deduct fee and update post
+      // Call backend to deduct $eqoflo fee and update post with signature
+      console.log('💰 [useBlockchainTimestamp] Calling backend to process fee and update post...');
       const response = await timestampOnBlockchain({
         blockchain_tx_id: signature,
         post_id: postId,
       });
+
+      console.log('✅ [useBlockchainTimestamp] Backend response:', response);
 
       if (!response.data?.success) {
         throw new Error(response.data?.error || 'Failed to process timestamp fee');
@@ -104,7 +112,7 @@ export function useBlockchainTimestamp() {
         new_balance: response.data.new_balance,
       };
     } catch (err) {
-      console.error('Blockchain timestamp error:', err);
+      console.error('❌ [useBlockchainTimestamp] Error:', err);
       setError(err.message || 'Failed to timestamp on blockchain');
       setIsProcessing(false);
       throw err;

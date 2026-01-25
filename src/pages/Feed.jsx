@@ -1273,19 +1273,14 @@ export default function Feed() {
               console.log('[Feed.js] Content provenance processed:', provenanceResponse.data);
               newPost.content_hash = provenanceResponse.data.content_hash;
 
-              // If blockchain timestamp is required, trigger Phantom wallet authorization
+              // If blockchain timestamp is required, signal CreatePost to trigger Phantom
               if (provenanceResponse.data.requires_phantom_auth && provenanceResponse.data.content_hash) {
-                console.log('[Feed.js] Triggering Phantom wallet for blockchain timestamp...');
+                console.log('[Feed.js] Backend verified balance. Signaling CreatePost to trigger Phantom...');
                 
-                // This will be handled by CreatePost component's timestampContent call
-                // Set a flag on the newPost so CreatePost knows to trigger Phantom
+                // Set flag so CreatePost component knows to trigger Phantom transaction
                 newPost._requires_blockchain_timestamp = true;
-              } else if (provenanceResponse.data.blockchain_tx_id) {
-                // Backend already handled timestamp (shouldn't happen anymore)
-                newPost.blockchain_tx_id = provenanceResponse.data.blockchain_tx_id;
-                setErrorMessage("✓ Post created and timestamped on blockchain!");
-                setTimeout(() => setErrorMessage(null), 5000);
-              } else {
+                newPost.content_hash = provenanceResponse.data.content_hash;
+              } else if (!provenanceResponse.data.blockchain_timestamp_enabled) {
                 setErrorMessage("✓ Post created with content hash!");
                 setTimeout(() => setErrorMessage(null), 3000);
               }

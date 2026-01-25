@@ -61,7 +61,6 @@ Deno.serve(async (req) => {
     console.log('[processPostCreation] Post updated successfully');
 
     // If blockchain timestamp requested, verify balance and signal client to trigger Phantom
-    let requiresPhantomAuth = false;
     const EQOFLO_FEE = 3;
     
     if (enable_blockchain_timestamp) {
@@ -77,14 +76,20 @@ Deno.serve(async (req) => {
         }, { status: 402 });
       }
       
-      requiresPhantomAuth = true;
+      console.log('[processPostCreation] Balance sufficient. Signaling client to trigger Phantom...');
+      return Response.json({
+        success: true,
+        content_hash: contentHash,
+        blockchain_timestamp_enabled: true,
+        requires_phantom_auth: true
+      });
     }
 
     return Response.json({
       success: true,
       content_hash: contentHash,
-      blockchain_timestamp_enabled: enable_blockchain_timestamp,
-      requires_phantom_auth: requiresPhantomAuth
+      blockchain_timestamp_enabled: false,
+      requires_phantom_auth: false
     });
 
   } catch (error) {
