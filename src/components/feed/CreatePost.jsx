@@ -432,21 +432,28 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
 
     try {
       const newPost = await onSubmit(postData);
+      console.log('[CreatePost] Post created, newPost:', newPost);
 
       // Check if post requires blockchain timestamping via Phantom
       if (newPost?._requires_blockchain_timestamp && newPost?.content_hash) {
-        console.log('[CreatePost] Post requires Phantom authorization for timestamp');
+        console.log('[CreatePost] 🔐 Post requires Phantom authorization for timestamp');
+        console.log('[CreatePost] 🔐 Calling timestampContent with hash:', newPost.content_hash, 'postId:', newPost.id);
         try {
           const result = await timestampContent(newPost.content_hash, newPost.id);
+          console.log('[CreatePost] ✅ Timestamp result:', result);
           if (result.success) {
             setErrorMessage('✓ Post timestamped on blockchain! 3 $eqoflo deducted.');
             setTimeout(() => setErrorMessage(null), 4000);
           }
         } catch (timestampError) {
-          console.error('Blockchain timestamp error:', timestampError);
+          console.error('[CreatePost] ❌ Blockchain timestamp error:', timestampError);
           setErrorMessage('Post created, but timestamp cancelled or failed.');
           setTimeout(() => setErrorMessage(null), 5000);
         }
+      } else if (enableBlockchainTimestamp) {
+        console.log('[CreatePost] ⚠️ Blockchain timestamp enabled but flag not set on newPost');
+        console.log('[CreatePost] ⚠️ newPost._requires_blockchain_timestamp:', newPost?._requires_blockchain_timestamp);
+        console.log('[CreatePost] ⚠️ newPost.content_hash:', newPost?.content_hash);
       }
 
       setContent("");
