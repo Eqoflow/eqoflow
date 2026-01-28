@@ -2240,15 +2240,6 @@ export default function Feed() {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-8">
             <div className="lg:col-span-3 space-y-4 md:space-y-6 order-1">
               {user &&
-            <TrendingCommunitiesSlider
-              user={user}
-              onUserUpdate={handleUserUpdate}
-              showSlider={showTrendingCommunities}
-              setShowSlider={setShowTrendingCommunities} />
-
-            }
-
-              {user &&
             <div className="flex justify-center my-4">
                   <Button
                 onClick={() => setShowCreatePostModal(true)} className="bg-slate-950 text-white px-6 py-3 text-sm font-medium rounded-lg inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-primary/90 h-10 from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 shadow-lg hover:shadow-blue-500/50 transition-shadow duration-300">
@@ -2370,6 +2361,12 @@ export default function Feed() {
                         </div>
                       </CardContent>
                     </Card>
+
+                    <TrendingCommunitiesSlider
+                      user={user}
+                      onUserUpdate={handleUserUpdate}
+                      showSlider={showTrendingCommunities}
+                      setShowSlider={setShowTrendingCommunities} />
 
                     <TrendingTopics />
                   </>
