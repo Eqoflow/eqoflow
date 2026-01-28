@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { getTrendingCommunities } from '@/functions/getTrendingCommunities';
 import { Link } from 'react-router-dom';
@@ -6,6 +5,8 @@ import { createPageUrl } from '@/utils';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { motion } from 'framer-motion';
 import { Zap, Users, Settings, Flame, Heart, Plus } from 'lucide-react';
 import ManageInterestsModal from './ManageInterestsModal';
@@ -203,13 +204,16 @@ export default function TrendingCommunitiesSlider({ user, onUserUpdate, showSlid
             <Flame className="w-6 h-6 text-purple-400" />
             Trending Communities
           </h2>
-          <Button
-            variant="link"
-            className="text-red-500 hover:text-red-400 text-xs h-auto p-1 ml-2"
-            onClick={() => setShowSlider(!showSlider)}
-          >
-            {showSlider ? 'Hide Communities' : 'Show Communities'}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Switch
+              id="toggle-communities"
+              checked={showSlider}
+              onCheckedChange={setShowSlider}
+            />
+            <Label htmlFor="toggle-communities" className="text-xs text-gray-400 cursor-pointer">
+              {showSlider ? 'Hide' : 'Show'}
+            </Label>
+          </div>
         </div>
         {!isLoading && !shouldShowUpdateMessage && showSlider && (
           <Button
