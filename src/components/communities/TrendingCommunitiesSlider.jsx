@@ -198,6 +198,19 @@ export default function TrendingCommunitiesSlider({ user, onUserUpdate, showSlid
         />
       )}
       
+      {!isLoading && !shouldShowUpdateMessage && showSlider && (
+        <div className="flex justify-end mb-2">
+          <Button
+            variant="outline"
+            className="border-purple-500/30 text-white hover:bg-purple-500/10"
+            onClick={() => setShowInterestsModal(true)}
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Manage Interests
+          </Button>
+        </div>
+      )}
+      
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-bold text-white flex items-center gap-2">
@@ -215,16 +228,6 @@ export default function TrendingCommunitiesSlider({ user, onUserUpdate, showSlid
             </Label>
           </div>
         </div>
-        {!isLoading && !shouldShowUpdateMessage && showSlider && (
-          <Button
-            variant="outline"
-            className="border-purple-500/30 text-white hover:bg-purple-500/10"
-            onClick={() => setShowInterestsModal(true)}
-          >
-            <Settings className="w-4 h-4 mr-2" />
-            Manage Interests
-          </Button>
-        )}
       </div>
 
       {/* Show content based on showSlider prop */}
