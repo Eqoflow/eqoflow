@@ -2250,34 +2250,6 @@ export default function Feed() {
                 </div>
             }
 
-              {user?.algorithm_preferences && Object.keys(user.algorithm_preferences).length > 0 ?
-            <div className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-black/20 rounded-xl border border-purple-500/20 gap-3">
-                  <div className="flex items-center gap-3">
-                    <Filter className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                    <span className="text-white text-sm">
-                      Sorted by: <span className="font-medium text-purple-400">
-                        {user.algorithm_preferences.primary_algorithm?.replace('_', ' ') || 'Personalized'}
-                      </span>
-                    </span>
-                  </div>
-                  <Badge variant="outline" className="border-purple-500/30 text-purple-400 text-xs w-fit">
-                    Custom Algorithm Active
-                  </Badge>
-                </div> :
-
-            <div className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-black/20 rounded-xl border border-purple-500/20 gap-3">
-                  <div className="flex items-center gap-3">
-                    <Sparkles className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                    <span className="text-white text-sm">
-                      Sorted by: <span className="font-medium text-purple-400">Latest</span>
-                    </span>
-                  </div>
-                  <Badge variant="outline" className="border-purple-500/30 text-purple-400 text-xs w-fit">
-                    Default Algorithm Active
-                  </Badge>
-                </div>
-            }
-
               <AnimatePresence>
                 {filteredPosts.map((item, index) => {
                 const isPollItem = !!item.question;
@@ -2338,6 +2310,34 @@ export default function Feed() {
                       <Settings className="w-4 h-4 md:w-5 md:h-5 mr-2 md:mr-3" />
                       Customize Feed
                     </Button>
+
+                    {user?.algorithm_preferences && Object.keys(user.algorithm_preferences).length > 0 ?
+                    <div className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-black/20 rounded-xl border border-purple-500/20 gap-3">
+                      <div className="flex items-center gap-3">
+                        <Filter className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                        <span className="text-white text-sm">
+                          Sorted by: <span className="font-medium text-purple-400">
+                            {user.algorithm_preferences.primary_algorithm?.replace('_', ' ') || 'Personalized'}
+                          </span>
+                        </span>
+                      </div>
+                      <Badge variant="outline" className="border-purple-500/30 text-purple-400 text-xs w-fit">
+                        Custom Algorithm Active
+                      </Badge>
+                    </div> :
+
+                    <div className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-black/20 rounded-xl border border-purple-500/20 gap-3">
+                      <div className="flex items-center gap-3">
+                        <Sparkles className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                        <span className="text-white text-sm">
+                          Sorted by: <span className="font-medium text-purple-400">Latest</span>
+                        </span>
+                      </div>
+                      <Badge variant="outline" className="border-purple-500/30 text-purple-400 text-xs w-fit">
+                        Default Algorithm Active
+                      </Badge>
+                    </div>
+                    }
 
                     <Card className="dark-card">
                       <CardHeader className="bg-[#000000] pb-3 p-6 flex flex-col space-y-1.5 md:pb-4">
