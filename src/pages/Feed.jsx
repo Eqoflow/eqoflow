@@ -2166,6 +2166,15 @@ export default function Feed() {
                 {user &&
               <div className="flex items-center gap-2">
                     <Button
+                      onClick={refreshFeed}
+                      variant="outline"
+                      className="border-purple-500/30 text-white hover:bg-purple-500/10 px-3 py-2"
+                      size="sm"
+                    >
+                      <RefreshCw className="w-4 h-4 mr-1" />
+                      <span className="hidden sm:inline">Refresh</span>
+                    </Button>
+                    <Button
                       onClick={() => navigate(createPageUrl('OrbitalFeed'))}
                       variant="outline"
                       className="border-purple-500/30 text-white hover:bg-purple-500/10 px-3 py-2"
