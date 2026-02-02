@@ -1286,7 +1286,7 @@ export default function Feed() {
               });
 
               if (!provenanceResponse.data.blockchain_timestamp_enabled) {
-                setErrorMessage("✓ Post created with content hash!");
+                setErrorMessage("✓ Echo created with content hash!");
                 setTimeout(() => setErrorMessage(null), 3000);
               }
             }
@@ -2061,9 +2061,9 @@ export default function Feed() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -50 }}
           className="fixed top-4 left-4 right-4 z-50 mx-auto max-w-2xl">
-            <div className="bg-red-600/20 border border-red-500/30 rounded-xl p-4 backdrop-blur-sm">
+            <div className={errorMessage.startsWith('✓') ? "bg-green-600/20 border border-green-500/30 rounded-xl p-4 backdrop-blur-sm" : "bg-red-600/20 border border-red-500/30 rounded-xl p-4 backdrop-blur-sm"}>
               <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse mt-2 flex-shrink-0"></div>
+                <div className={errorMessage.startsWith('✓') ? "w-2 h-2 bg-green-400 rounded-full animate-pulse mt-2 flex-shrink-0" : "w-2 h-2 bg-red-400 rounded-full animate-pulse mt-2 flex-shrink-0"}></div>
                 <div className="flex-1">
                   <p className="text-white font-medium text-sm leading-relaxed">
                     {errorMessage}
@@ -2073,7 +2073,7 @@ export default function Feed() {
                 onClick={() => setErrorMessage(null)}
                 variant="ghost"
                 size="sm"
-                className="text-red-300 hover:text-white p-1">
+                className={errorMessage.startsWith('✓') ? "text-green-300 hover:text-white p-1" : "text-red-300 hover:text-white p-1"}>
                   <X className="w-4 h-4" />
                 </Button>
               </div>
