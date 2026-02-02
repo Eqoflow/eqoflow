@@ -92,6 +92,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   // Content License state
   const [selectedLicenseIds, setSelectedLicenseIds] = useState([]);
   const [availableLicenses, setAvailableLicenses] = useState([]);
+  const [showAllLicenses, setShowAllLicenses] = useState(false);
   const [enableBlockchainTimestamp, setEnableBlockchainTimestamp] = useState(false);
 
   // $eqoflo Gated Content state
@@ -865,7 +866,8 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
                 <span className="text-xs text-gray-400">(select one or more)</span>
               </div>
               <div className="space-y-2 bg-black/20 border border-purple-500/20 rounded-lg p-3">
-                {availableLicenses.map((license) =>
+                {/* First License - Always Visible */}
+                {availableLicenses.slice(0, 1).map((license) =>
                   <label key={license.id} className="flex items-start gap-3 cursor-pointer p-2 hover:bg-purple-500/10 rounded transition-colors">
                     <input
                       type="checkbox"
@@ -888,6 +890,50 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
                     </div>
                   </label>
                 )}
+
+                {/* Remaining Licenses - Collapsible */}
+                <AnimatePresence>
+                  {showAllLicenses && availableLicenses.slice(1).map((license) =>
+                    <motion.label
+                      key={license.id}
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="flex items-start gap-3 cursor-pointer p-2 hover:bg-purple-500/10 rounded transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={selectedLicenseIds.includes(license.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedLicenseIds([...selectedLicenseIds, license.id]);
+                          } else {
+                            setSelectedLicenseIds(selectedLicenseIds.filter(id => id !== license.id));
+                          }
+                        }}
+                        className="mt-1 w-4 h-4 cursor-pointer"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-white text-sm">{license.name}</span>
+                          <span className="text-xs text-gray-400">({license.short_code})</span>
+                        </div>
+                        <p className="text-xs text-gray-400 mt-1">{license.description}</p>
+                      </div>
+                    </motion.label>
+                  )}
+                </AnimatePresence>
+
+                {/* Show More/Less Button */}
+                {availableLicenses.length > 1 &&
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowAllLicenses(!showAllLicenses)}
+                    className="w-full text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 mt-2">
+                    {showAllLicenses ? 'Show Less' : `Show ${availableLicenses.length - 1} More`}
+                  </Button>
+                }
               </div>
             </div>
           }
