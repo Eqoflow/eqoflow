@@ -34,57 +34,8 @@ export default function ScheduledPostsTab({ user }) {
   const loadScheduledPosts = async () => {
     try {
       setIsLoading(true);
-      
-      // First publish any due posts
-      const allScheduled = await base44.entities.ScheduledPost.filter({ created_by: user.email, status: 'scheduled' });
-      const now = new Date();
-      
-      for (const scheduledPost of allScheduled) {
-        const scheduledDate = new Date(scheduledPost.scheduled_date);
-        if (scheduledDate <= now) {
-          try {
-            const postData = {
-              content: scheduledPost.content,
-              media_urls: scheduledPost.media_urls || [],
-              tags: scheduledPost.tags || [],
-              privacy_level: scheduledPost.privacy_level || "public",
-              nft_gate_settings: scheduledPost.nft_gate_settings || null,
-              community_id: scheduledPost.community_id || null,
-              share_to_main_feed: scheduledPost.share_to_main_feed || false,
-              youtube_video_id: scheduledPost.youtube_video_id || null,
-              youtube_thumbnail_url: scheduledPost.youtube_thumbnail_url || null,
-              youtube_video_title: scheduledPost.youtube_video_title || null,
-              license_id: scheduledPost.license_id || null,
-              eqoflo_price: scheduledPost.eqoflo_price || null,
-              gated_content_title: scheduledPost.gated_content_title || null,
-              brand_content_price: scheduledPost.brand_content_price || null,
-              brand_content_title: scheduledPost.brand_content_title || null,
-              post_to_x: scheduledPost.post_to_x || false,
-              moderation_status: 'approved',
-              author_full_name: user.full_name || user.email.split('@')[0],
-              author_username: user.username || user.email.split('@')[0],
-              author_avatar_url: user.avatar_url || null,
-              author_banner_url: user.banner_url || null,
-              author_follower_count: user.followers?.length || 0,
-              author_professional_credentials: user.professional_credentials || null,
-              author_cross_platform_identity: user.cross_platform_identity || null
-            };
-
-            const createdPost = await base44.entities.Post.create(postData);
-            await base44.entities.ScheduledPost.update(scheduledPost.id, {
-              status: "published",
-              published_post_id: createdPost.id
-            });
-          } catch (error) {
-            console.error(`Failed to publish scheduled post ${scheduledPost.id}:`, error);
-            await base44.entities.ScheduledPost.update(scheduledPost.id, { status: "failed" }).catch(err => console.error(err));
-          }
-        }
-      }
-      
-      // Then load all posts for display
       const posts = await base44.entities.ScheduledPost.filter(
-        { created_by: user.email },
+        { created_by: user.email, status: "scheduled" },
         "scheduled_date"
       );
       setScheduledPosts(posts);

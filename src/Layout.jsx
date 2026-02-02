@@ -10,6 +10,7 @@ import { getAdminActionCounts } from "@/functions/getAdminActionCounts";
 import { processReferral } from "@/functions/processReferral";
 import { AnimatePresence, motion } from "framer-motion";
 import SolanaWalletProvider from './components/blockchain/SolanaWalletProvider';
+import ScheduledPostProcessor from './components/scheduling/ScheduledPostProcessor';
 
 // Simple className utility function to replace clsx/twMerge
 function cn(...classes) {
@@ -762,6 +763,7 @@ export default function Layout({ children, currentPageName }) {
     return (
       <UserContext.Provider value={userContextValue}>
         <NotificationProvider>
+          <ScheduledPostProcessor />
           <TooltipProvider>
             <style>
               {`
