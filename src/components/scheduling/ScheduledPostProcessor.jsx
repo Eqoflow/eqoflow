@@ -8,15 +8,10 @@ export default function ScheduledPostProcessor() {
         const scheduledPosts = await base44.entities.ScheduledPost.filter({ status: 'scheduled' });
         const now = new Date();
 
-        console.log(`[ScheduledPostProcessor] Checking ${scheduledPosts.length} scheduled posts at ${now.toISOString()}`);
-
         for (const scheduledPost of scheduledPosts) {
           const scheduledDate = new Date(scheduledPost.scheduled_date);
-          const timeDiff = scheduledDate.getTime() - now.getTime();
           
-          console.log(`[ScheduledPostProcessor] Post ${scheduledPost.id}: scheduled for ${scheduledDate.toISOString()}, current time ${now.toISOString()}, diff: ${timeDiff}ms`);
-          
-          if (scheduledDate <= now) {
+          if (scheduledDate.getTime() <= now.getTime()) {
             try {
               const userRecords = await base44.entities.User.filter({ email: scheduledPost.created_by });
               const user = userRecords.length > 0 ? userRecords[0] : null;
@@ -51,30 +46,21 @@ export default function ScheduledPostProcessor() {
                 postData.author_cross_platform_identity = user.cross_platform_identity || null;
               }
 
-              const createdPost = await base44.entities.Post.create(postData);
+              await base44.entities.Post.create(postData);
               await base44.entities.ScheduledPost.update(scheduledPost.id, {
                 status: "published",
-                published_post_id: createdPost.id
+                published_post_id: scheduledPost.id
               });
-
-              console.log(`Published scheduled post ${scheduledPost.id} at ${now.toISOString()}`);
-            } catch (error) {
-              console.error(`Failed to publish scheduled post ${scheduledPost.id}:`, error);
-              await base44.entities.ScheduledPost.update(scheduledPost.id, { status: "failed" }).catch(err => console.error(err));
+            } catch {
+              await base44.entities.ScheduledPost.update(scheduledPost.id, { status: "failed" }).catch(() => {});
             }
           }
         }
-      } catch (error) {
-        console.error('Error processing scheduled posts:', error);
-      }
+      } catch {}
     };
 
-    // Check immediately on mount
     processScheduledPosts();
-
-    // Then check every minute
-    const interval = setInterval(processScheduledPosts, 60000);
-
+    const interval = setInterval(processScheduledPosts, 30000);
     return () => clearInterval(interval);
   }, []);
 
