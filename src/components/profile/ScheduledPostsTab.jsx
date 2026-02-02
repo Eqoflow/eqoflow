@@ -218,7 +218,9 @@ export default function ScheduledPostsTab({ user }) {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-white">
-                  {format(selectedDate, "MMMM d, yyyy")}
+                  {selectedDate && !isNaN(selectedDate.getTime()) 
+                    ? format(selectedDate, "MMMM d, yyyy")
+                    : "Select a date"}
                 </h3>
                 <Button
                   onClick={() => {
@@ -246,7 +248,9 @@ export default function ScheduledPostsTab({ user }) {
                           <div className="flex items-center gap-2">
                             <Clock className="w-4 h-4 text-purple-400" />
                             <span className="text-sm font-medium text-white">
-                              {format(new Date(post.scheduled_date), "h:mm a")}
+                              {post.scheduled_date && !isNaN(new Date(post.scheduled_date).getTime()) 
+                                ? format(new Date(post.scheduled_date), "h:mm a")
+                                : "Invalid time"}
                             </span>
                             <Badge className="bg-purple-600/20 text-purple-400 border-purple-500/30 text-xs">
                               {post.status}
@@ -382,7 +386,11 @@ export default function ScheduledPostsTab({ user }) {
                       <label className="text-sm text-gray-400 block mb-2">Scheduled Date</label>
                       <div className="flex items-center gap-2 text-white">
                         <CalendarIcon className="w-4 h-4 text-purple-400" />
-                        <span>{format(selectedDate, "MMMM d, yyyy")}</span>
+                        <span>
+                          {selectedDate && !isNaN(selectedDate.getTime()) 
+                            ? format(selectedDate, "MMMM d, yyyy")
+                            : "No date selected"}
+                        </span>
                       </div>
                     </div>
                     <div>
