@@ -448,7 +448,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
           console.log('[CreatePost] ✅ Timestamp successful! Result:', result);
 
           if (result.success) {
-            setErrorMessage('✓ Post timestamped on blockchain! 3 $eqoflo deducted.');
+            setErrorMessage('✓ Echo timestamped on blockchain! 3 $eqoflo deducted.');
             setTimeout(() => setErrorMessage(null), 4000);
           }
         } catch (timestampError) {
@@ -456,9 +456,9 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
 
           // Show specific error message if no wallet selected
           if (timestampError.message?.includes('No wallet selected')) {
-            setErrorMessage('Post created. Please connect your Phantom wallet using the wallet button, then try timestamping again.');
+            setErrorMessage('Echo created. Please connect your Phantom wallet using the wallet button, then try timestamping again.');
           } else {
-            setErrorMessage('Post created, but timestamp was cancelled or failed.');
+            setErrorMessage('Echo created, but timestamp was cancelled or failed.');
           }
           setTimeout(() => setErrorMessage(null), 6000);
         }
@@ -559,8 +559,8 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
           className="mx-4 mt-4 flex-shrink-0">
-            <div className="bg-red-600/20 border border-red-500/30 rounded-lg p-3">
-              <p className="text-red-300 text-sm">{errorMessage}</p>
+            <div className={errorMessage.startsWith('✓') ? "bg-green-600/20 border border-green-500/30 rounded-lg p-3" : "bg-red-600/20 border border-red-500/30 rounded-lg p-3"}>
+              <p className={errorMessage.startsWith('✓') ? "text-green-300 text-sm" : "text-red-300 text-sm"}>{errorMessage}</p>
             </div>
           </motion.div>
         }
