@@ -380,7 +380,7 @@ export default function ScheduledPostsTab({ user }) {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="w-full max-w-2xl max-h-[90vh] overflow-y-auto pb-6"
+              className="w-full max-w-2xl max-h-[90vh] overflow-y-auto pb-6 pr-2"
               onClick={(e) => e.stopPropagation()}
             >
               <Card className="dark-card">
