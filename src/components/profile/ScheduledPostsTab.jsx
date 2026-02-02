@@ -99,16 +99,23 @@ export default function ScheduledPostsTab({ user }) {
 
   const handleEditScheduled = (post) => {
     setEditingScheduledPost(post);
-    setSelectedDate(new Date(post.scheduled_date));
-    const time = format(new Date(post.scheduled_date), "HH:mm");
-    setSelectedTime(time);
+    if (post.scheduled_date) {
+      const schedDate = new Date(post.scheduled_date);
+      if (!isNaN(schedDate.getTime())) {
+        setSelectedDate(schedDate);
+        setSelectedTime(format(schedDate, "HH:mm"));
+      }
+    }
     setShowCreateModal(true);
   };
 
   const getPostsForDate = (date) => {
-    return scheduledPosts.filter(post => 
-      isSameDay(new Date(post.scheduled_date), date)
-    );
+    return scheduledPosts.filter(post => {
+      if (!post.scheduled_date) return false;
+      const postDate = new Date(post.scheduled_date);
+      if (isNaN(postDate.getTime())) return false;
+      return isSameDay(postDate, date);
+    });
   };
 
   const hasPostsOnDate = (date) => {
