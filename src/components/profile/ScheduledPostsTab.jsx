@@ -16,11 +16,19 @@ export default function ScheduledPostsTab({ user }) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedTime, setSelectedTime] = useState("12:00");
   const [editingScheduledPost, setEditingScheduledPost] = useState(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   const maxDate = addYears(new Date(), 3);
 
   useEffect(() => {
     loadScheduledPosts();
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
   }, []);
 
   const loadScheduledPosts = async () => {
@@ -391,6 +399,13 @@ export default function ScheduledPostsTab({ user }) {
                             ? format(selectedDate, "MMMM d, yyyy")
                             : "No date selected"}
                         </span>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm text-gray-400 block mb-2">Current Time</label>
+                      <div className="flex items-center gap-2 text-green-400 font-mono">
+                        <Clock className="w-4 h-4" />
+                        <span>{format(currentTime, "h:mm:ss a")}</span>
                       </div>
                     </div>
                     <div>
