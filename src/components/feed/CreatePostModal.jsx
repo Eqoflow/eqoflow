@@ -9,17 +9,14 @@ export default function CreatePostModal({ isOpen, onClose, onSubmit, user, commu
 
   const handleInnerSubmit = async (postData) => {
     try {
+      // Close modal immediately when user clicks broadcast
+      onClose();
       const result = await onSubmit(postData);
-      // Don't close modal yet if blockchain timestamp is pending
-      if (!result?.requires_phantom_auth) {
-        onClose();
-      }
       return result; // Return enriched post data back to CreatePost
     } catch (error) {
       // The error is already handled and displayed within the CreatePost component
-      // or the Feed page's global error handler. We keep the modal open
-      // so the user doesn't lose their draft and can retry.
-      console.error("Submission failed, keeping modal open:", error);
+      // or the Feed page's global error handler.
+      console.error("Submission failed:", error);
       throw error;
     }
   };
