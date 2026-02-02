@@ -134,6 +134,43 @@ export default function ScheduledPostsTab({ user }) {
             {/* Calendar View */}
             <div className="space-y-4">
               <div className="bg-black/20 border border-purple-500/20 rounded-lg p-4">
+                <style>{`
+                  .rdp {
+                    --rdp-cell-size: 40px;
+                    --rdp-accent-color: #8b5cf6;
+                    --rdp-background-color: rgba(139, 92, 246, 0.1);
+                  }
+                  .rdp-day {
+                    color: white !important;
+                  }
+                  .rdp-day_selected {
+                    background-color: #8b5cf6 !important;
+                    color: white !important;
+                  }
+                  .rdp-day:hover {
+                    background-color: rgba(139, 92, 246, 0.2) !important;
+                  }
+                  .rdp-head_cell {
+                    color: rgba(255, 255, 255, 0.7) !important;
+                    font-weight: 600;
+                  }
+                  .rdp-caption_label {
+                    color: white !important;
+                    font-weight: 600;
+                  }
+                  .rdp-nav_button {
+                    color: white !important;
+                  }
+                  .rdp-nav_button:hover {
+                    background-color: rgba(139, 92, 246, 0.2) !important;
+                  }
+                  .rdp-day_outside {
+                    color: rgba(255, 255, 255, 0.3) !important;
+                  }
+                  .rdp-day_disabled {
+                    color: rgba(255, 255, 255, 0.2) !important;
+                  }
+                `}</style>
                 <Calendar
                   mode="single"
                   selected={selectedDate}
@@ -148,7 +185,8 @@ export default function ScheduledPostsTab({ user }) {
                     hasPost: {
                       backgroundColor: 'rgba(139, 92, 246, 0.3)',
                       fontWeight: 'bold',
-                      border: '2px solid #8b5cf6'
+                      border: '2px solid #8b5cf6',
+                      color: 'white'
                     }
                   }}
                 />
