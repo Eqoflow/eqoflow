@@ -428,6 +428,7 @@ export default function ScheduledPostsTab({ user }) {
                   />
                 </CardContent>
               </Card>
+              </div>
             </motion.div>
           </motion.div>
         )}
