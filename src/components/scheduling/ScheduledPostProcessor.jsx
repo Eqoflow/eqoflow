@@ -8,8 +8,14 @@ export default function ScheduledPostProcessor() {
         const scheduledPosts = await base44.entities.ScheduledPost.filter({ status: 'scheduled' });
         const now = new Date();
 
+        console.log(`[ScheduledPostProcessor] Checking ${scheduledPosts.length} scheduled posts at ${now.toISOString()}`);
+
         for (const scheduledPost of scheduledPosts) {
           const scheduledDate = new Date(scheduledPost.scheduled_date);
+          const timeDiff = scheduledDate.getTime() - now.getTime();
+          
+          console.log(`[ScheduledPostProcessor] Post ${scheduledPost.id}: scheduled for ${scheduledDate.toISOString()}, current time ${now.toISOString()}, diff: ${timeDiff}ms`);
+          
           if (scheduledDate <= now) {
             try {
               const userRecords = await base44.entities.User.filter({ email: scheduledPost.created_by });
