@@ -930,7 +930,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
                     variant="ghost"
                     size="sm"
                     onClick={() => setShowAllLicenses(!showAllLicenses)}
-                    className="w-full text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 mt-2">
+                    className="w-full text-white hover:text-white hover:bg-purple-500/10 mt-2">
                     {showAllLicenses ? 'Show Less' : `Show ${availableLicenses.length - 1} More`}
                   </Button>
                 }
