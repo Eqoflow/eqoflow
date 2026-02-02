@@ -58,9 +58,16 @@ export default function PublicProfile() {
     try {
       setIsLoading(true);
       
-      const users = await base44.entities.PublicUserDirectory.filter({ username });
+      if (!username || username.trim() === '') {
+        console.error('Invalid username provided');
+        setProfileUser(null);
+        return;
+      }
+      
+      const users = await base44.entities.PublicUserDirectory.filter({ username: username.trim() });
       
       if (users.length === 0) {
+        console.log('No user found with username:', username);
         setProfileUser(null);
         return;
       }

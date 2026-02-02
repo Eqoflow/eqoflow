@@ -60,8 +60,10 @@ export default function Discovery() {
     try {
       setIsLoading(true);
       const publicUsers = await base44.entities.PublicUserDirectory.filter({ is_public: true });
-      setUsers(publicUsers);
-      setFilteredUsers(publicUsers);
+      // Filter out users without valid usernames
+      const validUsers = publicUsers.filter(user => user.username && user.username.trim() !== '');
+      setUsers(validUsers);
+      setFilteredUsers(validUsers);
     } catch (error) {
       console.error("Error loading users:", error);
       setUsers([]);
@@ -448,8 +450,8 @@ export default function Discovery() {
       const dx = x - bubble.x;
       const dy = y - bubble.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
-      if (distance < bubble.radius) {
-        window.location.href = createPageUrl('PublicProfile') + `?username=${bubble.user.username}`;
+      if (distance < bubble.radius && bubble.user.username) {
+        window.location.href = createPageUrl('PublicProfile') + `?username=${encodeURIComponent(bubble.user.username)}`;
       }
     });
   };
@@ -794,12 +796,14 @@ export default function Discovery() {
                       }
                         </Button>
                     }
-                      <Link to={createPageUrl('PublicProfile') + `?username=${hoveredBubble.user.username}`} className="flex-1">
-                        <Button variant="outline" className="w-full border-purple-500/30 text-white hover:bg-purple-500/10">
-                          <ExternalLink className="w-4 h-4 mr-2" />
-                          View Profile
-                        </Button>
-                      </Link>
+                      {hoveredBubble.user.username && (
+                        <Link to={createPageUrl('PublicProfile') + `?username=${encodeURIComponent(hoveredBubble.user.username)}`} className="flex-1">
+                          <Button variant="outline" className="w-full border-purple-500/30 text-white hover:bg-purple-500/10">
+                            <ExternalLink className="w-4 h-4 mr-2" />
+                            View Profile
+                          </Button>
+                        </Link>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
