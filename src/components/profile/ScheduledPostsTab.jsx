@@ -140,34 +140,44 @@ export default function ScheduledPostsTab({ user }) {
                     --rdp-accent-color: #8b5cf6;
                     --rdp-background-color: rgba(139, 92, 246, 0.1);
                   }
-                  .rdp-day {
+                  .rdp button,
+                  .rdp-day,
+                  .rdp-day button,
+                  .rdp-button {
                     color: white !important;
                   }
-                  .rdp-day_selected {
+                  .rdp-day_selected,
+                  .rdp-day_selected button {
                     background-color: #8b5cf6 !important;
                     color: white !important;
                   }
-                  .rdp-day:hover {
+                  .rdp-day:hover,
+                  .rdp-day button:hover {
                     background-color: rgba(139, 92, 246, 0.2) !important;
+                    color: white !important;
                   }
                   .rdp-head_cell {
-                    color: rgba(255, 255, 255, 0.7) !important;
+                    color: white !important;
                     font-weight: 600;
                   }
                   .rdp-caption_label {
                     color: white !important;
                     font-weight: 600;
                   }
-                  .rdp-nav_button {
+                  .rdp-nav_button,
+                  .rdp-nav button {
                     color: white !important;
                   }
-                  .rdp-nav_button:hover {
+                  .rdp-nav_button:hover,
+                  .rdp-nav button:hover {
                     background-color: rgba(139, 92, 246, 0.2) !important;
                   }
-                  .rdp-day_outside {
+                  .rdp-day_outside,
+                  .rdp-day_outside button {
                     color: rgba(255, 255, 255, 0.3) !important;
                   }
-                  .rdp-day_disabled {
+                  .rdp-day_disabled,
+                  .rdp-day_disabled button {
                     color: rgba(255, 255, 255, 0.2) !important;
                   }
                 `}</style>
