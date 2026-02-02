@@ -380,11 +380,11 @@ export default function ScheduledPostsTab({ user }) {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="w-full max-w-2xl max-h-[90vh] overflow-hidden"
+              className="w-full max-w-2xl max-h-[90vh] flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
-              <Card className="dark-card overflow-hidden">
-                <CardHeader className="bg-[#000000] border-b border-purple-500/20">
+              <Card className="dark-card flex flex-col h-full overflow-hidden">
+                <CardHeader className="bg-[#000000] border-b border-purple-500/20 flex-shrink-0">
                   <CardTitle className="text-white flex items-center gap-2">
                     <CalendarIcon className="w-5 h-5 text-purple-400" />
                     {editingScheduledPost ? "Edit Scheduled Post" : "Schedule New Post"}
@@ -419,7 +419,7 @@ export default function ScheduledPostsTab({ user }) {
                     </div>
                     </div>
                     </CardHeader>
-                    <CardContent className="bg-[#000000] p-0">
+                    <CardContent className="bg-[#000000] p-0 overflow-y-auto flex-1">
                     <CreatePost
                     onSubmit={handleSchedulePost}
                     user={user}
