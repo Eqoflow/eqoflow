@@ -249,7 +249,7 @@ export default function ScheduledPostsTab({ user }) {
                             <Clock className="w-4 h-4 text-purple-400" />
                             <span className="text-sm font-medium text-white">
                               {post.scheduled_date && !isNaN(new Date(post.scheduled_date).getTime()) 
-                                ? format(new Date(post.scheduled_date), "h:mm a")
+                                ? format(new Date(post.scheduled_date), "h:mm:ss a")
                                 : "Invalid time"}
                             </span>
                             <Badge className="bg-purple-600/20 text-purple-400 border-purple-500/30 text-xs">
