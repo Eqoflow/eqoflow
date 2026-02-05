@@ -2225,15 +2225,15 @@ export default function Feed() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-black border-purple-500/20">
-                <SelectItem value="all" className="text-white hover:bg-purple-500/10 hover:text-white">All Categories</SelectItem>
-                <SelectItem value="general" className="text-white hover:bg-purple-500/10 hover:text-white">General</SelectItem>
-                <SelectItem value="entertainment" className="text-white hover:bg-purple-500/10 hover:text-white">Entertainment</SelectItem>
-                <SelectItem value="education" className="text-white hover:bg-purple-500/10 hover:text-white">Education</SelectItem>
-                <SelectItem value="business_finance" className="text-white hover:bg-purple-500/10 hover:text-white">Business/Finance</SelectItem>
-                <SelectItem value="world_news" className="text-white hover:bg-purple-500/10 hover:text-white">World News</SelectItem>
-                <SelectItem value="technology" className="text-white hover:bg-purple-500/10 hover:text-white">Technology</SelectItem>
-                <SelectItem value="health_wellness" className="text-white hover:bg-purple-500/10 hover:text-white">Health & Wellness</SelectItem>
-                <SelectItem value="sports" className="text-white hover:bg-purple-500/10 hover:text-white">Sports</SelectItem>
+                <SelectItem value="all" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">All Categories</SelectItem>
+                <SelectItem value="general" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">General</SelectItem>
+                <SelectItem value="entertainment" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">Entertainment</SelectItem>
+                <SelectItem value="education" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">Education</SelectItem>
+                <SelectItem value="business_finance" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">Business/Finance</SelectItem>
+                <SelectItem value="world_news" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">World News</SelectItem>
+                <SelectItem value="technology" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">Technology</SelectItem>
+                <SelectItem value="health_wellness" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">Health & Wellness</SelectItem>
+                <SelectItem value="sports" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">Sports</SelectItem>
               </SelectContent>
             </Select>
           </div>

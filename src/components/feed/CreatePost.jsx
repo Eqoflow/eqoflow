@@ -764,14 +764,14 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
                 <SelectValue placeholder="Select a category..." />
               </SelectTrigger>
               <SelectContent className="bg-black border-purple-500/20">
-                <SelectItem value="general" className="text-white hover:bg-purple-500/10">General</SelectItem>
-                <SelectItem value="entertainment" className="text-white hover:bg-purple-500/10">Entertainment</SelectItem>
-                <SelectItem value="education" className="text-white hover:bg-purple-500/10">Education</SelectItem>
-                <SelectItem value="business_finance" className="text-white hover:bg-purple-500/10">Business/Finance</SelectItem>
-                <SelectItem value="world_news" className="text-white hover:bg-purple-500/10">World News</SelectItem>
-                <SelectItem value="technology" className="text-white hover:bg-purple-500/10">Technology</SelectItem>
-                <SelectItem value="health_wellness" className="text-white hover:bg-purple-500/10">Health & Wellness</SelectItem>
-                <SelectItem value="sports" className="text-white hover:bg-purple-500/10">Sports</SelectItem>
+                <SelectItem value="general" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">General</SelectItem>
+                <SelectItem value="entertainment" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">Entertainment</SelectItem>
+                <SelectItem value="education" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">Education</SelectItem>
+                <SelectItem value="business_finance" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">Business/Finance</SelectItem>
+                <SelectItem value="world_news" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">World News</SelectItem>
+                <SelectItem value="technology" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">Technology</SelectItem>
+                <SelectItem value="health_wellness" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">Health & Wellness</SelectItem>
+                <SelectItem value="sports" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">Sports</SelectItem>
               </SelectContent>
             </Select>
           </div>
