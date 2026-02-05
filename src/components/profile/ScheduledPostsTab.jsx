@@ -52,9 +52,17 @@ export default function ScheduledPostsTab({ user }) {
 
   const handleSchedulePost = async (postData) => {
     try {
+      if (!selectedDate || isNaN(new Date(selectedDate).getTime())) {
+        throw new Error("Please select a valid date for scheduling");
+      }
+      
       const scheduledDateTime = new Date(selectedDate);
       const [hours, minutes] = selectedTime.split(':');
       scheduledDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      
+      if (isNaN(scheduledDateTime.getTime())) {
+        throw new Error("Invalid date/time selected for scheduling");
+      }
 
       const scheduledPostData = {
         content: postData.content,
