@@ -79,15 +79,18 @@ export default function ScheduledPostsTab({ user }) {
         post_to_x: postData.post_to_x || false
       };
 
+      let result;
       if (editingScheduledPost) {
-        await base44.entities.ScheduledPost.update(editingScheduledPost.id, scheduledPostData);
+        result = await base44.entities.ScheduledPost.update(editingScheduledPost.id, scheduledPostData);
       } else {
-        await base44.entities.ScheduledPost.create(scheduledPostData);
+        result = await base44.entities.ScheduledPost.create(scheduledPostData);
       }
 
       await loadScheduledPosts();
       setShowCreateModal(false);
       setEditingScheduledPost(null);
+      
+      return result;
     } catch (error) {
       console.error("Error scheduling post:", error);
       throw error;
