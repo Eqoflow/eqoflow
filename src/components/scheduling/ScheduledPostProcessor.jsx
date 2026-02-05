@@ -5,7 +5,9 @@ export default function ScheduledPostProcessor() {
   useEffect(() => {
     const processScheduledPosts = async () => {
       try {
-        const scheduledPosts = await base44.entities.ScheduledPost.filter({ status: 'scheduled' });
+        const scheduledPosts = await base44.entities.ScheduledPost.filter({ 
+          status: 'scheduled'
+        });
         const now = new Date();
 
         for (const scheduledPost of scheduledPosts) {
