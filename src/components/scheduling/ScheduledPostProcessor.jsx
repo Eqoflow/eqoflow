@@ -16,6 +16,17 @@ export default function ScheduledPostProcessor() {
               const userRecords = await base44.entities.User.filter({ email: scheduledPost.created_by });
               const user = userRecords.length > 0 ? userRecords[0] : null;
 
+              let mergedUser = user;
+              if (user) {
+                const profileRecords = await base44.entities.UserProfileData.filter({ user_email: user.email });
+                if (profileRecords.length > 0) {
+                  mergedUser = { ...user, ...profileRecords[0] };
+                }
+              }
+
+              const publicUserRecords = await base44.entities.PublicUserDirectory.filter({ user_email: scheduledPost.created_by });
+              const publicUser = publicUserRecords.length > 0 ? publicUserRecords[0] : null;
+
               const postData = {
                 content: scheduledPost.content,
                 media_urls: scheduledPost.media_urls || [],
@@ -37,14 +48,14 @@ export default function ScheduledPostProcessor() {
                 moderation_status: 'approved'
               };
 
-              if (user) {
-                postData.author_full_name = user.full_name || user.email.split('@')[0];
-                postData.author_username = user.username || user.email.split('@')[0];
-                postData.author_avatar_url = user.avatar_url || null;
-                postData.author_banner_url = user.banner_url || null;
-                postData.author_follower_count = user.followers?.length || 0;
-                postData.author_professional_credentials = user.professional_credentials || null;
-                postData.author_cross_platform_identity = user.cross_platform_identity || null;
+              if (mergedUser) {
+                postData.author_full_name = publicUser?.full_name || mergedUser.full_name || mergedUser.email.split('@')[0];
+                postData.author_username = publicUser?.username || mergedUser.username || mergedUser.email.split('@')[0];
+                postData.author_avatar_url = publicUser?.avatar_url || mergedUser.avatar_url || null;
+                postData.author_banner_url = publicUser?.banner_url || mergedUser.banner_url || null;
+                postData.author_follower_count = publicUser?.follower_count || mergedUser.followers?.length || 0;
+                postData.author_professional_credentials = publicUser?.professional_credentials || mergedUser.professional_credentials || null;
+                postData.author_cross_platform_identity = publicUser?.cross_platform_identity || mergedUser.cross_platform_identity || null;
               }
 
               await base44.entities.Post.create(postData);
