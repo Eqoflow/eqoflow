@@ -13,17 +13,6 @@ export default function ScheduledPostProcessor() {
           
           if (scheduledDate.getTime() <= now.getTime()) {
             try {
-              const userRecords = await base44.entities.User.filter({ email: scheduledPost.created_by });
-              const user = userRecords.length > 0 ? userRecords[0] : null;
-
-              let mergedUser = user;
-              if (user) {
-                const profileRecords = await base44.entities.UserProfileData.filter({ user_email: user.email });
-                if (profileRecords.length > 0) {
-                  mergedUser = { ...user, ...profileRecords[0] };
-                }
-              }
-
               const publicUserRecords = await base44.entities.PublicUserDirectory.filter({ user_email: scheduledPost.created_by });
               const publicUser = publicUserRecords.length > 0 ? publicUserRecords[0] : null;
 
@@ -45,17 +34,14 @@ export default function ScheduledPostProcessor() {
                 brand_content_price: scheduledPost.brand_content_price || null,
                 brand_content_title: scheduledPost.brand_content_title || null,
                 post_to_x: scheduledPost.post_to_x || false,
-                moderation_status: 'approved'
-              };
-
-              if (mergedUser) {
-                postData.author_full_name = publicUser?.full_name || mergedUser.full_name || mergedUser.email.split('@')[0];
-                postData.author_username = publicUser?.username || mergedUser.username || mergedUser.email.split('@')[0];
-                postData.author_avatar_url = publicUser?.avatar_url || mergedUser.avatar_url || null;
-                postData.author_banner_url = publicUser?.banner_url || mergedUser.banner_url || null;
-                postData.author_follower_count = publicUser?.follower_count || mergedUser.followers?.length || 0;
-                postData.author_professional_credentials = publicUser?.professional_credentials || mergedUser.professional_credentials || null;
-                postData.author_cross_platform_identity = publicUser?.cross_platform_identity || mergedUser.cross_platform_identity || null;
+                moderation_status: 'approved',
+                author_full_name: publicUser?.full_name || scheduledPost.created_by.split('@')[0],
+                author_username: publicUser?.username || scheduledPost.created_by.split('@')[0],
+                author_avatar_url: publicUser?.avatar_url || null,
+                author_banner_url: publicUser?.banner_url || null,
+                author_follower_count: publicUser?.follower_count || 0,
+                author_professional_credentials: publicUser?.professional_credentials || null,
+                author_cross_platform_identity: publicUser?.cross_platform_identity || null
               }
 
               await base44.entities.Post.create(postData);
