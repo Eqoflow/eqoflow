@@ -13,6 +13,9 @@ export default function ScheduledPostProcessor() {
           
           if (scheduledDate.getTime() <= now.getTime()) {
             try {
+              // Immediately mark as processing to prevent duplicate posts
+              await base44.entities.ScheduledPost.update(scheduledPost.id, { status: "processing" });
+              
               const publicUserRecords = await base44.entities.PublicUserDirectory.filter({ user_email: scheduledPost.created_by });
               const publicUser = publicUserRecords.length > 0 ? publicUserRecords[0] : null;
 
@@ -44,10 +47,10 @@ export default function ScheduledPostProcessor() {
                 author_cross_platform_identity: publicUser?.cross_platform_identity || null
               }
 
-              await base44.entities.Post.create(postData);
+              const createdPost = await base44.entities.Post.create(postData);
               await base44.entities.ScheduledPost.update(scheduledPost.id, {
                 status: "published",
-                published_post_id: scheduledPost.id
+                published_post_id: createdPost.id
               });
             } catch {
               await base44.entities.ScheduledPost.update(scheduledPost.id, { status: "failed" }).catch(() => {});
