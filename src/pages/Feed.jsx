@@ -12,6 +12,7 @@ import { PublicUserDirectory } from "@/entities/PublicUserDirectory";
 import { Poll } from "@/entities/Poll";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   TrendingUp,
   Zap,
@@ -23,7 +24,8 @@ import {
   X,
   Users,
   Plus,
-  RefreshCw } from
+  RefreshCw,
+  Layers } from
 "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
@@ -109,6 +111,8 @@ export default function Feed() {
     const saved = localStorage.getItem('showTrendingCommunities');
     return saved !== null ? JSON.parse(saved) : true;
   });
+
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
@@ -2031,7 +2035,9 @@ export default function Feed() {
     }
   }, [user, posts, showErrorMessage]);
 
-  const filteredPosts = posts;
+  const filteredPosts = selectedCategory === "all" 
+    ? posts 
+    : posts.filter(post => post.category === selectedCategory);
 
   const userColorScheme = getColorScheme(user?.color_scheme);
 
@@ -2209,6 +2215,29 @@ export default function Feed() {
               </div>
             </div>
           </div>
+
+          {/* Category Filter */}
+          {user &&
+          <div className="mb-6 flex items-center gap-3">
+            <Layers className="w-5 h-5 text-purple-400 flex-shrink-0" />
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-full md:w-64 bg-black/20 border-purple-500/20 text-white">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-black border-purple-500/20">
+                <SelectItem value="all" className="text-white hover:bg-purple-500/10">All Categories</SelectItem>
+                <SelectItem value="general" className="text-white hover:bg-purple-500/10">General</SelectItem>
+                <SelectItem value="entertainment" className="text-white hover:bg-purple-500/10">Entertainment</SelectItem>
+                <SelectItem value="education" className="text-white hover:bg-purple-500/10">Education</SelectItem>
+                <SelectItem value="business_finance" className="text-white hover:bg-purple-500/10">Business/Finance</SelectItem>
+                <SelectItem value="world_news" className="text-white hover:bg-purple-500/10">World News</SelectItem>
+                <SelectItem value="technology" className="text-white hover:bg-purple-500/10">Technology</SelectItem>
+                <SelectItem value="health_wellness" className="text-white hover:bg-purple-500/10">Health & Wellness</SelectItem>
+                <SelectItem value="sports" className="text-white hover:bg-purple-500/10">Sports</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          }
 
           <AnimatePresence>
             {hasNewPosts &&

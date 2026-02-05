@@ -20,6 +20,7 @@ export default function ScheduledPostProcessor() {
                 content: scheduledPost.content,
                 media_urls: scheduledPost.media_urls || [],
                 tags: scheduledPost.tags || [],
+                category: scheduledPost.category || "general",
                 privacy_level: scheduledPost.privacy_level || "public",
                 nft_gate_settings: scheduledPost.nft_gate_settings || null,
                 community_id: scheduledPost.community_id || null,

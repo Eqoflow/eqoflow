@@ -79,6 +79,9 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const [isFetchingYTDetails, setIsFetchingYTDetails] = useState(false);
   const debounceTimeoutRef = useRef(null);
 
+  // Category state
+  const [selectedCategory, setSelectedCategory] = useState("general");
+
   // Poll state
   const [showPollInputs, setShowPollInputs] = useState(false);
   const [pollQuestion, setPollQuestion] = useState('');
@@ -347,6 +350,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
           author_avatar_url: user?.avatar_url,
           privacy_level: privacyLevel,
           tags,
+          category: selectedCategory,
           isPoll: true,
           moderation_status: 'approved'
         };
@@ -400,6 +404,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       content: textContent,
       media_urls: mediaFiles.map((f) => f.url),
       tags,
+      category: selectedCategory,
       privacy_level: privacyLevel,
       nft_gate_settings: nftGateSettings,
       post_to_x: postToX,
@@ -487,6 +492,7 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
       setShareToMainFeed(true);
       setYoutubeVideoDetails(null);
       setPostToX(false);
+      setSelectedCategory("general");
       setEnableBlockchainTimestamp(false);
       setEnableGatedContent(false);
       setEqofloPrice(250);
@@ -746,6 +752,30 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
               </motion.div>
             }
           </AnimatePresence>
+
+          {/* Category Selection */}
+          {!showPollInputs &&
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-white">Category</span>
+            </div>
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="bg-black/20 border-purple-500/20 text-white">
+                <SelectValue placeholder="Select a category..." />
+              </SelectTrigger>
+              <SelectContent className="bg-black border-purple-500/20">
+                <SelectItem value="general" className="text-white hover:bg-purple-500/10">General</SelectItem>
+                <SelectItem value="entertainment" className="text-white hover:bg-purple-500/10">Entertainment</SelectItem>
+                <SelectItem value="education" className="text-white hover:bg-purple-500/10">Education</SelectItem>
+                <SelectItem value="business_finance" className="text-white hover:bg-purple-500/10">Business/Finance</SelectItem>
+                <SelectItem value="world_news" className="text-white hover:bg-purple-500/10">World News</SelectItem>
+                <SelectItem value="technology" className="text-white hover:bg-purple-500/10">Technology</SelectItem>
+                <SelectItem value="health_wellness" className="text-white hover:bg-purple-500/10">Health & Wellness</SelectItem>
+                <SelectItem value="sports" className="text-white hover:bg-purple-500/10">Sports</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          }
 
           {/* Tags Section */}
           <div className="space-y-2">
