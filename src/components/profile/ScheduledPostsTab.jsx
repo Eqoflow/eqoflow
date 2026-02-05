@@ -60,6 +60,7 @@ export default function ScheduledPostsTab({ user }) {
         content: postData.content,
         media_urls: postData.media_urls || [],
         tags: postData.tags || [],
+        category: postData.category || "general",
         scheduled_date: scheduledDateTime.toISOString(),
         timezone: getUserTimezone(),
         status: "scheduled",
