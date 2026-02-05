@@ -58,14 +58,25 @@ Deno.serve(async (req) => {
         const userRecords = await base44.asServiceRole.entities.User.filter({ email: userEmail });
         const user = userRecords.length > 0 ? userRecords[0] : null;
         
+        let mergedUser = user;
         if (user) {
-          postData.author_full_name = user.full_name || user.email.split('@')[0];
-          postData.author_username = user.username || user.email.split('@')[0];
-          postData.author_avatar_url = user.avatar_url || null;
-          postData.author_banner_url = user.banner_url || null;
-          postData.author_follower_count = user.followers?.length || 0;
-          postData.author_professional_credentials = user.professional_credentials || null;
-          postData.author_cross_platform_identity = user.cross_platform_identity || null;
+          const profileRecords = await base44.asServiceRole.entities.UserProfileData.filter({ user_email: user.email });
+          if (profileRecords.length > 0) {
+            mergedUser = { ...user, ...profileRecords[0] };
+          }
+        }
+        
+        const publicUserRecords = await base44.asServiceRole.entities.PublicUserDirectory.filter({ user_email: userEmail });
+        const publicUser = publicUserRecords.length > 0 ? publicUserRecords[0] : null;
+        
+        if (mergedUser) {
+          postData.author_full_name = publicUser?.full_name || mergedUser.full_name || mergedUser.email.split('@')[0];
+          postData.author_username = publicUser?.username || mergedUser.username || mergedUser.email.split('@')[0];
+          postData.author_avatar_url = publicUser?.avatar_url || mergedUser.avatar_url || null;
+          postData.author_banner_url = publicUser?.banner_url || mergedUser.banner_url || null;
+          postData.author_follower_count = publicUser?.follower_count || mergedUser.followers?.length || 0;
+          postData.author_professional_credentials = publicUser?.professional_credentials || mergedUser.professional_credentials || null;
+          postData.author_cross_platform_identity = publicUser?.cross_platform_identity || mergedUser.cross_platform_identity || null;
         }
         
         // Create the post
