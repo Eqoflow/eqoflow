@@ -52,12 +52,16 @@ export default function ScheduledPostsTab({ user }) {
 
   const handleSchedulePost = async (postData) => {
     try {
-      if (!selectedDate || isNaN(new Date(selectedDate).getTime())) {
+      // Check if scheduling data is provided in postData
+      const dateToUse = postData.scheduled_date ? new Date(postData.scheduled_date) : (selectedDate ? new Date(selectedDate) : null);
+      const timeToUse = postData.scheduled_time || selectedTime;
+      
+      if (!dateToUse || isNaN(dateToUse.getTime())) {
         throw new Error("Please select a valid date for scheduling");
       }
       
-      const scheduledDateTime = new Date(selectedDate);
-      const [hours, minutes] = selectedTime.split(':');
+      const scheduledDateTime = new Date(dateToUse);
+      const [hours, minutes] = timeToUse.split(':');
       scheduledDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
       
       if (isNaN(scheduledDateTime.getTime())) {
