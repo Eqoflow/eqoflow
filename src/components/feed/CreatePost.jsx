@@ -24,7 +24,9 @@ import {
   AlertTriangle,
   BookMarked,
   BarChart3,
-  Coins } from
+  Coins,
+  ChevronDown,
+  ChevronUp } from
 "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UploadFile } from "@/integrations/Core";
@@ -104,6 +106,9 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   const [enableBrandContent, setEnableBrandContent] = useState(false);
   const [brandContentPrice, setBrandContentPrice] = useState(500);
   const [brandContentTitle, setBrandContentTitle] = useState("");
+
+  // Protection Rights dropdown state
+  const [showProtectionRights, setShowProtectionRights] = useState(false);
 
   // Initialize blockchain hook
   const { timestampContent, isProcessing: isTimestamping } = useBlockchainTimestamp();
@@ -938,150 +943,170 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
             </div>
           }
 
-          {/* Monetize with $eqoflo */}
+          {/* Protection Rights Dropdown */}
           {!showPollInputs &&
           <div className="space-y-3">
-            <div className="space-y-3 p-4 bg-gradient-to-r from-amber-600/10 to-orange-600/10 border border-amber-500/20 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Coins className="w-4 h-4 text-amber-400" />
-                    <Label htmlFor="gated-content" className="text-sm font-medium text-white cursor-pointer">
-                      Unlock Premium Access
-                    </Label>
-                  </div>
-                  <p className="text-xs text-gray-400 mt-1">Set a price for users to unlock this content</p>
-                </div>
-                <Switch
-                id="gated-content"
-                checked={enableGatedContent}
-                onCheckedChange={setEnableGatedContent} />
+            <button
+              type="button"
+              onClick={() => setShowProtectionRights(!showProtectionRights)}
+              className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-purple-600/10 to-pink-600/10 border border-purple-500/20 rounded-lg hover:bg-purple-600/15 transition-colors">
+              <div className="flex items-center gap-2">
+                <Shield className="w-4 h-4 text-purple-400" />
+                <span className="text-sm font-medium text-white">Protection Rights</span>
               </div>
+              {showProtectionRights ? 
+                <ChevronUp className="w-4 h-4 text-gray-400" /> : 
+                <ChevronDown className="w-4 h-4 text-gray-400" />
+              }
+            </button>
 
-              {enableGatedContent &&
+            <AnimatePresence>
+              {showProtectionRights &&
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
                 className="space-y-3">
-                  <div>
-                    <Label className="text-sm text-white">Content Title *</Label>
-                    <Input
-                      type="text"
-                      value={gatedContentTitle}
-                      onChange={(e) => setGatedContentTitle(e.target.value)}
-                      placeholder="e.g., Exclusive Trading Strategy, Premium Tutorial..."
-                      className="bg-black/20 border-amber-500/20 text-white mt-1"
-                      maxLength={100}
-                    />
-                    <p className="text-xs text-gray-400 mt-1">
-                      This title will be shown to users before they unlock your content
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="text-sm text-white">Price (min 250 $eqoflo = $5)</Label>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Input
-                        type="number"
-                        min="250"
-                        step="50"
-                        value={eqofloPrice}
-                        onChange={(e) => setEqofloPrice(Math.max(250, parseInt(e.target.value) || 250))}
-                        className="bg-black/20 border-amber-500/20 text-white"
-                      />
-                      <span className="text-sm text-gray-400 whitespace-nowrap">
-                        ≈ ${(eqofloPrice * 0.02).toFixed(2)}
-                      </span>
+                <div className="space-y-3 p-4 bg-gradient-to-r from-amber-600/10 to-orange-600/10 border border-amber-500/20 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Coins className="w-4 h-4 text-amber-400" />
+                        <Label htmlFor="gated-content" className="text-sm font-medium text-white cursor-pointer">
+                          Unlock Premium Access
+                        </Label>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-1">Set a price for users to unlock this content</p>
                     </div>
+                    <Switch
+                    id="gated-content"
+                    checked={enableGatedContent}
+                    onCheckedChange={setEnableGatedContent} />
                   </div>
-                  <p className="text-xs text-amber-400">
-                    Platform fee: 7% • You earn: {Math.round(eqofloPrice * 0.93)} $eqoflo per unlock
-                  </p>
-                </motion.div>
-              }
-            </div>
 
-            <div className="space-y-3 p-4 bg-gradient-to-r from-violet-600/10 to-fuchsia-600/10 border border-violet-500/20 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Coins className="w-4 h-4 text-violet-400" />
-                    <Label htmlFor="brand-content" className="text-sm font-medium text-white cursor-pointer">
-                      Sell your content to brands
-                    </Label>
-                  </div>
-                  <p className="text-xs text-gray-400 mt-1">Allow brands to purchase distribution rights (ARR waived)</p>
+                  {enableGatedContent &&
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="space-y-3">
+                      <div>
+                        <Label className="text-sm text-white">Content Title *</Label>
+                        <Input
+                          type="text"
+                          value={gatedContentTitle}
+                          onChange={(e) => setGatedContentTitle(e.target.value)}
+                          placeholder="e.g., Exclusive Trading Strategy, Premium Tutorial..."
+                          className="bg-black/20 border-amber-500/20 text-white mt-1"
+                          maxLength={100}
+                        />
+                        <p className="text-xs text-gray-400 mt-1">
+                          This title will be shown to users before they unlock your content
+                        </p>
+                      </div>
+                      <div>
+                        <Label className="text-sm text-white">Price (min 250 $eqoflo = $5)</Label>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Input
+                            type="number"
+                            min="250"
+                            step="50"
+                            value={eqofloPrice}
+                            onChange={(e) => setEqofloPrice(Math.max(250, parseInt(e.target.value) || 250))}
+                            className="bg-black/20 border-amber-500/20 text-white"
+                          />
+                          <span className="text-sm text-gray-400 whitespace-nowrap">
+                            ≈ ${(eqofloPrice * 0.02).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                      <p className="text-xs text-amber-400">
+                        Platform fee: 7% • You earn: {Math.round(eqofloPrice * 0.93)} $eqoflo per unlock
+                      </p>
+                    </motion.div>
+                  }
                 </div>
-                <Switch
-                id="brand-content"
-                checked={enableBrandContent}
-                onCheckedChange={setEnableBrandContent} />
-              </div>
 
-              {enableBrandContent &&
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                className="space-y-3">
+                <div className="space-y-3 p-4 bg-gradient-to-r from-violet-600/10 to-fuchsia-600/10 border border-violet-500/20 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Coins className="w-4 h-4 text-violet-400" />
+                        <Label htmlFor="brand-content" className="text-sm font-medium text-white cursor-pointer">
+                          Sell your content to brands
+                        </Label>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-1">Allow brands to purchase distribution rights (ARR waived)</p>
+                    </div>
+                    <Switch
+                    id="brand-content"
+                    checked={enableBrandContent}
+                    onCheckedChange={setEnableBrandContent} />
+                  </div>
+
+                  {enableBrandContent &&
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="space-y-3">
+                      <div>
+                        <Label className="text-sm text-white">Content Package Title *</Label>
+                        <Input
+                          type="text"
+                          value={brandContentTitle}
+                          onChange={(e) => setBrandContentTitle(e.target.value)}
+                          placeholder="e.g., Q1 Marketing Campaign Content, Brand Asset Bundle..."
+                          className="bg-black/20 border-violet-500/20 text-white mt-1"
+                          maxLength={100}
+                        />
+                        <p className="text-xs text-gray-400 mt-1">
+                          Buyers get full distribution rights with no legal restrictions (ARR waived)
+                        </p>
+                      </div>
+                      <div>
+                        <Label className="text-sm text-white">Price (min 500 $eqoflo = $10)</Label>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Input
+                            type="number"
+                            min="500"
+                            step="100"
+                            value={brandContentPrice}
+                            onChange={(e) => setBrandContentPrice(Math.max(500, parseInt(e.target.value) || 500))}
+                            className="bg-black/20 border-violet-500/20 text-white"
+                          />
+                          <span className="text-sm text-gray-400 whitespace-nowrap">
+                            ≈ ${(brandContentPrice * 0.02).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                      <p className="text-xs text-violet-400">
+                        Platform fee: 7% • You earn: {Math.round(brandContentPrice * 0.93)} $eqoflo per purchase
+                      </p>
+                    </motion.div>
+                  }
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-gradient-to-r from-purple-600/10 to-pink-600/10 border border-purple-500/20 rounded-lg">
                   <div>
-                    <Label className="text-sm text-white">Content Package Title *</Label>
-                    <Input
-                      type="text"
-                      value={brandContentTitle}
-                      onChange={(e) => setBrandContentTitle(e.target.value)}
-                      placeholder="e.g., Q1 Marketing Campaign Content, Brand Asset Bundle..."
-                      className="bg-black/20 border-violet-500/20 text-white mt-1"
-                      maxLength={100}
-                    />
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-purple-400" />
+                      <Label htmlFor="blockchain-timestamp" className="text-sm font-medium text-white cursor-pointer">
+                        Blockchain Timestamp
+                      </Label>
+                      <Badge className="bg-purple-600/20 text-purple-300 text-xs">3 $eqoflo</Badge>
+                    </div>
                     <p className="text-xs text-gray-400 mt-1">
-                      Buyers get full distribution rights with no legal restrictions (ARR waived)
+                      Immutable proof of creation on Solana blockchain
                     </p>
                   </div>
-                  <div>
-                    <Label className="text-sm text-white">Price (min 500 $eqoflo = $10)</Label>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Input
-                        type="number"
-                        min="500"
-                        step="100"
-                        value={brandContentPrice}
-                        onChange={(e) => setBrandContentPrice(Math.max(500, parseInt(e.target.value) || 500))}
-                        className="bg-black/20 border-violet-500/20 text-white"
-                      />
-                      <span className="text-sm text-gray-400 whitespace-nowrap">
-                        ≈ ${(brandContentPrice * 0.02).toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-                  <p className="text-xs text-violet-400">
-                    Platform fee: 7% • You earn: {Math.round(brandContentPrice * 0.93)} $eqoflo per purchase
-                  </p>
-                </motion.div>
+                  <Switch
+                  id="blockchain-timestamp"
+                  checked={enableBlockchainTimestamp}
+                  onCheckedChange={handleBlockchainToggle} />
+                </div>
+              </motion.div>
               }
-            </div>
+            </AnimatePresence>
           </div>
-          }
-
-          {/* Blockchain Timestamping Toggle */}
-          {!showPollInputs &&
-          <div className="flex items-center justify-between p-3 bg-gradient-to-r from-purple-600/10 to-pink-600/10 border border-purple-500/20 rounded-lg">
-              <div>
-                <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-purple-400" />
-                  <Label htmlFor="blockchain-timestamp" className="text-sm font-medium text-white cursor-pointer">
-                    Blockchain Timestamp
-                  </Label>
-                  <Badge className="bg-purple-600/20 text-purple-300 text-xs">3 $eqoflo</Badge>
-                  </div>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Immutable proof of creation on Solana blockchain
-                  </p>
-                  </div>
-              <Switch
-              id="blockchain-timestamp"
-              checked={enableBlockchainTimestamp}
-              onCheckedChange={handleBlockchainToggle} />
-
-            </div>
           }
 
           {/* X (Twitter) Cross-Posting Toggle */}
