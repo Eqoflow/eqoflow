@@ -66,7 +66,6 @@ import WalletManager from "../components/profile/WalletManager";
 import FiatPaymentManager from "../components/profile/FiatPaymentManager";
 import TokenBalanceCard from "../components/profile/TokenBalanceCard";
 import PushNotificationManager from "../components/notifications/PushNotificationManager";
-import ScheduledPostsTab from "../components/profile/ScheduledPostsTab";
 import CoCEOBadge from '../components/identity/CoCEOBadge';
 import CMOBadge from '../components/identity/CMOBadge';
 import CoFounderBadge from '../components/identity/CoFounderBadge';
@@ -83,7 +82,7 @@ import { debounce } from 'lodash';
 const getInitialActiveTab = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const section = urlParams.get('section');
-  const knownTabs = ["overview", "posts", "scheduled", "identity", "professional", "engagement", "wallet", "analytics", "privacy", "subscriptions"];
+  const knownTabs = ["overview", "posts", "identity", "professional", "engagement", "wallet", "analytics", "privacy", "subscriptions"];
   if (section && knownTabs.includes(section)) {
     return section;
   }
@@ -370,7 +369,7 @@ export default function Profile() {
     if (user && activeTab) {
       const urlParams = new URLSearchParams(window.location.search);
       const sectionParam = urlParams.get('section');
-      const newKnownTabs = ["overview", "posts", "scheduled", "identity", "professional", "engagement", "wallet", "analytics", "privacy", "subscriptions"];
+      const newKnownTabs = ["overview", "posts", "identity", "professional", "engagement", "wallet", "analytics", "privacy", "subscriptions"];
       if (sectionParam && activeTab === sectionParam && newKnownTabs.includes(sectionParam)) {
         setTimeout(() => {
           const element = document.getElementById(sectionParam);
@@ -941,7 +940,6 @@ export default function Profile() {
                 {[
           { key: "overview", label: "Overview", icon: UserIcon },
           { key: "posts", label: "My Posts", icon: MessageSquare },
-          { key: "scheduled", label: "Scheduled Posts", icon: Calendar },
           { key: "identity", label: "Identity", icon: UserCheck },
           { key: "professional", label: "Professional", icon: Briefcase },
           { key: "engagement", label: "Engagement", icon: Zap },
@@ -1505,12 +1503,6 @@ export default function Profile() {
                 posts={posts}
                 onEditPost={handleEditPost}
                 onDeletePost={handleDeletePost} />
-                    </div>
-            }
-
-                  {activeTab === "scheduled" && loadedTabs.has("scheduled") &&
-            <div id="scheduled" className="bg-transparent md:bg-black md:p-4 md:rounded-xl">
-                      <ScheduledPostsTab user={user} />
                     </div>
             }
 
