@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,16 +20,21 @@ import {
   MessageCircle,
   DollarSign,
   Check,
-  X
+  X,
+  Trash2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import NillionInterestsManager from "../privacy/NillionInterestsManager";
 import { nillionPrivacy } from "@/functions/nillionPrivacy";
+import { requestAccountDeletion } from "@/functions/requestAccountDeletion";
 
 export default function PrivacyHubTab({ user, onUpdate }) {
   const [activeSection, setActiveSection] = useState('interests');
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   const [privacySettings, setPrivacySettings] = useState({
     profile_visibility: user?.privacy_settings?.profile_visibility || 'public',
@@ -368,6 +372,25 @@ export default function PrivacyHubTab({ user, onUpdate }) {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== 'DELETE MY ACCOUNT') {
+      showMessage('error', 'Please type the confirmation text exactly as shown');
+      return;
+    }
+
+    setIsDeletingAccount(true);
+    try {
+      await requestAccountDeletion();
+      showMessage('success', 'Account deletion request submitted. You will be logged out shortly.');
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 3000);
+    } catch (error) {
+      showMessage('error', 'Failed to delete account: ' + error.message);
+      setIsDeletingAccount(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -412,7 +435,8 @@ export default function PrivacyHubTab({ user, onUpdate }) {
           { id: 'storage', label: 'Private Storage', icon: Lock },
           { id: 'age', label: 'Age Verification', icon: Calendar },
           { id: 'governance', label: 'Anonymous Voting', icon: CheckCircle },
-          { id: 'uniqueness', label: 'Uniqueness Proof', icon: Key }
+          { id: 'uniqueness', label: 'Uniqueness Proof', icon: Key },
+          { id: 'delete', label: 'Delete Account', icon: Trash2 }
         ].map(tab => (
           <Button
             key={tab.id}
@@ -1028,7 +1052,120 @@ export default function PrivacyHubTab({ user, onUpdate }) {
               </CardContent>
             </Card>
           )}
+
+          {activeSection === 'delete' && (
+            <Card className="dark-card border-red-500/30">
+              <CardHeader>
+                <CardTitle className="text-red-400 flex items-center gap-2">
+                  <Trash2 className="w-5 h-5" />
+                  Delete Account
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="p-4 bg-red-600/10 border border-red-500/30 rounded-lg space-y-3">
+                  <p className="text-red-300 font-bold">⚠ Warning: This action is permanent and cannot be undone</p>
+                  <p className="text-gray-300 text-sm">
+                    Deleting your account will:
+                  </p>
+                  <ul className="text-gray-300 text-sm list-disc list-inside space-y-1">
+                    <li>Permanently remove all your posts, comments, and content</li>
+                    <li>Delete your profile and personal information</li>
+                    <li>Forfeit all your tokens and rewards</li>
+                    <li>Remove you from all communities and subscriptions</li>
+                    <li>Cancel all pending transactions</li>
+                  </ul>
+                </div>
+
+                <Button
+                  onClick={() => setShowDeleteModal(true)}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Permanently Delete My Account
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </motion.div>
+      </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+            onClick={() => !isDeletingAccount && setShowDeleteModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="w-full max-w-md"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Card className="dark-card border-red-500/50">
+                <CardHeader>
+                  <CardTitle className="text-red-400 flex items-center gap-2">
+                    <Trash2 className="w-5 h-5" />
+                    Confirm Account Deletion
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-4 bg-red-600/10 border border-red-500/30 rounded-lg">
+                    <p className="text-red-300 text-sm mb-2">
+                      This will permanently delete your account and all associated data. This action cannot be reversed.
+                    </p>
+                    <p className="text-gray-300 text-sm">
+                      To confirm, type <strong className="text-white">DELETE MY ACCOUNT</strong> below:
+                    </p>
+                  </div>
+
+                  <Input
+                    value={deleteConfirmText}
+                    onChange={(e) => setDeleteConfirmText(e.target.value)}
+                    placeholder="Type: DELETE MY ACCOUNT"
+                    className="bg-black/20 border-red-500/20 text-white"
+                    disabled={isDeletingAccount}
+                  />
+
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={() => {
+                        setShowDeleteModal(false);
+                        setDeleteConfirmText('');
+                      }}
+                      variant="outline"
+                      className="flex-1 border-gray-500/30 text-white hover:bg-gray-500/10"
+                      disabled={isDeletingAccount}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleDeleteAccount}
+                      disabled={isDeletingAccount || deleteConfirmText !== 'DELETE MY ACCOUNT'}
+                      className="flex-1 bg-red-600 hover:bg-red-700"
+                    >
+                      {isDeletingAccount ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Deleting...
+                        </>
+                      ) : (
+                        <>
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete Forever
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );
