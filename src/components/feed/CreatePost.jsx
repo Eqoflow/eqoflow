@@ -3,7 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { 
+  MobileSelect as Select, 
+  MobileSelectContent as SelectContent, 
+  MobileSelectItem as SelectItem, 
+  MobileSelectTrigger as SelectTrigger, 
+  MobileSelectValue as SelectValue 
+} from "@/components/ui/mobile-select";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -556,7 +562,9 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
   };
 
   return (
-    <Card className="dark-card neon-glow max-h-[90vh] flex flex-col">
+    <Card className="dark-card neon-glow max-h-[90vh] flex flex-col" style={{
+      paddingBottom: 'max(0px, env(safe-area-inset-bottom))'
+    }}>
       <CardHeader className="bg-[#000000] pb-3 p-6 flex flex-col space-y-1.5 md:pb-4 flex-shrink-0">
         <CardTitle className="text-white flex items-center gap-2 text-base md:text-lg">
           <Zap className="w-4 h-4 md:w-5 md:h-5 text-purple-400" />
@@ -578,7 +586,9 @@ export default function CreatePost({ onSubmit, user, communityId = null, isCreat
         }
       </AnimatePresence>
 
-      <CardContent className="bg-[#000000] p-4 md:p-6 overflow-y-auto flex-1">
+      <CardContent className="bg-[#000000] p-4 md:p-6 overflow-y-auto flex-1" style={{
+        paddingBottom: 'max(1rem, calc(1rem + env(safe-area-inset-bottom)))'
+      }}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex items-start gap-3 md:gap-4">
             <div

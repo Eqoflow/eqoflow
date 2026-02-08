@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Course } from '@/entities/Course';
 import { base44 } from '@/api/base44Client';
@@ -395,6 +394,9 @@ export default function CreateCourseModal({ isOpen, onClose, user, onCourseCreat
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto"
+        style={{
+          paddingBottom: 'max(1rem, env(safe-area-inset-bottom))'
+        }}
         onClick={onClose} // Closes modal when clicking backdrop
       >
           <motion.div

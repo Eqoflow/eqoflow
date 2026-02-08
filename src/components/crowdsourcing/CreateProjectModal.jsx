@@ -1,10 +1,15 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { 
+  MobileSelect as Select, 
+  MobileSelectContent as SelectContent, 
+  MobileSelectItem as SelectItem, 
+  MobileSelectTrigger as SelectTrigger, 
+  MobileSelectValue as SelectValue 
+} from '@/components/ui/mobile-select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -172,7 +177,9 @@ export default function CreateProjectModal({ user, communities, onSubmit, onClos
 
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50" style={{
+      paddingBottom: 'max(1rem, env(safe-area-inset-bottom))'
+    }}>
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}

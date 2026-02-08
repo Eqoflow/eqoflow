@@ -524,8 +524,11 @@ export default function Layout({ children, currentPageName }) {
   const [isEmailVisible, setIsEmailVisible] = useState(true);
   const [direction, setDirection] = useState(0);
   const scrollPositions = React.useRef({});
-  const [activeTab, setActiveTab] = React.useState(currentPageName);
-  const [tabStates, setTabStates] = React.useState({});
+  const [activeTab, setActiveTab] = React.useState(() => {
+    const tabPages = ['Feed', 'Discovery', 'Messages', 'Profile'];
+    return tabPages.includes(currentPageName) ? currentPageName : 'Feed';
+  });
+  const previousPageRef = React.useRef(currentPageName);
 
   // Define public pages that never require login
   const publicPages = useMemo(() => [
@@ -755,22 +758,30 @@ export default function Layout({ children, currentPageName }) {
     prevPageRef.current = currentPageName;
   }, [currentPageName]);
 
-  // Scroll position preservation
+  // Enhanced scroll position preservation for bottom tab navigation
   React.useEffect(() => {
-    // Save scroll position when leaving a page
-    return () => {
-      scrollPositions.current[currentPageName] = window.scrollY;
-    };
-  }, [currentPageName]);
+    const tabPages = ['Feed', 'Discovery', 'Messages', 'Profile'];
+    const isBottomTabNavigation = tabPages.includes(previousPageRef.current) && tabPages.includes(currentPageName);
 
-  React.useEffect(() => {
-    // Restore scroll position when entering a page
-    const savedPosition = scrollPositions.current[currentPageName];
-    if (savedPosition !== undefined) {
-      setTimeout(() => {
-        window.scrollTo(0, savedPosition);
-      }, 0);
+    if (isBottomTabNavigation) {
+      // Save scroll position of previous tab page
+      scrollPositions.current[previousPageRef.current] = window.scrollY;
+      
+      // Restore scroll position for new tab page
+      const savedPosition = scrollPositions.current[currentPageName];
+      if (savedPosition !== undefined) {
+        setTimeout(() => {
+          window.scrollTo(0, savedPosition);
+        }, 0);
+      } else {
+        // First visit to this tab, start at top
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+        }, 0);
+      }
     }
+
+    previousPageRef.current = currentPageName;
   }, [currentPageName]);
 
   const pageVariants = {
