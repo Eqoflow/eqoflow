@@ -535,6 +535,12 @@ export default function Layout({ children, currentPageName }) {
     return tabPages.includes(currentPageName) ? currentPageName : 'Feed';
   });
   const previousPageRef = React.useRef(currentPageName);
+  
+  // Pull-to-refresh state
+  const [isPullRefreshing, setIsPullRefreshing] = React.useState(false);
+  const [pullDistance, setPullDistance] = React.useState(0);
+  const pullStartY = React.useRef(0);
+  const isPulling = React.useRef(false);
 
   // Define public pages that never require login
   const publicPages = useMemo(() => [
@@ -746,6 +752,73 @@ export default function Layout({ children, currentPageName }) {
     invalidateUserCache: UserCacheHelpers.invalidateUserCache,
     getCachedUser: UserCacheHelpers.getMergedCachedUser
   }), [user, loadUserData, isLoading]);
+
+  // Pull-to-refresh handler
+  const handlePullRefresh = React.useCallback(async () => {
+    setIsPullRefreshing(true);
+    try {
+      await loadUserData();
+      // Trigger a refresh event that pages can listen to
+      window.dispatchEvent(new CustomEvent('pull-refresh'));
+    } catch (error) {
+      console.error('Pull refresh error:', error);
+    } finally {
+      setTimeout(() => {
+        setIsPullRefreshing(false);
+        setPullDistance(0);
+      }, 500);
+    }
+  }, [loadUserData]);
+
+  // Pull-to-refresh gesture detection (mobile only)
+  React.useEffect(() => {
+    if (window.innerWidth >= 768) return; // Desktop only
+
+    const handleTouchStart = (e) => {
+      if (window.scrollY === 0) {
+        pullStartY.current = e.touches[0].clientY;
+        isPulling.current = true;
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      if (!isPulling.current || isPullRefreshing) return;
+      
+      if (window.scrollY === 0) {
+        const currentY = e.touches[0].clientY;
+        const distance = Math.max(0, currentY - pullStartY.current);
+        
+        if (distance > 0 && distance < 120) {
+          setPullDistance(distance);
+        }
+      }
+    };
+
+    const handleTouchEnd = async () => {
+      if (!isPulling.current) return;
+      
+      isPulling.current = false;
+      
+      if (pullDistance > 80) {
+        await handlePullRefresh();
+      } else {
+        setPullDistance(0);
+      }
+    };
+
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+      mainContent.addEventListener('touchstart', handleTouchStart, { passive: true });
+      mainContent.addEventListener('touchmove', handleTouchMove, { passive: true });
+      mainContent.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+      return () => {
+        mainContent.removeEventListener('touchstart', handleTouchStart);
+        mainContent.removeEventListener('touchmove', handleTouchMove);
+        mainContent.removeEventListener('touchend', handleTouchEnd);
+      };
+    }
+  }, [isPullRefreshing, pullDistance, handlePullRefresh]);
 
   // Page transition logic
   const pageOrder = ['Feed', 'Discovery', 'Messages', 'Profile'];
@@ -1292,6 +1365,40 @@ export default function Layout({ children, currentPageName }) {
 
                 <div className="flex-1 flex flex-col bg-black">
                   <main className="flex-1 flex flex-col relative overflow-y-auto" id="main-content">
+                    {/* Pull-to-Refresh Indicator */}
+                    <AnimatePresence>
+                      {pullDistance > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="md:hidden fixed top-0 left-0 right-0 flex justify-center pointer-events-none z-50"
+                          style={{ 
+                            paddingTop: `max(${pullDistance * 0.5}px, env(safe-area-inset-top))`,
+                            height: `${pullDistance}px`
+                          }}
+                        >
+                          <div className="flex items-center justify-center">
+                            <motion.div
+                              animate={{ 
+                                rotate: isPullRefreshing ? 360 : pullDistance * 3,
+                              }}
+                              transition={isPullRefreshing ? { 
+                                duration: 1, 
+                                repeat: Infinity, 
+                                ease: "linear" 
+                              } : { duration: 0 }}
+                              className="bg-purple-600/20 backdrop-blur-sm border border-purple-500/30 rounded-full p-2"
+                            >
+                              <RefreshCw 
+                                className="w-5 h-5 text-purple-400"
+                              />
+                            </motion.div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
                     <header className="bg-[#000000] px-4 sticky top-0 z-40 border-b border-[var(--glass-border)] md:hidden" style={{
                       paddingTop: 'max(0.75rem, env(safe-area-inset-top))',
                       paddingBottom: '0.75rem'

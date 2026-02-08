@@ -1,11 +1,16 @@
-
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { 
+  MobileSelect as Select, 
+  MobileSelectContent as SelectContent, 
+  MobileSelectItem as SelectItem, 
+  MobileSelectTrigger as SelectTrigger, 
+  MobileSelectValue as SelectValue 
+} from '@/components/ui/mobile-select';
 import { Badge } from '@/components/ui/badge';
 import { X, Loader, DollarSign, Coins, Zap, Info, CreditCard, Upload, Plus, Trash2, ImagePlus, Sparkles } from 'lucide-react';
 import { UploadFile } from '@/integrations/Core';
@@ -236,7 +241,9 @@ export default function CreateCommunityModal({ user, onClose, onSubmit }) {
   // NEW: maxSteps is now 3, implicitly handled by step advancement logic
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50" style={{
+      paddingBottom: 'max(1rem, env(safe-area-inset-bottom))'
+    }}>
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}

@@ -6,12 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue } from
-'@/components/ui/select';
+  MobileSelect as Select,
+  MobileSelectContent as SelectContent,
+  MobileSelectItem as SelectItem,
+  MobileSelectTrigger as SelectTrigger,
+  MobileSelectValue as SelectValue
+} from '@/components/ui/mobile-select';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Upload, X, Link as LinkIcon, FileVideo, FileText, Image as ImageIcon, Plus, Loader2 } from 'lucide-react';
