@@ -960,6 +960,7 @@ export default function Layout({ children, currentPageName }) {
                     radial-gradient(circle at 80% 20%, rgba(${parseInt(userColorScheme.accent.slice(1, 3), 16)}, ${parseInt(userColorScheme.accent.slice(3, 5), 16)}, ${parseInt(userColorScheme.accent.slice(5, 7), 16)}, 0.2) 0%, transparent 50%),
                     radial-gradient(circle at 40% 40%, rgba(26, 11, 46, 0.3) 0%, transparent 50%) !important;
                   min-height: 100vh;
+                  overscroll-behavior: none !important;
                 }
 
                 #root {

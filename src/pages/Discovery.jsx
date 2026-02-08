@@ -50,8 +50,7 @@ export default function Discovery() {
   const containerRef = useRef(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 }); // Stores mouse position relative to canvas
   const [cardPosition, setCardPosition] = useState({ left: '0px', top: '0px', transform: 'none' }); // New state for card position
-  const [isPullRefreshing, setIsPullRefreshing] = useState(false);
-  const [pullDistance, setPullDistance] = useState(0);
+
 
   useEffect(() => {
     loadUsers();
@@ -595,83 +594,18 @@ export default function Discovery() {
     }
   };
 
-  // Pull-to-Refresh implementation
+  // Listen for pull-refresh event from Layout
   useEffect(() => {
-    let startY = 0;
-    let currentY = 0;
-
-    const handleTouchStart = (e) => {
-      if (window.scrollY === 0) {
-        startY = e.touches[0].clientY;
-      }
+    const handlePullRefresh = () => {
+      loadUsers();
     };
 
-    const handleTouchMove = (e) => {
-      if (window.scrollY === 0 && !isPullRefreshing) {
-        currentY = e.touches[0].clientY;
-        const distance = Math.max(0, currentY - startY);
-        
-        if (distance > 0 && distance < 100) {
-          setPullDistance(distance);
-        }
-      }
-    };
-
-    const handleTouchEnd = async () => {
-      if (pullDistance > 60 && !isPullRefreshing) {
-        setIsPullRefreshing(true);
-        setPullDistance(0);
-        await loadUsers();
-        setIsPullRefreshing(false);
-      } else {
-        setPullDistance(0);
-      }
-    };
-
-    document.addEventListener('touchstart', handleTouchStart, { passive: true });
-    document.addEventListener('touchmove', handleTouchMove, { passive: true });
-    document.addEventListener('touchend', handleTouchEnd, { passive: true });
-
-    return () => {
-      document.removeEventListener('touchstart', handleTouchStart);
-      document.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, [isPullRefreshing, pullDistance]);
+    window.addEventListener('pull-refresh', handlePullRefresh);
+    return () => window.removeEventListener('pull-refresh', handlePullRefresh);
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 mt-32 md:mt-6">
-      {/* Pull-to-Refresh Indicator */}
-      <AnimatePresence>
-        {pullDistance > 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed top-0 left-0 right-0 flex justify-center pt-4 z-50 pointer-events-none md:hidden"
-            style={{ paddingTop: 'max(1rem, env(safe-area-inset-top))' }}
-          >
-            <div className="bg-purple-600/20 backdrop-blur-sm border border-purple-500/30 rounded-full px-4 py-2 flex items-center gap-2">
-              <svg 
-                className="w-4 h-4 text-purple-400" 
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                style={{ 
-                  transform: `rotate(${pullDistance * 3}deg)`,
-                  animation: isPullRefreshing ? 'spin 1s linear infinite' : 'none'
-                }}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              <span className="text-sm text-purple-300">
-                {isPullRefreshing ? 'Refreshing...' : pullDistance > 60 ? 'Release to refresh' : 'Pull to refresh'}
-              </span>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Confidential Connection Engine Header */}
       <Card className="bg-gradient-to-r text-card-foreground rounded-lg border shadow-sm dark-card border-purple-500/30 from-purple-900/20 to-pink-900/20">
         <div className="p-6">
