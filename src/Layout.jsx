@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useContext } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { User } from "@/entities/User";
 import { UserProfileData } from "@/entities/UserProfileData";
@@ -41,7 +41,9 @@ import {
   EyeOff,
   Megaphone,
   Plus,
-  Bot } from
+  Bot,
+  MessageSquare,
+  Home } from
 
 "lucide-react";
 import {
@@ -514,6 +516,7 @@ const SidebarNavigationContent = ({ user, location, userColorScheme, adminAction
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [adminActionCount, setAdminActionCount] = useState(0);
@@ -784,6 +787,8 @@ export default function Layout({ children, currentPageName }) {
                 html, body {
                   background: #000000 !important;
                   background-color: #000000 !important;
+                  overscroll-behavior-y: none;
+                  -webkit-overflow-scrolling: touch;
                 }
 
                 body {
@@ -801,6 +806,22 @@ export default function Layout({ children, currentPageName }) {
 
                 *, *::before, *::after {
                   transition: background-color 0s !important;
+                }
+
+                /* Global user-select settings for mobile */
+                button, a, .header-icon-btn, nav, [role="button"], .sidebar-dark, [data-sidebar] {
+                  user-select: none;
+                  -webkit-user-select: none;
+                  -moz-user-select: none;
+                  -ms-user-select: none;
+                }
+
+                /* Keep text content selectable */
+                p, span, h1, h2, h3, h4, h5, h6, article, .text-content {
+                  user-select: text;
+                  -webkit-user-select: text;
+                  -moz-user-select: text;
+                  -ms-user-select: text;
                 }
 
                 .sidebar-dark {
@@ -1179,7 +1200,10 @@ export default function Layout({ children, currentPageName }) {
 
                 <div className="flex-1 flex flex-col bg-black">
                   <main className="flex-1 flex flex-col relative overflow-y-auto">
-                    <header className="bg-[#000000] px-4 py-3 sticky top-0 z-40 border-b border-[var(--glass-border)] md:hidden">
+                    <header className="bg-[#000000] px-4 sticky top-0 z-40 border-b border-[var(--glass-border)] md:hidden" style={{
+                      paddingTop: 'max(0.75rem, env(safe-area-inset-top))',
+                      paddingBottom: '0.75rem'
+                    }}>
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
                           <SidebarTrigger className="p-2 rounded-lg transition-colors duration-200 text-white" style={{
@@ -1281,9 +1305,61 @@ export default function Layout({ children, currentPageName }) {
                       </AnimatePresence>
                     </div>
 
-                    <div className="p-3 md:p-6 flex-1">
+                    <motion.div 
+                      className="p-3 md:p-6 flex-1 pb-20 md:pb-6"
+                      initial={false}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
                       {children}
-                    </div>
+                    </motion.div>
+
+                    {/* Mobile Bottom Navigation Bar */}
+                    <nav 
+                      className="md:hidden fixed bottom-0 left-0 right-0 bg-[#000000] border-t border-[var(--glass-border)] z-50"
+                      style={{
+                        paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))'
+                      }}
+                    >
+                      <div className="flex items-center justify-around pt-2">
+                        <button
+                          onClick={() => navigate(createPageUrl("Feed"))}
+                          className={`flex flex-col items-center gap-1 px-4 py-2 transition-colors min-w-[44px] min-h-[44px] justify-center ${
+                            location.pathname.includes('Feed') ? 'text-purple-400' : 'text-gray-400'
+                          }`}
+                        >
+                          <Home className="w-5 h-5" />
+                          <span className="text-xs">Feed</span>
+                        </button>
+                        <button
+                          onClick={() => navigate(createPageUrl("Discovery"))}
+                          className={`flex flex-col items-center gap-1 px-4 py-2 transition-colors min-w-[44px] min-h-[44px] justify-center ${
+                            location.pathname.includes('Discovery') ? 'text-purple-400' : 'text-gray-400'
+                          }`}
+                        >
+                          <Search className="w-5 h-5" />
+                          <span className="text-xs">Discover</span>
+                        </button>
+                        <button
+                          onClick={() => navigate(createPageUrl("Messages"))}
+                          className={`flex flex-col items-center gap-1 px-4 py-2 transition-colors min-w-[44px] min-h-[44px] justify-center ${
+                            location.pathname.includes('Messages') ? 'text-purple-400' : 'text-gray-400'
+                          }`}
+                        >
+                          <MessageSquare className="w-5 h-5" />
+                          <span className="text-xs">Messages</span>
+                        </button>
+                        <button
+                          onClick={() => navigate(createPageUrl("Profile"))}
+                          className={`flex flex-col items-center gap-1 px-4 py-2 transition-colors min-w-[44px] min-h-[44px] justify-center ${
+                            location.pathname.includes('Profile') ? 'text-purple-400' : 'text-gray-400'
+                          }`}
+                        >
+                          <UserIcon className="w-5 h-5" />
+                          <span className="text-xs">Profile</span>
+                        </button>
+                      </div>
+                    </nav>
                   </main>
                 </div>
               </div>

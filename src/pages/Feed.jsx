@@ -122,6 +122,9 @@ export default function Feed() {
   const [highlightCommentId, setHighlightCommentId] = useState(null);
   const [repostingPost, setRepostingPost] = useState(null);
   const [showRepostModal, setShowRepostModal] = useState(false);
+  
+  const [isPullRefreshing, setIsPullRefreshing] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
 
   const showErrorMessage = useCallback((error, context = '') => {
     console.error(`${context} error:`, error);
@@ -2045,6 +2048,50 @@ export default function Feed() {
   const urlParams = new URLSearchParams(window.location.search);
   const isSharedPostView = urlParams.get('postId') && !user;
 
+  // Pull-to-Refresh implementation
+  useEffect(() => {
+    let startY = 0;
+    let currentY = 0;
+
+    const handleTouchStart = (e) => {
+      if (window.scrollY === 0) {
+        startY = e.touches[0].clientY;
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      if (window.scrollY === 0 && !isPullRefreshing) {
+        currentY = e.touches[0].clientY;
+        const distance = Math.max(0, currentY - startY);
+        
+        if (distance > 0 && distance < 100) {
+          setPullDistance(distance);
+        }
+      }
+    };
+
+    const handleTouchEnd = async () => {
+      if (pullDistance > 60 && !isPullRefreshing) {
+        setIsPullRefreshing(true);
+        setPullDistance(0);
+        await refreshFeed();
+        setIsPullRefreshing(false);
+      } else {
+        setPullDistance(0);
+      }
+    };
+
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchmove', handleTouchMove, { passive: true });
+    document.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isPullRefreshing, pullDistance, refreshFeed]);
+
   return (
     <div className="min-h-screen bg-black text-white p-3 md:p-6">
       <style>{`
@@ -2056,7 +2103,37 @@ export default function Feed() {
         .highlight-flash {
           animation: highlight-flash 2s ease-in-out;
         }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
       `}</style>
+
+      {/* Pull-to-Refresh Indicator */}
+      <AnimatePresence>
+        {pullDistance > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed top-0 left-0 right-0 flex justify-center pt-4 z-50 pointer-events-none"
+            style={{ paddingTop: 'max(1rem, env(safe-area-inset-top))' }}
+          >
+            <div className="bg-purple-600/20 backdrop-blur-sm border border-purple-500/30 rounded-full px-4 py-2 flex items-center gap-2">
+              <RefreshCw 
+                className="w-4 h-4 text-purple-400" 
+                style={{ 
+                  transform: `rotate(${pullDistance * 3}deg)`,
+                  animation: isPullRefreshing ? 'spin 1s linear infinite' : 'none'
+                }} 
+              />
+              <span className="text-sm text-purple-300">
+                {isPullRefreshing ? 'Refreshing...' : pullDistance > 60 ? 'Release to refresh' : 'Pull to refresh'}
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
 
 
