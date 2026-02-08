@@ -951,6 +951,14 @@ export default function Layout({ children, currentPageName }) {
                   transform: translateY(0) !important;
                 }
 
+                /* Mobile Touch Target Enhancement - Minimum 44px */
+                @media (max-width: 768px) {
+                  button, a[role="button"], [role="button"], input[type="button"], input[type="submit"] {
+                    min-width: 44px !important;
+                    min-height: 44px !important;
+                  }
+                }
+
                 .header-icon-btn.wallet-connected:hover {
                   background-color: rgba(16, 185, 129, 0.1) !important;
                   color: rgb(52, 211, 153) !important;
