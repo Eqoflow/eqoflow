@@ -762,9 +762,10 @@ export default function Layout({ children, currentPageName }) {
   React.useEffect(() => {
     const tabPages = ['Feed', 'Discovery', 'Messages', 'Profile'];
     const isBottomTabNavigation = tabPages.includes(previousPageRef.current) && tabPages.includes(currentPageName);
+    const isNavigatingToSameTab = previousPageRef.current === currentPageName;
 
-    if (isBottomTabNavigation) {
-      // Save scroll position of previous tab page
+    if (isBottomTabNavigation && !isNavigatingToSameTab) {
+      // Save scroll position of previous tab page when switching tabs
       scrollPositions.current[previousPageRef.current] = window.scrollY;
       
       // Restore scroll position for new tab page
@@ -779,6 +780,10 @@ export default function Layout({ children, currentPageName }) {
           window.scrollTo(0, 0);
         }, 0);
       }
+    } else if (isNavigatingToSameTab) {
+      // Tab was re-selected, scroll to top is handled by button onClick
+      // Clear saved scroll position to reset the tab
+      delete scrollPositions.current[currentPageName];
     }
 
     previousPageRef.current = currentPageName;
@@ -1458,8 +1463,14 @@ export default function Layout({ children, currentPageName }) {
                       <div className="flex items-center justify-around pt-2">
                         <button
                           onClick={() => {
-                            setActiveTab('Feed');
-                            navigate(createPageUrl("Feed"));
+                            const isCurrentlyActive = activeTab === 'Feed' || location.pathname.includes('Feed');
+                            if (isCurrentlyActive) {
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                              navigate(createPageUrl("Feed"), { replace: true });
+                            } else {
+                              setActiveTab('Feed');
+                              navigate(createPageUrl("Feed"));
+                            }
                           }}
                           className={`flex flex-col items-center gap-0.5 px-3 py-2 transition-colors min-w-[60px] min-h-[52px] justify-center ${
                             activeTab === 'Feed' || location.pathname.includes('Feed') ? 'text-purple-400' : 'text-gray-400'
@@ -1470,8 +1481,14 @@ export default function Layout({ children, currentPageName }) {
                         </button>
                         <button
                           onClick={() => {
-                            setActiveTab('Discovery');
-                            navigate(createPageUrl("Discovery"));
+                            const isCurrentlyActive = activeTab === 'Discovery' || location.pathname.includes('Discovery');
+                            if (isCurrentlyActive) {
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                              navigate(createPageUrl("Discovery"), { replace: true });
+                            } else {
+                              setActiveTab('Discovery');
+                              navigate(createPageUrl("Discovery"));
+                            }
                           }}
                           className={`flex flex-col items-center gap-0.5 px-3 py-2 transition-colors min-w-[60px] min-h-[52px] justify-center ${
                             activeTab === 'Discovery' || location.pathname.includes('Discovery') ? 'text-purple-400' : 'text-gray-400'
@@ -1482,8 +1499,14 @@ export default function Layout({ children, currentPageName }) {
                         </button>
                         <button
                           onClick={() => {
-                            setActiveTab('Messages');
-                            navigate(createPageUrl("Messages"));
+                            const isCurrentlyActive = activeTab === 'Messages' || location.pathname.includes('Messages');
+                            if (isCurrentlyActive) {
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                              navigate(createPageUrl("Messages"), { replace: true });
+                            } else {
+                              setActiveTab('Messages');
+                              navigate(createPageUrl("Messages"));
+                            }
                           }}
                           className={`flex flex-col items-center gap-0.5 px-3 py-2 transition-colors min-w-[60px] min-h-[52px] justify-center ${
                             activeTab === 'Messages' || location.pathname.includes('Messages') ? 'text-purple-400' : 'text-gray-400'
@@ -1494,8 +1517,14 @@ export default function Layout({ children, currentPageName }) {
                         </button>
                         <button
                           onClick={() => {
-                            setActiveTab('Profile');
-                            navigate(createPageUrl("Profile"));
+                            const isCurrentlyActive = activeTab === 'Profile' || location.pathname.includes('Profile');
+                            if (isCurrentlyActive) {
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                              navigate(createPageUrl("Profile"), { replace: true });
+                            } else {
+                              setActiveTab('Profile');
+                              navigate(createPageUrl("Profile"));
+                            }
                           }}
                           className={`flex flex-col items-center gap-0.5 px-3 py-2 transition-colors min-w-[60px] min-h-[52px] justify-center ${
                             activeTab === 'Profile' || location.pathname.includes('Profile') ? 'text-purple-400' : 'text-gray-400'
