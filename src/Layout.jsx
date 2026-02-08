@@ -1255,6 +1255,13 @@ export default function Layout({ children, currentPageName }) {
                   0%, 100% { opacity: 0.3; }
                   50% { opacity: 0.6; }
                 }
+
+                /* Safe area padding for form inputs to prevent virtual keyboard clipping */
+                @media (max-width: 768px) {
+                  .modal-form-input, input, textarea, select {
+                    margin-bottom: max(0.5rem, env(safe-area-inset-bottom));
+                  }
+                }
               `}
             </style>
 
