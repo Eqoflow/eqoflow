@@ -524,6 +524,8 @@ export default function Layout({ children, currentPageName }) {
   const [isEmailVisible, setIsEmailVisible] = useState(true);
   const [direction, setDirection] = useState(0);
   const scrollPositions = React.useRef({});
+  const [activeTab, setActiveTab] = React.useState(currentPageName);
+  const [tabStates, setTabStates] = React.useState({});
 
   // Define public pages that never require login
   const publicPages = useMemo(() => [
@@ -1429,36 +1431,48 @@ export default function Layout({ children, currentPageName }) {
                     >
                       <div className="flex items-center justify-around pt-2">
                         <button
-                          onClick={() => navigate(createPageUrl("Feed"))}
+                          onClick={() => {
+                            setActiveTab('Feed');
+                            navigate(createPageUrl("Feed"));
+                          }}
                           className={`flex flex-col items-center gap-0.5 px-3 py-2 transition-colors min-w-[60px] min-h-[52px] justify-center ${
-                            location.pathname.includes('Feed') ? 'text-purple-400' : 'text-gray-400'
+                            activeTab === 'Feed' || location.pathname.includes('Feed') ? 'text-purple-400' : 'text-gray-400'
                           }`}
                         >
                           <Home className="w-6 h-6" />
                           <span className="text-xs">Feed</span>
                         </button>
                         <button
-                          onClick={() => navigate(createPageUrl("Discovery"))}
+                          onClick={() => {
+                            setActiveTab('Discovery');
+                            navigate(createPageUrl("Discovery"));
+                          }}
                           className={`flex flex-col items-center gap-0.5 px-3 py-2 transition-colors min-w-[60px] min-h-[52px] justify-center ${
-                            location.pathname.includes('Discovery') ? 'text-purple-400' : 'text-gray-400'
+                            activeTab === 'Discovery' || location.pathname.includes('Discovery') ? 'text-purple-400' : 'text-gray-400'
                           }`}
                         >
                           <Search className="w-6 h-6" />
                           <span className="text-xs">Discover</span>
                         </button>
                         <button
-                          onClick={() => navigate(createPageUrl("Messages"))}
+                          onClick={() => {
+                            setActiveTab('Messages');
+                            navigate(createPageUrl("Messages"));
+                          }}
                           className={`flex flex-col items-center gap-0.5 px-3 py-2 transition-colors min-w-[60px] min-h-[52px] justify-center ${
-                            location.pathname.includes('Messages') ? 'text-purple-400' : 'text-gray-400'
+                            activeTab === 'Messages' || location.pathname.includes('Messages') ? 'text-purple-400' : 'text-gray-400'
                           }`}
                         >
                           <MessageSquare className="w-6 h-6" />
                           <span className="text-xs">Messages</span>
                         </button>
                         <button
-                          onClick={() => navigate(createPageUrl("Profile"))}
+                          onClick={() => {
+                            setActiveTab('Profile');
+                            navigate(createPageUrl("Profile"));
+                          }}
                           className={`flex flex-col items-center gap-0.5 px-3 py-2 transition-colors min-w-[60px] min-h-[52px] justify-center ${
-                            location.pathname.includes('Profile') ? 'text-purple-400' : 'text-gray-400'
+                            activeTab === 'Profile' || location.pathname.includes('Profile') ? 'text-purple-400' : 'text-gray-400'
                           }`}
                         >
                           <UserIcon className="w-6 h-6" />
