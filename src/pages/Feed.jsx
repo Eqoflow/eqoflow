@@ -2252,27 +2252,27 @@ export default function Feed() {
                     <Button
                       onClick={refreshFeed}
                       variant="outline"
-                      className="border-purple-500/30 text-white hover:bg-purple-500/10 px-3 py-2"
+                      className="border-purple-500/30 text-white hover:bg-purple-500/10 px-3 py-2 min-h-[44px]"
                       size="sm"
                     >
-                      <RefreshCw className="w-4 h-4 mr-1" />
+                      <RefreshCw className="w-5 h-5 mr-1" />
                       <span className="hidden sm:inline">Refresh</span>
                     </Button>
                     <Button
                       onClick={() => navigate(createPageUrl('OrbitalFeed'))}
                       variant="outline"
-                      className="border-purple-500/30 text-white hover:bg-purple-500/10 px-3 py-2"
+                      className="border-purple-500/30 text-white hover:bg-purple-500/10 px-3 py-2 min-h-[44px]"
                       size="sm"
                     >
-                      <Map className="w-4 h-4 mr-1" />
+                      <Map className="w-5 h-5 mr-1" />
                       <span className="hidden sm:inline">Orbital View</span>
                     </Button>
                     <Button
-                  onClick={() => setShowAlgorithmSettings(!showAlgorithmSettings)}
-                  variant="outline"
-                  className="lg:hidden border-purple-500/30 text-white hover:bg-purple-500/10 p-2"
-                  size="sm">
-                      <Settings className="w-4 h-4" />
+                      onClick={() => setShowAlgorithmSettings(!showAlgorithmSettings)}
+                      variant="outline"
+                      className="lg:hidden border-purple-500/30 text-white hover:bg-purple-500/10 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                      size="sm">
+                      <Settings className="w-5 h-5" />
                     </Button>
                   </div>
               }
@@ -2358,7 +2358,7 @@ export default function Feed() {
               {user &&
             <div className="flex justify-center my-4">
                   <Button
-                onClick={() => setShowCreatePostModal(true)} className="bg-slate-950 text-white px-6 py-3 text-sm font-medium rounded-lg inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-primary/90 h-10 from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 shadow-lg hover:shadow-blue-500/50 transition-shadow duration-300">
+                    onClick={() => setShowCreatePostModal(true)} className="bg-slate-950 text-white px-6 py-3 text-sm font-medium rounded-lg inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-primary/90 min-h-[44px] from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 shadow-lg hover:shadow-blue-500/50 transition-shadow duration-300">
 
                     <Plus className="w-5 h-5 mr-2" />
                     Broadcast an Echo

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
@@ -16,6 +15,8 @@ export default function CommunitiesPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [isPullRefreshing, setIsPullRefreshing] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
 
   useEffect(() => {
     loadData();
@@ -127,8 +128,83 @@ export default function CommunitiesPage() {
     }
   };
 
+  // Pull-to-Refresh implementation
+  useEffect(() => {
+    let startY = 0;
+    let currentY = 0;
+
+    const handleTouchStart = (e) => {
+      if (window.scrollY === 0) {
+        startY = e.touches[0].clientY;
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      if (window.scrollY === 0 && !isPullRefreshing) {
+        currentY = e.touches[0].clientY;
+        const distance = Math.max(0, currentY - startY);
+        
+        if (distance > 0 && distance < 100) {
+          setPullDistance(distance);
+        }
+      }
+    };
+
+    const handleTouchEnd = async () => {
+      if (pullDistance > 60 && !isPullRefreshing) {
+        setIsPullRefreshing(true);
+        setPullDistance(0);
+        await loadData();
+        setIsPullRefreshing(false);
+      } else {
+        setPullDistance(0);
+      }
+    };
+
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchmove', handleTouchMove, { passive: true });
+    document.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isPullRefreshing, pullDistance]);
+
   return (
     <div className="p-3 md:p-6">
+      {/* Pull-to-Refresh Indicator */}
+      <AnimatePresence>
+        {pullDistance > 0 && (
+          <div
+            className="fixed top-0 left-0 right-0 flex justify-center pt-4 z-50 pointer-events-none md:hidden"
+            style={{ 
+              paddingTop: 'max(1rem, env(safe-area-inset-top))',
+              opacity: pullDistance / 60
+            }}
+          >
+            <div className="bg-purple-600/20 backdrop-blur-sm border border-purple-500/30 rounded-full px-4 py-2 flex items-center gap-2">
+              <svg 
+                className="w-4 h-4 text-purple-400" 
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                style={{ 
+                  transform: `rotate(${pullDistance * 3}deg)`,
+                  animation: isPullRefreshing ? 'spin 1s linear infinite' : 'none'
+                }}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span className="text-sm text-purple-300">
+                {isPullRefreshing ? 'Refreshing...' : pullDistance > 60 ? 'Release to refresh' : 'Pull to refresh'}
+              </span>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
@@ -140,10 +216,10 @@ export default function CommunitiesPage() {
               </h1>
               <Button
                 variant="outline"
-                className="border-purple-500/30 text-white hover:bg-purple-500/10 h-8 px-3"
+                className="border-purple-500/30 text-white hover:bg-purple-500/10 min-h-[44px] px-3"
                 onClick={() => setShowInfoModal(true)}
               >
-                <Info className="w-4 h-4 mr-2" />
+                <Info className="w-5 h-5 mr-2" />
                 How it works
               </Button>
             </div>
@@ -153,9 +229,9 @@ export default function CommunitiesPage() {
           </div>
           <Button
             onClick={() => setShowCreateModal(true)}
-            className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 neon-glow"
+            className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 neon-glow min-h-[44px]"
           >
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className="w-5 h-5 mr-2" />
             Create Community
           </Button>
         </div>
@@ -195,7 +271,7 @@ export default function CommunitiesPage() {
                 <p className="text-sm md:text-base text-gray-500 mb-4">Be the first to create a new micro-economy!</p>
                 <Button
                   onClick={() => setShowCreateModal(true)}
-                  className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600"
+                  className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 min-h-[44px]"
                 >
                   Create Your Community
                 </Button>

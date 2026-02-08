@@ -791,6 +791,12 @@ export default function Layout({ children, currentPageName }) {
                   -webkit-overflow-scrolling: touch;
                 }
 
+                @media (prefers-color-scheme: dark) {
+                  :root {
+                    color-scheme: dark;
+                  }
+                }
+
                 body {
                   background-image:
                     radial-gradient(circle at 20% 80%, rgba(${parseInt(userColorScheme.primary.slice(1, 3), 16)}, ${parseInt(userColorScheme.primary.slice(3, 5), 16)}, ${parseInt(userColorScheme.primary.slice(5, 7), 16)}, 0.15) 0%, transparent 50%),
@@ -1206,18 +1212,54 @@ export default function Layout({ children, currentPageName }) {
                     }}>
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <SidebarTrigger className="p-2 rounded-lg transition-colors duration-200 text-white" style={{
-                            backgroundColor: hexToRgba(userColorScheme.primary, 0.10)
-                          }}>
-                            <Menu className="w-5 h-5 text-white" />
-                          </SidebarTrigger>
-                          <div className="flex-1 flex items-center justify-center">
-                            <img
-                              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/687e8a7d9ad971203c39d072/d31ff4d3d_1000044465.png"
-                              alt="EqoFlow Logo"
-                              className="h-16 object-contain" />
-                          </div>
-                          <div className="w-9 h-9" />
+                          {(() => {
+                            const pathSegments = location.pathname.split('/').filter(Boolean);
+                            const showBackButton = pathSegments.length > 1;
+
+                            if (showBackButton) {
+                              return (
+                                <>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => window.history.back()}
+                                    className="p-2 rounded-lg transition-colors duration-200 text-white min-w-[44px] min-h-[44px]"
+                                    style={{
+                                      backgroundColor: hexToRgba(userColorScheme.primary, 0.10)
+                                    }}
+                                  >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                  </Button>
+                                  <div className="flex-1 flex items-center justify-center">
+                                    <img
+                                      src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/687e8a7d9ad971203c39d072/d31ff4d3d_1000044465.png"
+                                      alt="EqoFlow Logo"
+                                      className="h-16 object-contain" />
+                                  </div>
+                                  <div className="w-11 h-11" />
+                                </>
+                              );
+                            } else {
+                              return (
+                                <>
+                                  <SidebarTrigger className="p-2 rounded-lg transition-colors duration-200 text-white min-w-[44px] min-h-[44px]" style={{
+                                    backgroundColor: hexToRgba(userColorScheme.primary, 0.10)
+                                  }}>
+                                    <Menu className="w-5 h-5 text-white" />
+                                  </SidebarTrigger>
+                                  <div className="flex-1 flex items-center justify-center">
+                                    <img
+                                      src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/687e8a7d9ad971203c39d072/d31ff4d3d_1000044465.png"
+                                      alt="EqoFlow Logo"
+                                      className="h-16 object-contain" />
+                                  </div>
+                                  <div className="w-11 h-11" />
+                                </>
+                              );
+                            }
+                          })()}
                         </div>
 
                         <div className="flex items-center justify-center gap-2">
@@ -1324,38 +1366,38 @@ export default function Layout({ children, currentPageName }) {
                       <div className="flex items-center justify-around pt-2">
                         <button
                           onClick={() => navigate(createPageUrl("Feed"))}
-                          className={`flex flex-col items-center gap-1 px-4 py-2 transition-colors min-w-[44px] min-h-[44px] justify-center ${
+                          className={`flex flex-col items-center gap-0.5 px-3 py-2 transition-colors min-w-[60px] min-h-[52px] justify-center ${
                             location.pathname.includes('Feed') ? 'text-purple-400' : 'text-gray-400'
                           }`}
                         >
-                          <Home className="w-5 h-5" />
+                          <Home className="w-6 h-6" />
                           <span className="text-xs">Feed</span>
                         </button>
                         <button
                           onClick={() => navigate(createPageUrl("Discovery"))}
-                          className={`flex flex-col items-center gap-1 px-4 py-2 transition-colors min-w-[44px] min-h-[44px] justify-center ${
+                          className={`flex flex-col items-center gap-0.5 px-3 py-2 transition-colors min-w-[60px] min-h-[52px] justify-center ${
                             location.pathname.includes('Discovery') ? 'text-purple-400' : 'text-gray-400'
                           }`}
                         >
-                          <Search className="w-5 h-5" />
+                          <Search className="w-6 h-6" />
                           <span className="text-xs">Discover</span>
                         </button>
                         <button
                           onClick={() => navigate(createPageUrl("Messages"))}
-                          className={`flex flex-col items-center gap-1 px-4 py-2 transition-colors min-w-[44px] min-h-[44px] justify-center ${
+                          className={`flex flex-col items-center gap-0.5 px-3 py-2 transition-colors min-w-[60px] min-h-[52px] justify-center ${
                             location.pathname.includes('Messages') ? 'text-purple-400' : 'text-gray-400'
                           }`}
                         >
-                          <MessageSquare className="w-5 h-5" />
+                          <MessageSquare className="w-6 h-6" />
                           <span className="text-xs">Messages</span>
                         </button>
                         <button
                           onClick={() => navigate(createPageUrl("Profile"))}
-                          className={`flex flex-col items-center gap-1 px-4 py-2 transition-colors min-w-[44px] min-h-[44px] justify-center ${
+                          className={`flex flex-col items-center gap-0.5 px-3 py-2 transition-colors min-w-[60px] min-h-[52px] justify-center ${
                             location.pathname.includes('Profile') ? 'text-purple-400' : 'text-gray-400'
                           }`}
                         >
-                          <UserIcon className="w-5 h-5" />
+                          <UserIcon className="w-6 h-6" />
                           <span className="text-xs">Profile</span>
                         </button>
                       </div>
