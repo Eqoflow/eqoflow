@@ -1,13 +1,36 @@
 import * as React from "react"
+import { motion } from "framer-motion";
 
 import { cn } from "@/lib/utils"
 
-const Card = React.forwardRef(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("rounded-xl border bg-card text-card-foreground shadow", className)}
-    {...props} />
-))
+const Card = React.forwardRef(({ className, ...props }, ref) => {
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  if (isMobile) {
+    return (
+      <motion.div
+        whileTap={{ scale: 0.99 }}
+        ref={ref}
+        className={cn("rounded-xl border bg-card text-card-foreground shadow", className)}
+        {...props}
+      />
+    );
+  }
+
+  return (
+    <div
+      ref={ref}
+      className={cn("rounded-xl border bg-card text-card-foreground shadow", className)}
+      {...props} />
+  );
+})
 Card.displayName = "Card"
 
 const CardHeader = React.forwardRef(({ className, ...props }, ref) => (
