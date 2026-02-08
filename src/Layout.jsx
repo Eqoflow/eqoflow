@@ -736,6 +736,56 @@ export default function Layout({ children, currentPageName }) {
     getCachedUser: UserCacheHelpers.getMergedCachedUser
   }), [user, loadUserData, isLoading]);
 
+  // Page transition logic
+  const pageOrder = ['Feed', 'Discovery', 'Messages', 'Profile'];
+  const prevPageRef = React.useRef(currentPageName);
+
+  React.useEffect(() => {
+    const prevIndex = pageOrder.indexOf(prevPageRef.current);
+    const currentIndex = pageOrder.indexOf(currentPageName);
+    
+    if (prevIndex !== -1 && currentIndex !== -1) {
+      setDirection(currentIndex > prevIndex ? 1 : -1);
+    } else {
+      setDirection(0);
+    }
+    
+    prevPageRef.current = currentPageName;
+  }, [currentPageName]);
+
+  // Scroll position preservation
+  React.useEffect(() => {
+    // Save scroll position when leaving a page
+    return () => {
+      scrollPositions.current[currentPageName] = window.scrollY;
+    };
+  }, [currentPageName]);
+
+  React.useEffect(() => {
+    // Restore scroll position when entering a page
+    const savedPosition = scrollPositions.current[currentPageName];
+    if (savedPosition !== undefined) {
+      setTimeout(() => {
+        window.scrollTo(0, savedPosition);
+      }, 0);
+    }
+  }, [currentPageName]);
+
+  const pageVariants = {
+    enter: (direction) => ({
+      x: direction > 0 ? '100%' : direction < 0 ? '-100%' : 0,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction) => ({
+      x: direction > 0 ? '-100%' : direction < 0 ? '100%' : 0,
+      opacity: 0,
+    }),
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
