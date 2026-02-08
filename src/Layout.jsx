@@ -1089,14 +1089,6 @@ export default function Layout({ children, currentPageName }) {
                   transition: background-color 0s !important;
                 }
 
-                /* Mobile Touch Target Enhancement - Minimum 44px for accessibility */
-                @media (max-width: 768px) {
-                  button, a[role="button"], [role="button"], input[type="button"], input[type="submit"] {
-                    min-width: 44px;
-                    min-height: 44px;
-                  }
-                }
-
                 .glass-morphism {
                   background: rgba(0, 0, 0, 0.4);
                   backdrop-filter: blur(20px);
@@ -1267,13 +1259,6 @@ export default function Layout({ children, currentPageName }) {
                 @keyframes superGlow {
                   0%, 100% { opacity: 0.3; }
                   50% { opacity: 0.6; }
-                }
-
-                /* Safe area padding for form inputs to prevent virtual keyboard clipping */
-                @media (max-width: 768px) {
-                  .modal-form-input, input, textarea, select {
-                    margin-bottom: max(0.5rem, env(safe-area-inset-bottom));
-                  }
                 }
               `}
             </style>
