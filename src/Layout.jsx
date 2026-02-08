@@ -524,6 +524,12 @@ export default function Layout({ children, currentPageName }) {
   const [isEmailVisible, setIsEmailVisible] = useState(true);
   const [direction, setDirection] = useState(0);
   const scrollPositions = React.useRef({});
+  const navigationStacks = React.useRef({
+    Feed: [createPageUrl("Feed")],
+    Discovery: [createPageUrl("Discovery")],
+    Messages: [createPageUrl("Messages")],
+    Profile: [createPageUrl("Profile")]
+  });
   const [activeTab, setActiveTab] = React.useState(() => {
     const tabPages = ['Feed', 'Discovery', 'Messages', 'Profile'];
     return tabPages.includes(currentPageName) ? currentPageName : 'Feed';
@@ -758,11 +764,22 @@ export default function Layout({ children, currentPageName }) {
     prevPageRef.current = currentPageName;
   }, [currentPageName]);
 
-  // Enhanced scroll position preservation for bottom tab navigation
+  // Enhanced scroll position preservation and navigation stack management
   React.useEffect(() => {
     const tabPages = ['Feed', 'Discovery', 'Messages', 'Profile'];
     const isBottomTabNavigation = tabPages.includes(previousPageRef.current) && tabPages.includes(currentPageName);
     const isNavigatingToSameTab = previousPageRef.current === currentPageName;
+
+    // Update navigation stack for current page
+    if (tabPages.includes(currentPageName)) {
+      const currentPath = location.pathname;
+      const stack = navigationStacks.current[currentPageName];
+      
+      // Only add to stack if it's a new route within this tab
+      if (stack[stack.length - 1] !== currentPath) {
+        navigationStacks.current[currentPageName] = [...stack, currentPath];
+      }
+    }
 
     if (isBottomTabNavigation && !isNavigatingToSameTab) {
       // Save scroll position of previous tab page when switching tabs
@@ -780,14 +797,10 @@ export default function Layout({ children, currentPageName }) {
           window.scrollTo(0, 0);
         }, 0);
       }
-    } else if (isNavigatingToSameTab) {
-      // Tab was re-selected, scroll to top is handled by button onClick
-      // Clear saved scroll position to reset the tab
-      delete scrollPositions.current[currentPageName];
     }
 
     previousPageRef.current = currentPageName;
-  }, [currentPageName]);
+  }, [currentPageName, location.pathname]);
 
   const pageVariants = {
     enter: (direction) => ({
@@ -1446,15 +1459,22 @@ export default function Layout({ children, currentPageName }) {
                       }}
                     >
                       <div className="flex items-center justify-around pt-2">
-                        <button
+                        <motion.button
+                          whileTap={{ scale: 0.95 }}
                           onClick={() => {
                             const isCurrentlyActive = activeTab === 'Feed' || location.pathname.includes('Feed');
                             if (isCurrentlyActive) {
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
-                              navigate(createPageUrl("Feed"), { replace: true });
+                              const stack = navigationStacks.current.Feed;
+                              if (stack.length > 1) {
+                                stack.pop();
+                                navigate(stack[stack.length - 1], { replace: true });
+                              } else {
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                              }
                             } else {
                               setActiveTab('Feed');
-                              navigate(createPageUrl("Feed"));
+                              const lastRoute = navigationStacks.current.Feed[navigationStacks.current.Feed.length - 1];
+                              navigate(lastRoute);
                             }
                           }}
                           className={`flex flex-col items-center gap-0.5 px-3 py-2 transition-colors min-w-[60px] min-h-[52px] justify-center ${
@@ -1463,16 +1483,23 @@ export default function Layout({ children, currentPageName }) {
                         >
                           <Home className="w-6 h-6" />
                           <span className="text-xs">Feed</span>
-                        </button>
-                        <button
+                        </motion.button>
+                        <motion.button
+                          whileTap={{ scale: 0.95 }}
                           onClick={() => {
                             const isCurrentlyActive = activeTab === 'Discovery' || location.pathname.includes('Discovery');
                             if (isCurrentlyActive) {
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
-                              navigate(createPageUrl("Discovery"), { replace: true });
+                              const stack = navigationStacks.current.Discovery;
+                              if (stack.length > 1) {
+                                stack.pop();
+                                navigate(stack[stack.length - 1], { replace: true });
+                              } else {
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                              }
                             } else {
                               setActiveTab('Discovery');
-                              navigate(createPageUrl("Discovery"));
+                              const lastRoute = navigationStacks.current.Discovery[navigationStacks.current.Discovery.length - 1];
+                              navigate(lastRoute);
                             }
                           }}
                           className={`flex flex-col items-center gap-0.5 px-3 py-2 transition-colors min-w-[60px] min-h-[52px] justify-center ${
@@ -1481,16 +1508,23 @@ export default function Layout({ children, currentPageName }) {
                         >
                           <Search className="w-6 h-6" />
                           <span className="text-xs">Discover</span>
-                        </button>
-                        <button
+                        </motion.button>
+                        <motion.button
+                          whileTap={{ scale: 0.95 }}
                           onClick={() => {
                             const isCurrentlyActive = activeTab === 'Messages' || location.pathname.includes('Messages');
                             if (isCurrentlyActive) {
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
-                              navigate(createPageUrl("Messages"), { replace: true });
+                              const stack = navigationStacks.current.Messages;
+                              if (stack.length > 1) {
+                                stack.pop();
+                                navigate(stack[stack.length - 1], { replace: true });
+                              } else {
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                              }
                             } else {
                               setActiveTab('Messages');
-                              navigate(createPageUrl("Messages"));
+                              const lastRoute = navigationStacks.current.Messages[navigationStacks.current.Messages.length - 1];
+                              navigate(lastRoute);
                             }
                           }}
                           className={`flex flex-col items-center gap-0.5 px-3 py-2 transition-colors min-w-[60px] min-h-[52px] justify-center ${
@@ -1499,16 +1533,23 @@ export default function Layout({ children, currentPageName }) {
                         >
                           <MessageSquare className="w-6 h-6" />
                           <span className="text-xs">Messages</span>
-                        </button>
-                        <button
+                        </motion.button>
+                        <motion.button
+                          whileTap={{ scale: 0.95 }}
                           onClick={() => {
                             const isCurrentlyActive = activeTab === 'Profile' || location.pathname.includes('Profile');
                             if (isCurrentlyActive) {
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
-                              navigate(createPageUrl("Profile"), { replace: true });
+                              const stack = navigationStacks.current.Profile;
+                              if (stack.length > 1) {
+                                stack.pop();
+                                navigate(stack[stack.length - 1], { replace: true });
+                              } else {
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                              }
                             } else {
                               setActiveTab('Profile');
-                              navigate(createPageUrl("Profile"));
+                              const lastRoute = navigationStacks.current.Profile[navigationStacks.current.Profile.length - 1];
+                              navigate(lastRoute);
                             }
                           }}
                           className={`flex flex-col items-center gap-0.5 px-3 py-2 transition-colors min-w-[60px] min-h-[52px] justify-center ${
@@ -1517,7 +1558,7 @@ export default function Layout({ children, currentPageName }) {
                         >
                           <UserIcon className="w-6 h-6" />
                           <span className="text-xs">Profile</span>
-                        </button>
+                        </motion.button>
                       </div>
                     </nav>
                   </main>
