@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -423,7 +422,7 @@ export default function PollCard({ poll, user, onPollUpdate, onEdit, onDelete, o
                     <Button
                       onClick={() => handleVote(index)}
                       disabled={isVoting || !isPollOpen()}
-                      className="w-full bg-black/20 border border-purple-500/20 hover:bg-purple-500/10 text-white justify-start h-auto py-3"
+                      className="w-full bg-black/20 border border-purple-500/20 hover:bg-purple-500/10 text-white justify-start min-h-[44px] py-3"
                     >
                       <span className="font-medium">{filterProfanity(option, user?.privacy_settings?.profanity_filter_enabled)}</span>
                     </Button>
@@ -435,11 +434,11 @@ export default function PollCard({ poll, user, onPollUpdate, onEdit, onDelete, o
 
           {/* Poll Stats */}
           <div className="flex items-center justify-between pt-4 border-t border-gray-700/50 text-sm">
-            <div className="flex items-center gap-2 text-gray-400">
-              <Clock className="w-4 h-4" />
+            <div className="flex items-center gap-2 text-gray-400 min-h-[44px]">
+              <Clock className="w-5 h-5" />
               <span>{timeRemaining}</span>
             </div>
-            <div className="text-purple-400 font-medium">
+            <div className="text-purple-400 font-medium min-h-[44px] flex items-center">
               {localPoll.total_votes || 0} vote{(localPoll.total_votes || 0) !== 1 ? 's' : ''}
             </div>
           </div>

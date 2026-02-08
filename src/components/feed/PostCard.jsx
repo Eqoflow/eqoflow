@@ -1240,11 +1240,11 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
                   variant="ghost"
                   size="sm"
                   onClick={() => handleLike(displayPost)}
-                  className={`flex items-center gap-1 md:gap-2 transition-colors p-2 h-auto ${currentUser && displayPost.liked_by && displayPost.liked_by.includes(currentUser.email) ?
+                  className={`flex items-center gap-1 md:gap-2 transition-colors min-w-[44px] min-h-[44px] justify-center ${currentUser && displayPost.liked_by && displayPost.liked_by.includes(currentUser.email) ?
                   'text-red-400 hover:text-red-300' :
                   'text-gray-400 hover:text-red-400'}`}>
 
-                  <Heart className={`w-4 h-4 ${currentUser && displayPost.liked_by && displayPost.liked_by.includes(currentUser.email) ? 'fill-current' : ''}`} />
+                  <Heart className={`w-5 h-5 ${currentUser && displayPost.liked_by && displayPost.liked_by.includes(currentUser.email) ? 'fill-current' : ''}`} />
                   <span className="text-sm font-medium">{displayPost.likes_count || 0}</span>
                 </Button>
 
@@ -1259,9 +1259,9 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
                     variant="ghost"
                     size="sm"
                     onClick={() => setShowComments(!showComments)}
-                    className="flex items-center gap-1 md:gap-2 text-gray-400 hover:text-blue-400 transition-colors p-2 h-auto">
+                    className="flex items-center gap-1 md:gap-2 text-gray-400 hover:text-blue-400 transition-colors min-w-[44px] min-h-[44px] justify-center">
 
-                    <MessageCircle className="w-4 h-4" />
+                    <MessageCircle className="w-5 h-5" />
                     <span className="text-sm font-medium">{displayPost.comments_count || 0}</span>
                   </Button>
 
@@ -1269,9 +1269,9 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
                     variant="ghost"
                     size="sm"
                     onClick={() => handleRepost(displayPost)}
-                    className="flex items-center gap-1 md:gap-2 text-gray-400 hover:text-green-400 transition-colors p-2 h-auto">
+                    className="flex items-center gap-1 md:gap-2 text-gray-400 hover:text-green-400 transition-colors min-w-[44px] min-h-[44px] justify-center">
 
-                    <RefreshCw className="w-4 h-4" />
+                    <RefreshCw className="w-5 h-5" />
                     <span className="text-sm font-medium">{displayPost.reposts_count || 0}</span>
                   </Button>
 
@@ -1279,9 +1279,9 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
                     variant="ghost"
                     size="sm"
                     onClick={handleShare}
-                    className="flex items-center gap-1 md:gap-2 text-gray-400 hover:text-purple-400 transition-colors p-2 h-auto"
+                    className="flex items-center gap-1 md:gap-2 text-gray-400 hover:text-purple-400 transition-colors min-w-[44px] min-h-[44px] justify-center"
                     title="Share this echo">
-                    <Share2 className="w-4 h-4" />
+                    <Share2 className="w-5 h-5" />
                   </Button>
 
                   {canSupercharge &&
@@ -1290,10 +1290,10 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
                     size="sm"
                     onClick={handleSupercharge}
                     disabled={isSupercharging}
-                    className="flex items-center gap-1 md:gap-2 text-yellow-400 hover:text-yellow-300 transition-colors p-2 h-auto hover:bg-yellow-400/10"
+                    className="flex items-center gap-1 md:gap-2 text-yellow-400 hover:text-yellow-300 transition-colors min-w-[44px] min-h-[44px] justify-center hover:bg-yellow-400/10"
                     title="Supercharge this echo with a Super Boost token!">
 
-                      <Sparkles className="w-4 h-4" />
+                      <Sparkles className="w-5 h-5" />
                       <span className="text-xs font-medium hidden md:inline">Supercharge</span>
                     </Button>
                   }
@@ -1675,12 +1675,12 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
                 variant="ghost"
                 size="sm"
                 onClick={() => handleLike(displayPost)}
-                className={`flex items-center gap-1 md:gap-2 transition-colors p-2 h-auto ${currentUser && displayPost.liked_by && displayPost.liked_by.includes(currentUser.email) ?
+                className={`flex items-center gap-1 md:gap-2 transition-colors min-w-[44px] min-h-[44px] justify-center ${currentUser && displayPost.liked_by && displayPost.liked_by.includes(currentUser.email) ?
                 'text-red-400 hover:text-red-300' :
                 'text-gray-400 hover:text-red-400'}`
                 }>
 
-                <Heart className={`w-4 h-4 ${currentUser && displayPost.liked_by && displayPost.liked_by.includes(currentUser.email) ? 'fill-current' : ''}`
+                <Heart className={`w-5 h-5 ${currentUser && displayPost.liked_by && displayPost.liked_by.includes(currentUser.email) ? 'fill-current' : ''}`
                 } />
                 <span className="text-sm font-medium">{displayPost.likes_count || 0}</span>
               </Button>
@@ -1695,9 +1695,9 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowComments(!showComments)}
-                  className="flex items-center gap-1 md:gap-2 text-gray-400 hover:text-blue-400 transition-colors p-2 h-auto">
+                  className="flex items-center gap-1 md:gap-2 text-gray-400 hover:text-blue-400 transition-colors min-w-[44px] min-h-[44px] justify-center">
 
-                  <MessageCircle className="w-4 h-4" />
+                  <MessageCircle className="w-5 h-5" />
                   <span className="text-sm font-medium">{displayPost.comments_count || 0}</span>
                 </Button>
 
@@ -1705,9 +1705,9 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
                   variant="ghost"
                   size="sm"
                   onClick={() => handleRepost(displayPost)}
-                  className="flex items-center gap-1 md:gap-2 text-gray-400 hover:text-green-400 transition-colors p-2 h-auto">
+                  className="flex items-center gap-1 md:gap-2 text-gray-400 hover:text-green-400 transition-colors min-w-[44px] min-h-[44px] justify-center">
 
-                  <RefreshCw className="w-4 h-4" />
+                  <RefreshCw className="w-5 h-5" />
                   <span className="text-sm font-medium">{displayPost.reposts_count || 0}</span>
                 </Button>
 
@@ -1717,10 +1717,10 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
                   size="sm"
                   onClick={handleSupercharge}
                   disabled={isSupercharging}
-                  className="flex items-center gap-1 md:gap-2 text-yellow-400 hover:text-yellow-300 transition-colors p-2 h-auto hover:bg-yellow-400/10"
+                  className="flex items-center gap-1 md:gap-2 text-yellow-400 hover:text-yellow-300 transition-colors min-w-[44px] min-h-[44px] justify-center hover:bg-yellow-400/10"
                   title="Supercharge this echo with a Super Boost token!">
 
-                    <Sparkles className="w-4 h-4" />
+                    <Sparkles className="w-5 h-5" />
                     <span className="text-xs font-medium hidden md:inline">Supercharge</span>
                   </Button>
                 }
