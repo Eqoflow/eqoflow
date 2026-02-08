@@ -35,7 +35,7 @@ export default function CreatePostModal({ isOpen, onClose, onSubmit, user, commu
             initial={{ scale: 0.95, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
-            className="w-full max-w-2xl"
+            className="w-full max-w-2xl mb-20 md:mb-0"
             onClick={(e) => e.stopPropagation()}
           >
             {/* The CreatePost component is a Card, so it provides its own background and structure */}
