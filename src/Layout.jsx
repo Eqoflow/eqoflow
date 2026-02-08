@@ -1050,6 +1050,8 @@ export default function Layout({ children, currentPageName }) {
                 html, body {
                   background: #000000 !important;
                   background-color: #000000 !important;
+                  overscroll-behavior-y: none;
+                  -webkit-overflow-scrolling: touch;
                 }
 
                 body {
@@ -1258,7 +1260,7 @@ export default function Layout({ children, currentPageName }) {
                 </Sidebar>
 
                 <div className="flex-1 flex flex-col bg-black">
-                  <main className="flex-1 flex flex-col relative overflow-y-auto">
+                  <main className="flex-1 flex flex-col relative overflow-y-auto" id="main-content">
                     <header className="bg-[#000000] px-4 sticky top-0 z-40 border-b border-[var(--glass-border)] md:hidden" style={{
                       paddingTop: 'max(0.75rem, env(safe-area-inset-top))',
                       paddingBottom: '0.75rem'
@@ -1400,21 +1402,23 @@ export default function Layout({ children, currentPageName }) {
                       </AnimatePresence>
                     </div>
 
-                    <motion.div 
-                      key={currentPageName}
-                      custom={direction}
-                      variants={pageVariants}
-                      initial="enter"
-                      animate="center"
-                      exit="exit"
-                      transition={{
-                        x: { type: "spring", stiffness: 300, damping: 30 },
-                        opacity: { duration: 0.2 }
-                      }}
-                      className="p-3 md:p-6 flex-1 pb-20 md:pb-6"
-                    >
-                      {children}
-                    </motion.div>
+                    <AnimatePresence mode="wait">
+                      <motion.div 
+                        key={currentPageName}
+                        custom={direction}
+                        variants={pageVariants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{
+                          x: { type: "spring", stiffness: 300, damping: 30 },
+                          opacity: { duration: 0.2 }
+                        }}
+                        className="p-3 md:p-6 flex-1 pb-20 md:pb-6"
+                      >
+                        {children}
+                      </motion.div>
+                    </AnimatePresence>
 
                     {/* Mobile Bottom Navigation Bar */}
                     <nav 

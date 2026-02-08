@@ -15,7 +15,6 @@ import QuantumProBadge from '../identity/QuantumProBadge';
 
 export default function ProfileCard({ user: discoveryUser, currentUser }) {
   const [isFollowing, setIsFollowing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     checkFollowStatus();
@@ -38,9 +37,12 @@ export default function ProfileCard({ user: discoveryUser, currentUser }) {
   const handleFollow = async () => {
     if (!currentUser) return;
 
+    // Optimistic UI update
+    const wasFollowing = isFollowing;
+    setIsFollowing(!wasFollowing);
+
     try {
-      setIsLoading(true);
-      if (isFollowing) {
+      if (wasFollowing) {
         const follows = await base44.entities.Follow.filter({
           follower_email: currentUser.email,
           following_email: discoveryUser.user_email
@@ -48,18 +50,16 @@ export default function ProfileCard({ user: discoveryUser, currentUser }) {
         if (follows.length > 0) {
           await base44.entities.Follow.delete(follows[0].id);
         }
-        setIsFollowing(false);
       } else {
         await base44.entities.Follow.create({
           follower_email: currentUser.email,
           following_email: discoveryUser.user_email
         });
-        setIsFollowing(true);
       }
     } catch (error) {
       console.error("Error toggling follow:", error);
-    } finally {
-      setIsLoading(false);
+      // Revert on error
+      setIsFollowing(wasFollowing);
     }
   };
 
@@ -157,7 +157,6 @@ export default function ProfileCard({ user: discoveryUser, currentUser }) {
             <div className="flex gap-2 w-full">
               <Button
                 onClick={handleFollow}
-                disabled={isLoading}
                 className={`flex-1 ${
                   isFollowing 
                     ? "bg-gray-700 hover:bg-gray-600" 

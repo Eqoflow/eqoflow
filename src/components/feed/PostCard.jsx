@@ -159,7 +159,6 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
   const commentsContainerRef = useRef(null);
   const impressionRecorded = useRef(false);
   const [isSupercharging, setIsSupercharging] = useState(false);
-  const [isFollowLoading, setIsFollowLoading] = useState(false);
   const [localFollowerCount, setLocalFollowerCount] = useState(null);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [commentContent, setCommentContent] = useState("");
@@ -403,19 +402,18 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
     e.preventDefault();
     e.stopPropagation();
 
-    if (!currentUser || !currentAuthor || currentAuthor.email === currentUser.email || isFollowLoading) return;
-
-    setIsFollowLoading(true);
+    if (!currentUser || !currentAuthor || currentAuthor.email === currentUser.email) return;
 
     const authorEmail = currentAuthor.email || post.created_by;
     const isCurrentlyFollowing = currentUser.following_list?.includes(authorEmail) || false;
 
+    // Optimistic UI updates
     const newFollowerCount = (localFollowerCount ?? totalFollowers) + (isCurrentlyFollowing ? -1 : 1);
     setLocalFollowerCount(newFollowerCount);
 
     const newFollowingList = isCurrentlyFollowing ?
-    currentUser.following_list.filter((email) => email !== authorEmail) :
-    [...(currentUser.following_list || []), authorEmail];
+      currentUser.following_list.filter((email) => email !== authorEmail) :
+      [...(currentUser.following_list || []), authorEmail];
 
     const optimisticUser = { ...currentUser, following_list: newFollowingList };
 
@@ -430,12 +428,11 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
       });
     } catch (error) {
       console.error('Follow action failed:', error);
+      // Revert optimistic updates on error
       setLocalFollowerCount(null);
       if (onUserUpdate) {
         onUserUpdate(currentUser);
       }
-    } finally {
-      setIsFollowLoading(false);
     }
   };
 
@@ -725,12 +722,10 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
               {canFollow &&
                 <button
                   onClick={handleQuickFollow}
-                  disabled={isFollowLoading}
                   className={`p-1 rounded-full transition-colors ${
                   isFollowingAuthor ?
                   'text-green-400 hover:text-green-300 hover:bg-green-400/10' :
-                  'text-gray-400 hover:text-green-400 hover:bg-green-400/10'} ${
-                  isFollowLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  'text-gray-400 hover:text-green-400 hover:bg-green-400/10'}`}
                   title={isFollowingAuthor ? 'Unfollow' : 'Follow'}>
 
                     {isFollowingAuthor ?
