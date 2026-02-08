@@ -9,6 +9,7 @@ import { NotificationProvider } from "./components/contexts/NotificationContext"
 import { getAdminActionCounts } from "@/functions/getAdminActionCounts";
 import { processReferral } from "@/functions/processReferral";
 import { AnimatePresence, motion } from "framer-motion";
+import { useLocation as useRouterLocation } from "react-router-dom";
 import SolanaWalletProvider from './components/blockchain/SolanaWalletProvider';
 
 // Simple className utility function to replace clsx/twMerge
@@ -521,6 +522,8 @@ export default function Layout({ children, currentPageName }) {
   const [isLoading, setIsLoading] = useState(true);
   const [adminActionCount, setAdminActionCount] = useState(0);
   const [isEmailVisible, setIsEmailVisible] = useState(true);
+  const [direction, setDirection] = useState(0);
+  const scrollPositions = React.useRef({});
 
   // Define public pages that never require login
   const publicPages = useMemo(() => [
@@ -1348,10 +1351,17 @@ export default function Layout({ children, currentPageName }) {
                     </div>
 
                     <motion.div 
+                      key={currentPageName}
+                      custom={direction}
+                      variants={pageVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{
+                        x: { type: "spring", stiffness: 300, damping: 30 },
+                        opacity: { duration: 0.2 }
+                      }}
                       className="p-3 md:p-6 flex-1 pb-20 md:pb-6"
-                      initial={false}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3 }}
                     >
                       {children}
                     </motion.div>
