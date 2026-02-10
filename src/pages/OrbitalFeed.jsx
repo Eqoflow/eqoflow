@@ -56,19 +56,30 @@ export default function OrbitalFeed() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Load user and global orbital positions
+  // Load user and global orbital positions - MUST happen first
   useEffect(() => {
     const loadUserAndSettings = async () => {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
         
-        // Load global orbital feed settings
-        const settings = await base44.entities.OrbitalFeedSettings.filter({ is_active: true });
-        if (settings.length > 0) {
-          setSavedPositions(settings[0].positions || {});
-          setGlobalSettingsId(settings[0].id);
+        // Load ALL orbital feed settings to find the active one
+        const allSettings = await base44.entities.OrbitalFeedSettings.list('-created_date', 100);
+        
+        // Find the one with actual positions data
+        let foundSettings = null;
+        for (const setting of allSettings) {
+          if (setting.positions && Object.keys(setting.positions).length > 0) {
+            foundSettings = setting;
+            break;
+          }
         }
+        
+        if (foundSettings) {
+          setSavedPositions(foundSettings.positions || {});
+          setGlobalSettingsId(foundSettings.id);
+        }
+        
         setLayoutLoaded(true);
       } catch (error) {
         console.warn("Could not load settings:", error);
