@@ -81,11 +81,6 @@ export default function OrbitalFeed() {
   // Load trending topics with top posts (same logic as main feed)
   useEffect(() => {
     const loadTrendingTopics = async () => {
-      // Don't reload if we already have layout loaded - prevents position changes
-      if (layoutLoaded && trendingTopics.length > 0) {
-        return;
-      }
-      
       try {
         setIsLoading(true);
         await new Promise((resolve) => setTimeout(resolve, 200));
