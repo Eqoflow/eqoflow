@@ -202,12 +202,10 @@ export default function OrbitalFeed() {
     };
   };
 
-  const handlePositionChange = async (topicTag, newPosition) => {
+  const handlePositionChange = useCallback(async (topicTag, newPosition) => {
     const positionData = {
-      x: newPosition.x,
-      y: newPosition.y,
-      angle: Math.atan2(newPosition.y, newPosition.x),
-      radius: Math.sqrt(newPosition.x ** 2 + newPosition.y ** 2)
+      x: Math.round(newPosition.x * 100) / 100,
+      y: Math.round(newPosition.y * 100) / 100
     };
 
     const updatedPositions = {
@@ -215,33 +213,21 @@ export default function OrbitalFeed() {
       [topicTag]: positionData
     };
 
-    // Update state immediately
     setSavedPositions(updatedPositions);
 
-    // Always persist to database immediately - don't check user role
-    try {
-      if (globalSettingsId) {
-        // Update existing settings
-        await base44.entities.OrbitalFeedSettings.update(globalSettingsId, {
-          positions: updatedPositions,
-          is_active: true
-        });
-      } else {
-        // Create new settings
-        const newSettings = await base44.entities.OrbitalFeedSettings.create({
-          is_active: true,
-          positions: updatedPositions
-        });
-        setGlobalSettingsId(newSettings.id);
-      }
-    } catch (error) {
-      console.warn("Could not save orbital layout:", error);
-      // Try again on failure
-      setTimeout(() => {
-        handlePositionChange(topicTag, newPosition);
-      }, 1000);
+    // Save to database immediately
+    if (globalSettingsId) {
+      await base44.entities.OrbitalFeedSettings.update(globalSettingsId, {
+        positions: updatedPositions
+      });
+    } else {
+      const newSettings = await base44.entities.OrbitalFeedSettings.create({
+        is_active: true,
+        positions: updatedPositions
+      });
+      setGlobalSettingsId(newSettings.id);
     }
-  };
+  }, [savedPositions, globalSettingsId]);
 
   const handleTopicClick = (topicData) => {
     setSelectedTopic(topicData);
