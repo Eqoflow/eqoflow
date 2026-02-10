@@ -56,37 +56,32 @@ export default function OrbitalFeed() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Load user and global orbital positions - MUST happen first
+  // Load positions first, THEN render
   useEffect(() => {
-    const loadUserAndSettings = async () => {
+    const loadPositions = async () => {
       try {
-        const currentUser = await base44.auth.me();
-        setUser(currentUser);
-        
-        // Load ALL orbital feed settings to find the active one
-        const allSettings = await base44.entities.OrbitalFeedSettings.list('-created_date', 100);
-        
-        // Find the one with actual positions data
-        let foundSettings = null;
-        for (const setting of allSettings) {
-          if (setting.positions && Object.keys(setting.positions).length > 0) {
-            foundSettings = setting;
-            break;
-          }
+        const settings = await base44.entities.OrbitalFeedSettings.list('-created_date', 1);
+        if (settings.length > 0 && settings[0].positions) {
+          setSavedPositions(settings[0].positions);
+          setGlobalSettingsId(settings[0].id);
         }
-        
-        if (foundSettings) {
-          setSavedPositions(foundSettings.positions || {});
-          setGlobalSettingsId(foundSettings.id);
-        }
-        
-        setLayoutLoaded(true);
       } catch (error) {
-        console.warn("Could not load settings:", error);
+        console.error("Load positions error:", error);
+      } finally {
         setLayoutLoaded(true);
       }
     };
-    loadUserAndSettings();
+    
+    const loadUser = async () => {
+      try {
+        const currentUser = await base44.auth.me();
+        setUser(currentUser);
+      } catch (error) {
+        console.error("Load user error:", error);
+      }
+    };
+    
+    Promise.all([loadPositions(), loadUser()]);
   }, []);
 
   // Load trending topics with top posts (same logic as main feed)
