@@ -145,7 +145,7 @@ export default function OrbitalFeed() {
       }
     };
     loadTrendingTopics();
-  }, [layoutLoaded, trendingTopics.length]);
+  }, []);
 
   useEffect(() => {
     const updateCenter = () => {
