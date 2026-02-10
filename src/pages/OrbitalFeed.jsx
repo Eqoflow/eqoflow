@@ -180,7 +180,7 @@ export default function OrbitalFeed() {
   ];
 
   const calculateOrbitPosition = (topic, index) => {
-    // ALWAYS use saved position if it exists - never recalculate
+    // ALWAYS use saved position if it exists - never recalculate or change
     if (savedPositions[topic.tag]) {
       return savedPositions[topic.tag];
     }
@@ -189,18 +189,12 @@ export default function OrbitalFeed() {
     const posIndex = index % defaultPositions.length;
     const position = defaultPositions[posIndex];
 
-    // Save this initial position immediately so it doesn't change
-    const initialPosition = {
+    return {
       x: position.x,
       y: position.y,
       angle: Math.atan2(position.y, position.x),
       radius: Math.sqrt(position.x ** 2 + position.y ** 2)
     };
-    
-    // Automatically save this as the permanent position for this topic
-    handlePositionChange(topic.tag, initialPosition);
-    
-    return initialPosition;
   };
 
   const handlePositionChange = async (topicTag, newPosition) => {
