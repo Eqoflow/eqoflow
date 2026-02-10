@@ -181,20 +181,12 @@ export default function OrbitalFeed() {
   ];
 
   const calculateOrbitPosition = (topic, index) => {
-    // Check savedPositions first - if it exists, ALWAYS use it
-    const saved = savedPositions[topic.tag];
-    if (saved) {
-      return saved;
+    // ONLY use saved position if it exists, never use default
+    if (savedPositions[topic.tag]) {
+      return savedPositions[topic.tag];
     }
-
-    // Use default only if no saved position exists
-    const defaultPos = defaultPositions[index % defaultPositions.length];
-    return {
-      x: defaultPos.x,
-      y: defaultPos.y,
-      angle: Math.atan2(defaultPos.y, defaultPos.x),
-      radius: Math.sqrt(defaultPos.x ** 2 + defaultPos.y ** 2)
-    };
+    // First time - use default
+    return defaultPositions[index % defaultPositions.length];
   };
 
   const handlePositionChange = useCallback(async (topicTag, newPosition) => {
