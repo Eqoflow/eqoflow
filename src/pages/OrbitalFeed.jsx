@@ -81,6 +81,11 @@ export default function OrbitalFeed() {
   // Load trending topics with top posts (same logic as main feed)
   useEffect(() => {
     const loadTrendingTopics = async () => {
+      // Don't reload if we already have layout loaded - prevents position changes
+      if (layoutLoaded && trendingTopics.length > 0) {
+        return;
+      }
+      
       try {
         setIsLoading(true);
         await new Promise((resolve) => setTimeout(resolve, 200));
@@ -145,7 +150,7 @@ export default function OrbitalFeed() {
       }
     };
     loadTrendingTopics();
-  }, []);
+  }, [layoutLoaded, trendingTopics.length]);
 
   useEffect(() => {
     const updateCenter = () => {
@@ -175,21 +180,27 @@ export default function OrbitalFeed() {
   ];
 
   const calculateOrbitPosition = (topic, index) => {
-    // Check if we have a saved position for this topic
+    // ALWAYS use saved position if it exists - never recalculate
     if (savedPositions[topic.tag]) {
       return savedPositions[topic.tag];
     }
 
-    // Otherwise use default position
+    // Only use default position if there's no saved position at all
     const posIndex = index % defaultPositions.length;
     const position = defaultPositions[posIndex];
 
-    return {
+    // Save this initial position immediately so it doesn't change
+    const initialPosition = {
       x: position.x,
       y: position.y,
       angle: Math.atan2(position.y, position.x),
       radius: Math.sqrt(position.x ** 2 + position.y ** 2)
     };
+    
+    // Automatically save this as the permanent position for this topic
+    handlePositionChange(topic.tag, initialPosition);
+    
+    return initialPosition;
   };
 
   const handlePositionChange = async (topicTag, newPosition) => {
@@ -694,9 +705,7 @@ function TrendingTopicOrb({ topic, position, index, onClick, userColorScheme, ed
       initial={{ scale: 0, opacity: 0 }}
       animate={{
         scale: 1,
-        opacity: 1,
-        x: position.x,
-        y: position.y
+        opacity: 1
       }}
       exit={{ scale: 0, opacity: 0 }}
       transition={{
@@ -722,6 +731,7 @@ function TrendingTopicOrb({ topic, position, index, onClick, userColorScheme, ed
         position: 'absolute',
         left: '50%',
         top: '50%',
+        transform: `translate(${position.x}px, ${position.y}px)`,
         cursor: editMode ? 'move' : 'pointer',
         zIndex: 10,
         userSelect: 'none'
