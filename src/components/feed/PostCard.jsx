@@ -888,21 +888,25 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+          className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center z-50"
           onClick={() => {
             setShowDirectVideoModal(false);
             setCurrentVideoUrl(null);
           }}
-          style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+          style={{ 
+            padding: '1rem',
+            paddingTop: 'max(1rem, env(safe-area-inset-top))',
+            paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' 
+          }}
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="w-full max-w-4xl"
+            className="w-full h-full max-w-4xl flex flex-col items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative">
+            <div className="relative w-full h-full flex flex-col items-center justify-center">
               <Button
                 variant="ghost"
                 size="icon"
@@ -910,7 +914,7 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
                   setShowDirectVideoModal(false);
                   setCurrentVideoUrl(null);
                 }}
-                className="absolute -top-12 right-0 text-white hover:text-gray-300 z-10"
+                className="absolute top-0 right-0 text-white hover:text-gray-300 z-10 min-w-[44px] min-h-[44px]"
               >
                 <X className="w-6 h-6" />
               </Button>
@@ -918,7 +922,8 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
                 src={currentVideoUrl} 
                 controls 
                 autoPlay
-                className="w-full rounded-lg bg-black"
+                className="max-w-full max-h-full rounded-lg bg-black object-contain"
+                style={{ maxHeight: 'calc(100vh - 4rem)' }}
               />
             </div>
           </motion.div>
