@@ -29,7 +29,8 @@ import {
   UserCheck,
   BrainCircuit,
   RefreshCw,
-  Coins } from
+  Coins,
+  Play } from
 "lucide-react";
 import {
   DropdownMenu,
@@ -89,7 +90,7 @@ const ADMIN_EMAILS = [
 "moderator@example.com"];
 
 
-const renderMedia = (url) => {
+const renderMedia = (url, onVideoClick) => {
   // Check if URL contains .gif in the path (for Giphy URLs with query params)
   const isGif = url.toLowerCase().includes('.gif');
   const isGiphy = url.toLowerCase().includes('giphy.com');
@@ -109,7 +110,19 @@ const renderMedia = (url) => {
     return <img src={url} alt="Post media" className="rounded-lg object-cover w-full h-full" />;
   }
   if (['mp4', 'webm'].includes(extension)) {
-    return <video src={url} controls className="rounded-lg w-full bg-black" />;
+    return (
+      <div 
+        className="relative aspect-video bg-black rounded-lg overflow-hidden cursor-pointer group border border-purple-500/20"
+        onClick={() => onVideoClick(url)}
+      >
+        <video src={url} className="w-full h-full object-cover" muted playsInline />
+        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+          <div className="w-14 h-14 bg-purple-600/80 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform duration-300">
+            <Play className="w-6 h-6 text-white ml-0.5" fill="white" />
+          </div>
+        </div>
+      </div>
+    );
   }
   if (['mp3', 'wav', 'ogg'].includes(extension)) {
     return (
@@ -163,6 +176,8 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [commentContent, setCommentContent] = useState("");
   const [showUnlockModal, setShowUnlockModal] = useState(false);
+  const [showDirectVideoModal, setShowDirectVideoModal] = useState(false);
+  const [currentVideoUrl, setCurrentVideoUrl] = useState(null);
 
   // NEW: Add state for masked author email
   const [maskedAuthorEmail, setMaskedAuthorEmail] = useState('');
@@ -868,6 +883,48 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
 
         }
 
+        {showDirectVideoModal && currentVideoUrl &&
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+          onClick={() => {
+            setShowDirectVideoModal(false);
+            setCurrentVideoUrl(null);
+          }}
+          style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="w-full max-w-4xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  setShowDirectVideoModal(false);
+                  setCurrentVideoUrl(null);
+                }}
+                className="absolute -top-12 right-0 text-white hover:text-gray-300 z-10"
+              >
+                <X className="w-6 h-6" />
+              </Button>
+              <video 
+                src={currentVideoUrl} 
+                controls 
+                autoPlay
+                className="w-full rounded-lg bg-black"
+              />
+            </div>
+          </motion.div>
+        </motion.div>
+        }
+
         <Card className={`hover-lift transition-all duration-300 ${isSupercharged ? 'super-charged-card' : 'dark-card'}`}>
           {isSupercharged &&
           <div className="absolute inset-0 pointer-events-none rounded-xl overflow-hidden">
@@ -1150,7 +1207,10 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
                         <div className={`grid gap-2 ${displayPost.media_urls.length === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
                           {displayPost.media_urls.map((url, idx) =>
                             <div key={idx} className="relative rounded-lg overflow-hidden first:col-span-1 last:col-span-1 only:col-span-full">
-                              {renderMedia(url)}
+                              {renderMedia(url, (videoUrl) => {
+                                setCurrentVideoUrl(videoUrl);
+                                setShowDirectVideoModal(true);
+                              })}
                             </div>
                           )}
                         </div>
@@ -1615,7 +1675,10 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
                 <div className={`grid gap-2 ${displayPost.media_urls.length === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
                         {displayPost.media_urls.map((url, idx) =>
                   <div key={idx} className="relative rounded-lg overflow-hidden">
-                            {renderMedia(url)}
+                            {renderMedia(url, (videoUrl) => {
+                              setCurrentVideoUrl(videoUrl);
+                              setShowDirectVideoModal(true);
+                            })}
                           </div>
                   )}
                       </div>
