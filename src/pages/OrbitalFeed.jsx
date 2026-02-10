@@ -563,9 +563,7 @@ function BroadcastButtonOrb({ position, onClick, userColorScheme, editMode, onPo
       initial={{ scale: 0, opacity: 0 }}
       animate={{
         scale: 1,
-        opacity: 1,
-        x: position.x,
-        y: position.y
+        opacity: 1
       }}
       exit={{ scale: 0, opacity: 0 }}
       transition={{
@@ -591,6 +589,7 @@ function BroadcastButtonOrb({ position, onClick, userColorScheme, editMode, onPo
         position: 'absolute',
         left: '50%',
         top: '50%',
+        transform: `translate(${position.x}px, ${position.y}px)`,
         cursor: editMode ? 'move' : 'pointer',
         zIndex: 10,
         userSelect: 'none'
