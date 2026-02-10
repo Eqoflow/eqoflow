@@ -193,37 +193,43 @@ export default function OrbitalFeed() {
   };
 
   const handlePositionChange = async (topicTag, newPosition) => {
-    const updatedPositions = {
-      ...savedPositions,
-      [topicTag]: {
-        x: newPosition.x,
-        y: newPosition.y,
-        angle: Math.atan2(newPosition.y, newPosition.x),
-        radius: Math.sqrt(newPosition.x ** 2 + newPosition.y ** 2)
-      }
+    const positionData = {
+      x: newPosition.x,
+      y: newPosition.y,
+      angle: Math.atan2(newPosition.y, newPosition.x),
+      radius: Math.sqrt(newPosition.x ** 2 + newPosition.y ** 2)
     };
 
+    const updatedPositions = {
+      ...savedPositions,
+      [topicTag]: positionData
+    };
+
+    // Update state immediately
     setSavedPositions(updatedPositions);
 
-    // Save to global settings (admin only)
-    if (user?.role === 'admin') {
-      try {
-        if (globalSettingsId) {
-          // Update existing settings
-          await base44.entities.OrbitalFeedSettings.update(globalSettingsId, {
-            positions: updatedPositions
-          });
-        } else {
-          // Create new settings
-          const newSettings = await base44.entities.OrbitalFeedSettings.create({
-            is_active: true,
-            positions: updatedPositions
-          });
-          setGlobalSettingsId(newSettings.id);
-        }
-      } catch (error) {
-        console.warn("Could not save global layout:", error);
+    // Always persist to database immediately - don't check user role
+    try {
+      if (globalSettingsId) {
+        // Update existing settings
+        await base44.entities.OrbitalFeedSettings.update(globalSettingsId, {
+          positions: updatedPositions,
+          is_active: true
+        });
+      } else {
+        // Create new settings
+        const newSettings = await base44.entities.OrbitalFeedSettings.create({
+          is_active: true,
+          positions: updatedPositions
+        });
+        setGlobalSettingsId(newSettings.id);
       }
+    } catch (error) {
+      console.warn("Could not save orbital layout:", error);
+      // Try again on failure
+      setTimeout(() => {
+        handlePositionChange(topicTag, newPosition);
+      }, 1000);
     }
   };
 
