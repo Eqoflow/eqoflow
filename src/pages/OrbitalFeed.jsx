@@ -190,29 +190,22 @@ export default function OrbitalFeed() {
   };
 
   const handlePositionChange = useCallback(async (topicTag, newPosition) => {
-    const positionData = {
-      x: Math.round(newPosition.x * 100) / 100,
-      y: Math.round(newPosition.y * 100) / 100
-    };
-
-    const updatedPositions = {
+    const updated = {
       ...savedPositions,
-      [topicTag]: positionData
+      [topicTag]: newPosition
     };
+    setSavedPositions(updated);
 
-    setSavedPositions(updatedPositions);
-
-    // Save to database immediately
-    if (globalSettingsId) {
-      await base44.entities.OrbitalFeedSettings.update(globalSettingsId, {
-        positions: updatedPositions
-      });
-    } else {
-      const newSettings = await base44.entities.OrbitalFeedSettings.create({
-        is_active: true,
-        positions: updatedPositions
-      });
-      setGlobalSettingsId(newSettings.id);
+    // Save immediately
+    try {
+      if (globalSettingsId) {
+        await base44.entities.OrbitalFeedSettings.update(globalSettingsId, { positions: updated });
+      } else {
+        const newSettings = await base44.entities.OrbitalFeedSettings.create({ positions: updated });
+        setGlobalSettingsId(newSettings.id);
+      }
+    } catch (error) {
+      console.error("Failed to save positions:", error);
     }
   }, [savedPositions, globalSettingsId]);
 
