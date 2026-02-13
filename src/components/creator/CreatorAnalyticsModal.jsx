@@ -66,7 +66,7 @@ export default function CreatorAnalyticsModal({ isOpen, onClose, user, userColor
 
             <TabsContent value="overview" className="space-y-4">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Card className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border-purple-500/30">
+                <Card className="bg-black/40 border-white/20">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-white text-sm flex items-center gap-2">
                       <Eye className="w-4 h-4" />
@@ -78,7 +78,7 @@ export default function CreatorAnalyticsModal({ isOpen, onClose, user, userColor
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-br from-pink-500/20 to-pink-600/20 border-pink-500/30">
+                <Card className="bg-black/40 border-white/20">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-white text-sm flex items-center gap-2">
                       <Heart className="w-4 h-4" />
@@ -90,7 +90,7 @@ export default function CreatorAnalyticsModal({ isOpen, onClose, user, userColor
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border-blue-500/30">
+                <Card className="bg-black/40 border-white/20">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-white text-sm flex items-center gap-2">
                       <MessageSquare className="w-4 h-4" />
@@ -102,7 +102,7 @@ export default function CreatorAnalyticsModal({ isOpen, onClose, user, userColor
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-br from-green-500/20 to-green-600/20 border-green-500/30">
+                <Card className="bg-black/40 border-white/20">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-white text-sm flex items-center gap-2">
                       <TrendingUp className="w-4 h-4" />
