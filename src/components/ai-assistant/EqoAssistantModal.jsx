@@ -32,14 +32,22 @@ export default function EqoAssistantModal({ isOpen, onClose, userColorScheme }) 
         recognitionRef.current.interimResults = false;
         recognitionRef.current.lang = 'en-US';
 
+        recognitionRef.current.onstart = () => {
+          setIsListening(true);
+        };
+
         recognitionRef.current.onresult = (event) => {
           const transcript = event.results[0][0].transcript;
           setInputText(transcript);
+          setIsListening(false);
           handleSendMessage(transcript);
         };
 
         recognitionRef.current.onerror = (event) => {
           console.error('Speech recognition error:', event.error);
+          if (event.error === 'not-allowed') {
+            alert('Microphone access denied. Please allow microphone permissions.');
+          }
           setIsListening(false);
         };
 
@@ -70,9 +78,9 @@ export default function EqoAssistantModal({ isOpen, onClose, userColorScheme }) 
     if (recognitionRef.current && !isListening) {
       try {
         recognitionRef.current.start();
-        setIsListening(true);
       } catch (error) {
         console.error('Error starting recognition:', error);
+        alert('Could not start voice recognition. Please check your microphone permissions.');
       }
     }
   };
