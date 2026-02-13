@@ -8,6 +8,8 @@ import { Video, TrendingUp, Users, DollarSign, BarChart3, Shield, Sparkles } fro
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import CreatorOnboarding from "@/components/creator/CreatorOnboarding";
+import ContentStampModal from "@/components/creator/ContentStampModal";
+import CreatorAnalyticsModal from "@/components/creator/CreatorAnalyticsModal";
 
 export default function CreatorHub() {
   const { user } = useUser();
@@ -15,6 +17,8 @@ export default function CreatorHub() {
   const [creatorProfile, setCreatorProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showStampModal, setShowStampModal] = useState(false);
+  const [showAnalyticsModal, setShowAnalyticsModal] = useState(false);
 
   const userColorScheme = {
     primary: user?.color_scheme ? getColorScheme(user.color_scheme).primary : '#8b5cf6',
@@ -236,6 +240,7 @@ export default function CreatorHub() {
             </CardHeader>
             <CardContent>
               <Button
+                onClick={() => setShowStampModal(true)}
                 className="w-full"
                 style={{ background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})` }}>
                 Stamp New Content
@@ -260,6 +265,7 @@ export default function CreatorHub() {
             </CardHeader>
             <CardContent>
               <Button
+                onClick={() => setShowAnalyticsModal(true)}
                 variant="outline"
                 className="w-full border-white/20 text-black hover:bg-white/10">
                 View Analytics
