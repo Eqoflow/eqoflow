@@ -147,7 +147,7 @@ export default function ContentStampModal({ isOpen, onClose, userColorScheme }) 
                   type="button"
                   onClick={() => document.getElementById('file').click()}
                   variant="outline"
-                  className="w-full border-white/20 text-white hover:bg-white/10">
+                  className="w-full border-white/20 text-black hover:bg-white/10">
                   <Upload className="w-4 h-4 mr-2" />
                   {file ? file.name : "Choose File"}
                 </Button>
