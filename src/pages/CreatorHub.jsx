@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import { useUser } from "@/components/contexts/UserContext";
 import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
@@ -9,6 +11,7 @@ import CreatorOnboarding from "@/components/creator/CreatorOnboarding";
 
 export default function CreatorHub() {
   const { user } = useUser();
+  const navigate = useNavigate();
   const [creatorProfile, setCreatorProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -32,7 +35,15 @@ export default function CreatorHub() {
       if (profiles.length === 0) {
         setShowOnboarding(true);
       } else {
-        setCreatorProfile(profiles[0]);
+        const profile = profiles[0];
+        setCreatorProfile(profile);
+        
+        // If user is a viewer, redirect to Discovery
+        if (!profile.is_creator) {
+          navigate(createPageUrl("Discovery"));
+          return;
+        }
+        
         setShowOnboarding(false);
       }
     } catch (error) {
@@ -62,33 +73,6 @@ export default function CreatorHub() {
 
   if (showOnboarding) {
     return <CreatorOnboarding onComplete={handleOnboardingComplete} userColorScheme={userColorScheme} />;
-  }
-
-  // If user is a viewer, redirect them to discovery
-  if (creatorProfile && !creatorProfile.is_creator) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center max-w-md rounded-2xl p-8"
-          style={{
-            background: `linear-gradient(135deg, ${userColorScheme.accent}E6, ${userColorScheme.primary}40)`,
-            border: `2px solid ${userColorScheme.primary}60`
-          }}>
-          <Video className="w-20 h-20 mx-auto mb-4 text-white" />
-          <h2 className="text-2xl font-bold text-white mb-4">Viewer Mode Active</h2>
-          <p className="text-white/70 mb-6">
-            You're currently set up as a viewer. The Creator Hub is designed for content creators who want to stamp and protect their work.
-          </p>
-          <Button
-            onClick={() => window.location.href = '/Discovery'}
-            style={{ background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})` }}>
-            Explore Content
-          </Button>
-        </motion.div>
-      </div>
-    );
   }
 
   return (
