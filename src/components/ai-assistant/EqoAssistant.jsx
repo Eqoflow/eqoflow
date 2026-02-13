@@ -14,7 +14,7 @@ export default function EqoAssistant({ userColorScheme }) {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsModalOpen(true)}
-        className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-40 w-16 h-16 md:w-20 md:h-20 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 group"
+        className="fixed bottom-24 md:bottom-6 left-4 md:left-6 z-40 w-16 h-16 md:w-20 md:h-20 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 group"
         style={{
           background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})`,
           boxShadow: `0 0 30px ${userColorScheme.primary}80, 0 0 60px ${userColorScheme.primary}40`
