@@ -39,9 +39,7 @@ export default function EqoAssistantModal({ isOpen, onClose, userColorScheme }) 
         recognitionRef.current.onresult = (event) => {
           const transcript = event.results[0][0].transcript;
           setInputText(transcript);
-          setTimeout(() => {
-            handleSendMessage(transcript);
-          }, 100);
+          handleSendMessage(transcript);
         };
 
         recognitionRef.current.onerror = (event) => {
@@ -76,27 +74,12 @@ export default function EqoAssistantModal({ isOpen, onClose, userColorScheme }) 
   }, [messages]);
 
   const startListening = () => {
-    if (recognitionRef.current) {
+    if (recognitionRef.current && !isListening) {
       try {
-        if (isListening) {
-          recognitionRef.current.stop();
-        } else {
-          recognitionRef.current.start();
-        }
+        recognitionRef.current.start();
       } catch (error) {
-        console.error('Error with recognition:', error);
+        console.error('Error starting recognition:', error);
         setIsListening(false);
-        if (error.name === 'InvalidStateError') {
-          // Already started, try to stop and restart
-          try {
-            recognitionRef.current.abort();
-            setTimeout(() => {
-              recognitionRef.current.start();
-            }, 100);
-          } catch (e) {
-            alert('Could not start voice recognition. Please try again.');
-          }
-        }
       }
     }
   };
@@ -108,7 +91,6 @@ export default function EqoAssistantModal({ isOpen, onClose, userColorScheme }) 
       } catch (error) {
         console.error('Error stopping recognition:', error);
       }
-      setIsListening(false);
     }
   };
 
