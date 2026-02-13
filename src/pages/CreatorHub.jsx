@@ -35,15 +35,7 @@ export default function CreatorHub() {
       if (profiles.length === 0) {
         setShowOnboarding(true);
       } else {
-        const profile = profiles[0];
-        setCreatorProfile(profile);
-        
-        // If user is a viewer, redirect to Discovery
-        if (!profile.is_creator) {
-          navigate(createPageUrl("Discovery"));
-          return;
-        }
-        
+        setCreatorProfile(profiles[0]);
         setShowOnboarding(false);
       }
     } catch (error) {
@@ -75,6 +67,8 @@ export default function CreatorHub() {
     return <CreatorOnboarding onComplete={handleOnboardingComplete} userColorScheme={userColorScheme} />;
   }
 
+  const isCreator = creatorProfile?.is_creator;
+
   return (
     <div className="min-h-screen pb-20">
       {/* Hero Section */}
@@ -93,10 +87,10 @@ export default function CreatorHub() {
           <div className="flex items-start justify-between mb-6">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
-                {creatorProfile?.channel_name || "Creator Hub"}
+                {isCreator ? (creatorProfile?.channel_name || "Creator Hub") : "Creator Hub"}
               </h1>
               <p className="text-xl text-white/70">
-                Your content creation command center
+                {isCreator ? "Your content creation command center" : "Discover amazing creator content"}
               </p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
@@ -104,13 +98,13 @@ export default function CreatorHub() {
             </div>
           </div>
 
-          {creatorProfile?.description && (
+          {isCreator && creatorProfile?.description && (
             <p className="text-white/80 text-lg max-w-2xl">
               {creatorProfile.description}
             </p>
           )}
 
-          {creatorProfile?.social_links && creatorProfile.social_links.length > 0 && (
+          {isCreator && creatorProfile?.social_links && creatorProfile.social_links.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-4">
               {creatorProfile.social_links.map((link, index) => (
                 <a
@@ -127,8 +121,9 @@ export default function CreatorHub() {
         </div>
       </motion.div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      {/* Stats Grid - Only for Creators */}
+      {isCreator && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -200,9 +195,30 @@ export default function CreatorHub() {
             </CardContent>
           </Card>
         </motion.div>
-      </div>
+        </div>
+      )}
 
-      {/* Features Grid */}
+      {/* Content Section */}
+      {!isCreator && (
+        <div className="mb-8">
+          <Card className="bg-gradient-to-br from-white/5 to-white/10 border-white/20">
+            <CardHeader>
+              <CardTitle className="text-white text-2xl">Featured Creator Content</CardTitle>
+              <CardDescription className="text-white/70">
+                Discover and enjoy content from EqoFlow creators
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-white/60 text-center py-8">
+                Creator content discovery coming soon...
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Features Grid - Only for Creators */}
+      {isCreator && (
       <div className="grid md:grid-cols-2 gap-6">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -251,7 +267,8 @@ export default function CreatorHub() {
             </CardContent>
           </Card>
         </motion.div>
-      </div>
+        </div>
+      )}
 
       {/* Coming Soon Section */}
       <motion.div
