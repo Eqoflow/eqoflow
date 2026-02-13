@@ -65,6 +65,7 @@ import FeedbackWidget from "./components/feedback/FeedbackWidget";
 import NotificationBell from "./components/layout/NotificationBell";
 import MessageButton from "./components/layout/MessageButton";
 import WalletButton from "./components/layout/WalletButton";
+import EqoAssistant from "./components/ai-assistant/EqoAssistant";
 import {
   TooltipProvider,
   Tooltip,
@@ -1683,6 +1684,9 @@ export default function Layout({ children, currentPageName }) {
             <div className="fixed bottom-24 md:bottom-4 right-4 z-50">
               {user && <FeedbackWidget user={user} pageName={currentPageName} />}
             </div>
+
+            {/* EqoFlow AI Assistant */}
+            {user && <EqoAssistant userColorScheme={userColorScheme} />}
           </TooltipProvider>
         </SolanaWalletProvider>
       </NotificationProvider>
