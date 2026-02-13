@@ -127,7 +127,8 @@ export default function CreatorOnboarding({ onComplete, userColorScheme }) {
                 whileHover={{ scale: 1.05, y: -5 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleChoice(true)}
-                className="group relative overflow-hidden rounded-2xl p-8 text-left transition-all duration-300"
+                className="group relative overflow-hidden rounded-2xl p-8 text-left will-change-transform"
+                style={{ transition: 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)' }}
                 style={{
                   background: `linear-gradient(135deg, ${userColorScheme.primary}40, ${userColorScheme.secondary}40)`,
                   border: `2px solid ${userColorScheme.primary}60`
@@ -149,7 +150,8 @@ export default function CreatorOnboarding({ onComplete, userColorScheme }) {
                 whileHover={{ scale: 1.05, y: -5 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleChoice(false)}
-                className="group relative overflow-hidden rounded-2xl p-8 text-left transition-all duration-300"
+                className="group relative overflow-hidden rounded-2xl p-8 text-left will-change-transform"
+                style={{ transition: 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)' }}
                 style={{
                   background: `linear-gradient(135deg, ${userColorScheme.primary}40, ${userColorScheme.secondary}40)`,
                   border: `2px solid ${userColorScheme.primary}60`
