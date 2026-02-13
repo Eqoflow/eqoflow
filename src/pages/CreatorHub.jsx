@@ -293,6 +293,19 @@ export default function CreatorHub() {
           and AI-powered content optimization. Stay tuned!
         </p>
       </motion.div>
+
+      {/* Modals */}
+      <ContentStampModal 
+        isOpen={showStampModal} 
+        onClose={() => setShowStampModal(false)} 
+        userColorScheme={userColorScheme}
+      />
+      <CreatorAnalyticsModal 
+        isOpen={showAnalyticsModal} 
+        onClose={() => setShowAnalyticsModal(false)} 
+        user={user}
+        userColorScheme={userColorScheme}
+      />
     </div>
   );
 }
