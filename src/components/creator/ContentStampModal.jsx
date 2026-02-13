@@ -104,7 +104,7 @@ export default function ContentStampModal({ isOpen, onClose, userColorScheme }) 
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="My awesome video/article/creation"
+                placeholder="My awesome image, video, or creation"
                 className="bg-white/5 border-white/20 text-white"
               />
             </div>
@@ -126,7 +126,7 @@ export default function ContentStampModal({ isOpen, onClose, userColorScheme }) 
                 id="contentUrl"
                 value={contentUrl}
                 onChange={(e) => setContentUrl(e.target.value)}
-                placeholder="https://youtube.com/watch?v=..."
+                placeholder="https://youtube.com/watch?v=... or Instagram post URL"
                 className="bg-white/5 border-white/20 text-white"
               />
             </div>
@@ -134,7 +134,7 @@ export default function ContentStampModal({ isOpen, onClose, userColorScheme }) 
             <div className="text-center text-white/50">- OR -</div>
 
             <div>
-              <Label htmlFor="file" className="text-white mb-2 block">Upload File</Label>
+              <Label htmlFor="file" className="text-white mb-2 block">Upload File (Images, Videos, Documents)</Label>
               <div className="relative">
                 <input
                   id="file"
