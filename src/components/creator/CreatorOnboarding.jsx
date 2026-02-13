@@ -82,9 +82,7 @@ export default function CreatorOnboarding({ onComplete, userColorScheme }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{
-      background: `linear-gradient(135deg, ${userColorScheme.accent}E6, ${userColorScheme.primary}40, #000000)`
-    }}>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-black">
       <AnimatePresence mode="wait">
         {step === "choice" && (
           <motion.div
