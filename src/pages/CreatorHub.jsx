@@ -261,7 +261,7 @@ export default function CreatorHub() {
             <CardContent>
               <Button
                 variant="outline"
-                className="w-full border-white/20 text-white hover:bg-white/10">
+                className="w-full border-white/20 text-black hover:bg-white/10">
                 View Analytics
               </Button>
             </CardContent>

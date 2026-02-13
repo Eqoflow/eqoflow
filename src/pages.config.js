@@ -61,6 +61,7 @@ import Checkout from './pages/Checkout';
 import Communities from './pages/Communities';
 import CommunityProfile from './pages/CommunityProfile';
 import CourseViewer from './pages/CourseViewer';
+import CreatorHub from './pages/CreatorHub';
 import CreatorProfile from './pages/CreatorProfile';
 import CrossPlatformManager from './pages/CrossPlatformManager';
 import CustomReferrals from './pages/CustomReferrals';
@@ -120,7 +121,6 @@ import UserPayroll from './pages/UserPayroll';
 import VirtualSpaces from './pages/VirtualSpaces';
 import Wallet from './pages/Wallet';
 import WelcomeBonusManager from './pages/WelcomeBonusManager';
-import CreatorHub from './pages/CreatorHub';
 import __Layout from './Layout.jsx';
 
 
@@ -139,6 +139,7 @@ export const PAGES = {
     "Communities": Communities,
     "CommunityProfile": CommunityProfile,
     "CourseViewer": CourseViewer,
+    "CreatorHub": CreatorHub,
     "CreatorProfile": CreatorProfile,
     "CrossPlatformManager": CrossPlatformManager,
     "CustomReferrals": CustomReferrals,
@@ -198,7 +199,6 @@ export const PAGES = {
     "VirtualSpaces": VirtualSpaces,
     "Wallet": Wallet,
     "WelcomeBonusManager": WelcomeBonusManager,
-    "CreatorHub": CreatorHub,
 }
 
 export const pagesConfig = {
