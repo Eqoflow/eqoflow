@@ -28,8 +28,8 @@ export default function EqoAssistantModal({ isOpen, onClose, userColorScheme }) 
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (SpeechRecognition) {
         recognitionRef.current = new SpeechRecognition();
-        recognitionRef.current.continuous = false;
-        recognitionRef.current.interimResults = false;
+        recognitionRef.current.continuous = true;
+        recognitionRef.current.interimResults = true;
         recognitionRef.current.lang = 'en-US';
 
         recognitionRef.current.onstart = () => {
@@ -37,9 +37,24 @@ export default function EqoAssistantModal({ isOpen, onClose, userColorScheme }) 
         };
 
         recognitionRef.current.onresult = (event) => {
-          const transcript = event.results[0][0].transcript;
-          setInputText(transcript);
-          handleSendMessage(transcript);
+          let interimTranscript = '';
+          let finalTranscript = '';
+
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+              finalTranscript += transcript + ' ';
+            } else {
+              interimTranscript += transcript;
+            }
+          }
+
+          // Update input with interim or final transcript
+          if (interimTranscript) {
+            setInputText(prev => prev + interimTranscript);
+          } else if (finalTranscript) {
+            setInputText(prev => prev + finalTranscript);
+          }
         };
 
         recognitionRef.current.onerror = (event) => {
@@ -75,6 +90,7 @@ export default function EqoAssistantModal({ isOpen, onClose, userColorScheme }) 
 
   const startListening = () => {
     if (recognitionRef.current && !isListening) {
+      setInputText(''); // Clear input when starting
       try {
         recognitionRef.current.start();
       } catch (error) {
