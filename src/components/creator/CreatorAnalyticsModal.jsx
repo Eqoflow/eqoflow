@@ -58,15 +58,15 @@ export default function CreatorAnalyticsModal({ isOpen, onClose, user, userColor
           </div>
         ) : (
           <Tabs defaultValue="overview" className="mt-4">
-            <TabsList className="grid w-full grid-cols-3 bg-white/5">
-              <TabsTrigger value="overview" className="data-[state=active]:bg-white/10">Overview</TabsTrigger>
-              <TabsTrigger value="content" className="data-[state=active]:bg-white/10">Content</TabsTrigger>
-              <TabsTrigger value="audience" className="data-[state=active]:bg-white/10">Audience</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-3 bg-black">
+              <TabsTrigger value="overview" className="data-[state=active]:bg-black data-[state=active]:border data-[state=active]:border-white/20">Overview</TabsTrigger>
+              <TabsTrigger value="content" className="data-[state=active]:bg-black data-[state=active]:border data-[state=active]:border-white/20">Content</TabsTrigger>
+              <TabsTrigger value="audience" className="data-[state=active]:bg-black data-[state=active]:border data-[state=active]:border-white/20">Audience</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-4">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Card className="bg-black/40 border-white/20">
+                <Card className="bg-black border-white/20">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-white text-sm flex items-center gap-2">
                       <Eye className="w-4 h-4" />
@@ -78,7 +78,7 @@ export default function CreatorAnalyticsModal({ isOpen, onClose, user, userColor
                   </CardContent>
                 </Card>
 
-                <Card className="bg-black/40 border-white/20">
+                <Card className="bg-black border-white/20">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-white text-sm flex items-center gap-2">
                       <Heart className="w-4 h-4" />
@@ -90,7 +90,7 @@ export default function CreatorAnalyticsModal({ isOpen, onClose, user, userColor
                   </CardContent>
                 </Card>
 
-                <Card className="bg-black/40 border-white/20">
+                <Card className="bg-black border-white/20">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-white text-sm flex items-center gap-2">
                       <MessageSquare className="w-4 h-4" />
@@ -102,7 +102,7 @@ export default function CreatorAnalyticsModal({ isOpen, onClose, user, userColor
                   </CardContent>
                 </Card>
 
-                <Card className="bg-black/40 border-white/20">
+                <Card className="bg-black border-white/20">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-white text-sm flex items-center gap-2">
                       <TrendingUp className="w-4 h-4" />
@@ -115,7 +115,7 @@ export default function CreatorAnalyticsModal({ isOpen, onClose, user, userColor
                 </Card>
               </div>
 
-              <Card className="bg-white/5 border-white/20">
+              <Card className="bg-black border-white/20">
                 <CardHeader>
                   <CardTitle className="text-white">Engagement Overview</CardTitle>
                   <CardDescription className="text-white/70">Your content performance metrics</CardDescription>
@@ -152,7 +152,7 @@ export default function CreatorAnalyticsModal({ isOpen, onClose, user, userColor
             </TabsContent>
 
             <TabsContent value="content" className="space-y-4">
-              <Card className="bg-white/5 border-white/20">
+              <Card className="bg-black border-white/20">
                 <CardHeader>
                   <CardTitle className="text-white">Top Performing Content</CardTitle>
                   <CardDescription className="text-white/70">Your most engaged posts</CardDescription>
@@ -197,7 +197,7 @@ export default function CreatorAnalyticsModal({ isOpen, onClose, user, userColor
             </TabsContent>
 
             <TabsContent value="audience" className="space-y-4">
-              <Card className="bg-white/5 border-white/20">
+              <Card className="bg-black border-white/20">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <Users className="w-5 h-5" />
