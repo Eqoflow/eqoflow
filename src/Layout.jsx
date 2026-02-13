@@ -44,7 +44,8 @@ import {
   Plus,
   Bot,
   MessageSquare,
-  Home } from
+  Home,
+  Video } from
 
 "lucide-react";
 import {
@@ -272,9 +273,10 @@ const CustomSidebarNavItem = ({ item, isActive, userColorScheme, adminActionCoun
 
 const SidebarNavigationContent = ({ user, location, userColorScheme, adminActionCount, handleLogout, isEmailVisible, handleToggleEmailVisibility }) => {
   const mainNavLinks = [
-  { name: "Feed", href: createPageUrl("Feed"), icon: Rss, adminOnly: false, comingSoon: false },
-  { name: "Discovery", href: createPageUrl("Discovery"), icon: Search, adminOnly: false, comingSoon: false },
-  { name: "EqoChambers", href: createPageUrl("Communities"), icon: Users, adminOnly: false, comingSoon: false },
+    { name: "Feed", href: createPageUrl("Feed"), icon: Rss, adminOnly: false, comingSoon: false },
+    { name: "Discovery", href: createPageUrl("Discovery"), icon: Search, adminOnly: false, comingSoon: false },
+    { name: "Creator Hub", href: createPageUrl("CreatorHub"), icon: Video, adminOnly: false, comingSoon: false },
+    { name: "EqoChambers", href: createPageUrl("Communities"), icon: Users, adminOnly: false, comingSoon: false },
   { name: "EqoAssist", href: createPageUrl("KnowledgeHub"), icon: GraduationCap, adminOnly: false, comingSoon: false },
   { name: "Initial Token Offering", href: createPageUrl("ITOLandingPage"), icon: Coins, adminOnly: false, comingSoon: false }];
 

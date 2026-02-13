@@ -120,6 +120,7 @@ import UserPayroll from './pages/UserPayroll';
 import VirtualSpaces from './pages/VirtualSpaces';
 import Wallet from './pages/Wallet';
 import WelcomeBonusManager from './pages/WelcomeBonusManager';
+import CreatorHub from './pages/CreatorHub';
 import __Layout from './Layout.jsx';
 
 
@@ -197,6 +198,7 @@ export const PAGES = {
     "VirtualSpaces": VirtualSpaces,
     "Wallet": Wallet,
     "WelcomeBonusManager": WelcomeBonusManager,
+    "CreatorHub": CreatorHub,
 }
 
 export const pagesConfig = {
