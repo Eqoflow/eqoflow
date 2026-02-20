@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { User } from '@/entities/User';
 import { UserProfileData } from '@/entities/UserProfileData';
@@ -408,7 +407,25 @@ export default function ITOLandingPage() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
+          {/* Utility Token Explanation */}
+          <Card className="dark-card mb-8">
+            <CardContent className="p-6 md:p-8">
+              <div className="flex items-start gap-4">
+                <Coins className="w-8 h-8 flex-shrink-0 mt-1" style={{ color: userColorScheme.primary }} />
+                <div>
+                  <h2 className="text-2xl font-bold text-white mb-4">$EQOFLO: Platform Utility Token</h2>
+                  <p className="text-gray-300 text-lg leading-relaxed mb-4">
+                    $EQOFLO is the native utility token that powers the EqoFlow platform economy. It enables transactions, unlocks premium features, and facilitates community governance.
+                  </p>
+                  <p className="text-gray-300 text-lg leading-relaxed">
+                    You can participate in the raise to acquire tokens, or <span className="font-semibold" style={{ color: userColorScheme.primary }}>earn them organically</span> through meaningful engagement, quality content creation, active participation in communities, and providing valuable services to other users.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-8">
             <Card className="dark-card">
               <CardContent className="p-6 text-center">
                 <Coins className="w-12 h-12 mx-auto mb-4" style={{ color: userColorScheme.primary }} />
@@ -422,14 +439,6 @@ export default function ITOLandingPage() {
                 <TrendingUp className="w-12 h-12 text-green-400 mx-auto mb-4" />
                 <h3 className="text-2xl font-bold text-white mb-2">${totalValue.toLocaleString()}</h3>
                 <p className="text-gray-400">Total Fundraising Goal</p>
-              </CardContent>
-            </Card>
-
-            <Card className="dark-card">
-              <CardContent className="p-6 text-center">
-                <DollarSign className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-white mb-2">$0.02</h3>
-                <p className="text-gray-400">Indicative Initial Price</p>
               </CardContent>
             </Card>
           </div>
@@ -888,16 +897,7 @@ export default function ITOLandingPage() {
           </CardContent>
         </Card>
 
-        {/* Liquidity Commitment */}
-        <Card className="dark-card mb-8 md:mb-12">
-          <CardContent className="p-6 md:p-8 text-center">
-            <TrendingUp className="w-16 h-16 text-green-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-white mb-4">Liquidity Commitment</h2>
-            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-              The liquidity pool will be funded with <span className="text-green-400 font-bold">$1,000,000</span> to create a healthy market for the token upon launch.
-            </p>
-          </CardContent>
-        </Card>
+
 
         {/* Q&A Section */}
         <div className="mt-8 md:mt-12">
