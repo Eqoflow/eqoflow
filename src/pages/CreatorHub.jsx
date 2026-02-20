@@ -79,7 +79,7 @@ export default function CreatorHub() {
     <div className="min-h-screen pb-20">
       {/* View Mode Toggle - Only for Creators */}
       {isCreator && (
-        <div className="mb-6 flex justify-end">
+        <div className="mb-6 flex justify-start">
           <div className="bg-white/5 border border-white/20 rounded-lg p-1 flex gap-1">
             <Button
               onClick={() => setViewMode('creator')}
