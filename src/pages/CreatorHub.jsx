@@ -19,6 +19,7 @@ export default function CreatorHub() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showStampModal, setShowStampModal] = useState(false);
   const [showAnalyticsModal, setShowAnalyticsModal] = useState(false);
+  const [viewMode, setViewMode] = useState('creator'); // 'creator' or 'user'
 
   const userColorScheme = {
     primary: user?.color_scheme ? getColorScheme(user.color_scheme).primary : '#8b5cf6',
@@ -72,9 +73,42 @@ export default function CreatorHub() {
   }
 
   const isCreator = creatorProfile?.is_creator;
+  const showCreatorView = isCreator && viewMode === 'creator';
 
   return (
     <div className="min-h-screen pb-20">
+      {/* View Mode Toggle - Only for Creators */}
+      {isCreator && (
+        <div className="mb-6 flex justify-end">
+          <div className="bg-white/5 border border-white/20 rounded-lg p-1 flex gap-1">
+            <Button
+              onClick={() => setViewMode('creator')}
+              className={`transition-all ${
+                viewMode === 'creator'
+                  ? 'text-white'
+                  : 'bg-transparent text-white/60 hover:text-white hover:bg-white/5'
+              }`}
+              style={viewMode === 'creator' ? {
+                background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})`
+              } : {}}>
+              Creator View
+            </Button>
+            <Button
+              onClick={() => setViewMode('user')}
+              className={`transition-all ${
+                viewMode === 'user'
+                  ? 'text-white'
+                  : 'bg-transparent text-white/60 hover:text-white hover:bg-white/5'
+              }`}
+              style={viewMode === 'user' ? {
+                background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})`
+              } : {}}>
+              User View
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -91,10 +125,10 @@ export default function CreatorHub() {
           <div className="flex items-start justify-between mb-6">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
-                {isCreator ? (creatorProfile?.channel_name || "Creator Hub") : "Creator Hub"}
+                {showCreatorView ? (creatorProfile?.channel_name || "Creator Hub") : "Creator Hub"}
               </h1>
               <p className="text-xl text-white/70">
-                {isCreator ? "Your content creation command center" : "Discover amazing creator content"}
+                {showCreatorView ? "Your content creation command center" : "Discover amazing creator content"}
               </p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
@@ -102,13 +136,13 @@ export default function CreatorHub() {
             </div>
           </div>
 
-          {isCreator && creatorProfile?.description && (
+          {showCreatorView && creatorProfile?.description && (
             <p className="text-white/80 text-lg max-w-2xl">
               {creatorProfile.description}
             </p>
           )}
 
-          {isCreator && creatorProfile?.social_links && creatorProfile.social_links.length > 0 && (
+          {showCreatorView && creatorProfile?.social_links && creatorProfile.social_links.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-4">
               {creatorProfile.social_links.map((link, index) => (
                 <a
@@ -126,7 +160,7 @@ export default function CreatorHub() {
       </motion.div>
 
       {/* Stats Grid - Only for Creators */}
-      {isCreator && (
+      {showCreatorView && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -203,7 +237,7 @@ export default function CreatorHub() {
       )}
 
       {/* Content Section */}
-      {!isCreator && (
+      {!showCreatorView && (
         <div className="mb-8">
           <Card className="bg-gradient-to-br from-white/5 to-white/10 border-white/20">
             <CardHeader>
@@ -222,7 +256,7 @@ export default function CreatorHub() {
       )}
 
       {/* Features Grid - Only for Creators */}
-      {isCreator && (
+      {showCreatorView && (
       <div className="grid md:grid-cols-2 gap-6">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
