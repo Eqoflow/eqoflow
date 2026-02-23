@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useUser } from "@/components/contexts/UserContext";
 import { base44 } from "@/api/base44Client";
@@ -15,12 +15,13 @@ import StampedContentGallery from "@/components/creator/StampedContentGallery";
 export default function CreatorHub() {
   const { user } = useUser();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [creatorProfile, setCreatorProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showStampModal, setShowStampModal] = useState(false);
   const [showAnalyticsModal, setShowAnalyticsModal] = useState(false);
-  const [viewMode, setViewMode] = useState('creator'); // 'creator' or 'user'
+  const [viewMode, setViewMode] = useState(searchParams.get('view') || 'creator'); // 'creator' or 'user'
   const [stampedContentCount, setStampedContentCount] = useState(0);
   const [publishedCreatorContent, setPublishedCreatorContent] = useState([]);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);

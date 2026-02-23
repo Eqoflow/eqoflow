@@ -119,7 +119,7 @@ export default function PublicCreatorProfile() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
         <p className="text-white/70 text-lg mb-4">Creator profile not found</p>
-        <Button onClick={() => navigate(createPageUrl("CreatorHub"))}>
+        <Button onClick={() => navigate(createPageUrl("CreatorHub") + "?view=user")}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Creator Hub
         </Button>
@@ -131,7 +131,7 @@ export default function PublicCreatorProfile() {
     <div className="min-h-screen pb-20">
       {/* Back Button */}
       <Button
-        onClick={() => navigate(createPageUrl("CreatorHub"))}
+        onClick={() => navigate(createPageUrl("CreatorHub") + "?view=user")}
         variant="outline" className="bg-background text-slate-950 mb-6 px-4 py-2 text-sm font-medium rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border shadow-sm hover:text-accent-foreground h-9 border-white/20 hover:bg-white/10">
 
         <ArrowLeft className="w-4 h-4 mr-2" />
