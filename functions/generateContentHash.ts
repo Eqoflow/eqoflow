@@ -10,16 +10,17 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { content, media_urls = [], metadata = {} } = await req.json();
+    const { content, media_urls = [], content_url, metadata = {} } = await req.json();
 
-    if (!content && (!media_urls || media_urls.length === 0)) {
-      return Response.json({ error: 'Content or media required for hashing' }, { status: 400 });
+    if (!content && (!media_urls || media_urls.length === 0) && !content_url) {
+      return Response.json({ error: 'Content, media URLs, or content URL required for hashing' }, { status: 400 });
     }
 
     // Create a consistent string representation of the content
     const contentString = JSON.stringify({
       content: content || '',
       media_urls: media_urls.sort(), // Sort for consistency
+      content_url: content_url || '',
       timestamp: new Date().toISOString(),
       author: user.email,
       ...metadata
@@ -33,6 +34,7 @@ Deno.serve(async (req) => {
     const contentHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
     return Response.json({
+      hash: contentHash,
       content_hash: contentHash,
       generated_at: new Date().toISOString()
     });
