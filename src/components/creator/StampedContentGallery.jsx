@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Shield, Edit, Trash2, ExternalLink, Save, X, Film, MessageSquare, Image as ImageIcon, Upload } from "lucide-react";
+import { Shield, Edit, Trash2, ExternalLink, Save, X, Film, MessageSquare, Image as ImageIcon, Upload, Download } from "lucide-react";
 
 export default function StampedContentGallery({ user, userColorScheme, onContentUpdate }) {
   const [stampedContent, setStampedContent] = useState([]);
@@ -135,6 +135,33 @@ export default function StampedContentGallery({ user, userColorScheme, onContent
       alert("Failed to publish to feed. Please try again.");
     } finally {
       setPublishingToFeed(null);
+    }
+  };
+
+  const handleDownload = async (item) => {
+    if (!item.media_urls || item.media_urls.length === 0) return;
+
+    try {
+      const url = item.media_urls[0];
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      
+      // Extract file extension from URL
+      const extension = url.match(/\.(mp4|webm|mov|jpg|jpeg|png|gif|webp)$/i)?.[0] || '.mp4';
+      const filename = `${item.author_full_name || 'content'}_${item.id}${extension}`;
+      link.download = filename;
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Error downloading content:", error);
+      alert("Failed to download. Please try again.");
     }
   };
 
@@ -289,6 +316,16 @@ export default function StampedContentGallery({ user, userColorScheme, onContent
                             <Shield className="w-3 h-3" />
                             Published to Feed
                           </div>
+                        )}
+
+                        {item.media_urls && item.media_urls.length > 0 && (
+                          <Button
+                            size="sm"
+                            onClick={() => handleDownload(item)}
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                            <Download className="w-3 h-3 mr-2" />
+                            Download
+                          </Button>
                         )}
                         
                         <div className="flex gap-2">
