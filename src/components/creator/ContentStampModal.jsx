@@ -41,8 +41,8 @@ export default function ContentStampModal({ isOpen, onClose, userColorScheme }) 
 
       // Upload file if provided
       if (file) {
-        const { data } = await base44.integrations.Core.UploadFile({ file });
-        finalContentUrl = data.file_url;
+        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        finalContentUrl = file_url;
       }
 
       // Generate content hash
