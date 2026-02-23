@@ -113,8 +113,8 @@ export default function PublicCreatorProfile() {
       {/* Back Button */}
       <Button
         onClick={() => navigate(createPageUrl("CreatorHub"))}
-        variant="outline"
-        className="mb-6 border-white/20 text-white hover:bg-white/10">
+        variant="outline" className="bg-background text-slate-950 mb-6 px-4 py-2 text-sm font-medium rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border shadow-sm hover:text-accent-foreground h-9 border-white/20 hover:bg-white/10">
+
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back to Creator Hub
       </Button>
