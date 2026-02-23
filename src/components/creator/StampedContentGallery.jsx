@@ -167,9 +167,17 @@ export default function StampedContentGallery({ user, userColorScheme }) {
                     )}
 
                     <div className="p-4">
-                      <h3 className="text-white font-semibold mb-1 truncate">
-                        {item.author_full_name || "Untitled"}
-                      </h3>
+                      <div className="flex items-center justify-between mb-1">
+                        <h3 className="text-white font-semibold truncate flex-1">
+                          {item.author_full_name || "Untitled"}
+                        </h3>
+                        {(!item.media_urls || item.media_urls.length === 0) && (
+                          <div className="bg-black/60 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
+                            {getContentTypeIcon(item)}
+                            <Shield className="w-4 h-4 text-green-400" />
+                          </div>
+                        )}
+                      </div>
                       <p className="text-white/60 text-sm mb-3 line-clamp-2">
                         {item.content || "No description"}
                       </p>
