@@ -38,6 +38,19 @@ export default function CreatorHub() {
     loadPublishedContent();
   }, [user]);
 
+  // Real-time subscription for creator profile updates
+  useEffect(() => {
+    if (!creatorProfile?.id) return;
+
+    const unsubscribe = base44.entities.CreatorProfile.subscribe((event) => {
+      if (event.id === creatorProfile.id && event.type === 'update') {
+        setCreatorProfile(event.data);
+      }
+    });
+
+    return unsubscribe;
+  }, [creatorProfile?.id]);
+
   const loadCreatorProfile = async () => {
     if (!user) return;
 
@@ -310,11 +323,11 @@ export default function CreatorHub() {
             <CardHeader className="pb-2">
               <CardTitle className="text-white flex items-center gap-2">
                 <Users className="w-5 h-5" />
-                Followers
+                Subscribers
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-white">{user?.follower_count || 0}</p>
+              <p className="text-3xl font-bold text-white">{creatorProfile?.subscriber_count || 0}</p>
               <p className="text-sm text-white/60">Community members</p>
             </CardContent>
           </Card>
