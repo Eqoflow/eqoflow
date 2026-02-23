@@ -242,7 +242,8 @@ export default function StampedContentGallery({ user, userColorScheme }) {
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
                 placeholder="Content title"
-                className="bg-white border-white/20 text-black placeholder:text-gray-400"
+                className="bg-white border-white/20 !text-black placeholder:text-gray-400"
+                style={{ color: 'black' }}
               />
             </div>
 
@@ -252,7 +253,8 @@ export default function StampedContentGallery({ user, userColorScheme }) {
                 value={editDescription}
                 onChange={(e) => setEditDescription(e.target.value)}
                 placeholder="Content description"
-                className="bg-white border-white/20 text-black placeholder:text-gray-400 h-32"
+                className="bg-white border-white/20 !text-black placeholder:text-gray-400 h-32"
+                style={{ color: 'black' }}
               />
             </div>
 
