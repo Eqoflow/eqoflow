@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import CreatorOnboarding from "@/components/creator/CreatorOnboarding";
 import ContentStampModal from "@/components/creator/ContentStampModal";
 import CreatorAnalyticsModal from "@/components/creator/CreatorAnalyticsModal";
+import StampedContentGallery from "@/components/creator/StampedContentGallery";
 
 export default function CreatorHub() {
   const { user } = useUser();
@@ -278,7 +279,7 @@ export default function CreatorHub() {
 
       {/* Features Grid - Only for Creators */}
       {showCreatorView && (
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-6 mb-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -331,11 +332,22 @@ export default function CreatorHub() {
         </div>
       )}
 
+      {/* Stamped Content Gallery - Only for Creators */}
+      {showCreatorView && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="mb-8">
+          <StampedContentGallery user={user} userColorScheme={userColorScheme} />
+        </motion.div>
+      )}
+
       {/* Coming Soon Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7 }}
+        transition={{ delay: 0.8 }}
         className="mt-8 rounded-2xl p-8 text-center"
         style={{
           background: `linear-gradient(135deg, ${userColorScheme.primary}20, ${userColorScheme.secondary}20)`,
