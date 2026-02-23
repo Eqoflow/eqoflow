@@ -78,7 +78,24 @@ export default function CreatorHub() {
       }, '-created_date', 50);
       console.log("Loaded published content count:", content.length);
       console.log("Published content items:", content);
-      setPublishedCreatorContent(content);
+      
+      // Fetch creator profiles for all published content
+      const contentWithCreators = await Promise.all(
+        content.map(async (item) => {
+          try {
+            const creatorProfiles = await base44.entities.CreatorProfile.filter({ 
+              created_by: item.created_by 
+            });
+            const creatorName = creatorProfiles.length > 0 ? creatorProfiles[0].channel_name : item.created_by.split('@')[0];
+            return { ...item, creator_name: creatorName };
+          } catch (error) {
+            console.error("Error fetching creator profile:", error);
+            return { ...item, creator_name: item.created_by.split('@')[0] };
+          }
+        })
+      );
+      
+      setPublishedCreatorContent(contentWithCreators);
     } catch (error) {
       console.error("Error loading published creator content:", error);
     }
@@ -328,7 +345,7 @@ export default function CreatorHub() {
                         {item.author_avatar_url && (
                           <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10">
                             <img src={item.author_avatar_url} alt="Creator" className="w-6 h-6 rounded-full" />
-                            <span className="text-white/80 text-xs">By {item.created_by.split('@')[0]}</span>
+                            <span className="text-white/80 text-xs">By {item.creator_name || item.created_by.split('@')[0]}</span>
                           </div>
                         )}
                       </div>
