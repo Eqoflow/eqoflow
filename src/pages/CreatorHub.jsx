@@ -22,6 +22,7 @@ export default function CreatorHub() {
   const [showAnalyticsModal, setShowAnalyticsModal] = useState(false);
   const [viewMode, setViewMode] = useState('creator'); // 'creator' or 'user'
   const [stampedContentCount, setStampedContentCount] = useState(0);
+  const [publishedCreatorContent, setPublishedCreatorContent] = useState([]);
 
   const userColorScheme = {
     primary: user?.color_scheme ? getColorScheme(user.color_scheme).primary : '#8b5cf6',
@@ -32,6 +33,7 @@ export default function CreatorHub() {
   useEffect(() => {
     loadCreatorProfile();
     loadStampedContent();
+    loadPublishedContent();
   }, [user]);
 
   const loadCreatorProfile = async () => {
@@ -67,6 +69,18 @@ export default function CreatorHub() {
     }
   };
 
+  const loadPublishedContent = async () => {
+    try {
+      const content = await base44.entities.Post.filter({ 
+        is_creator_hub_published: true,
+        blockchain_tx_id: { $ne: null }
+      }, '-created_date', 50);
+      setPublishedCreatorContent(content);
+    } catch (error) {
+      console.error("Error loading published creator content:", error);
+    }
+  };
+
   const handleOnboardingComplete = async (isCreator) => {
     await loadCreatorProfile();
   };
@@ -74,6 +88,7 @@ export default function CreatorHub() {
   const handleStampComplete = async () => {
     setShowStampModal(false);
     await loadStampedContent();
+    await loadPublishedContent();
   };
 
   if (isLoading) {
@@ -269,9 +284,52 @@ export default function CreatorHub() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-white/60 text-center py-8">
-                Creator content discovery coming soon...
-              </p>
+              {publishedCreatorContent.length === 0 ? (
+                <p className="text-white/60 text-center py-8">
+                  No creator content published yet...
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {publishedCreatorContent.map((item) => (
+                    <div key={item.id} className="bg-black/40 rounded-lg border border-white/10 overflow-hidden group hover:border-purple-500/50 transition-all">
+                      {item.media_urls && item.media_urls.length > 0 && (
+                        <div className="aspect-video bg-black/60 relative overflow-hidden">
+                          {item.media_urls[0].match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                            <img
+                              src={item.media_urls[0]}
+                              alt={item.author_full_name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : item.media_urls[0].match(/\.(mp4|webm|mov)$/i) ? (
+                            <video
+                              src={item.media_urls[0]}
+                              className="w-full h-full object-cover"
+                              controls
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Shield className="w-12 h-12 text-white/30" />
+                            </div>
+                          )}
+                          <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
+                            <Shield className="w-4 h-4 text-green-400" />
+                          </div>
+                        </div>
+                      )}
+                      <div className="p-4">
+                        <h3 className="text-white font-semibold mb-1">{item.author_full_name || "Untitled"}</h3>
+                        <p className="text-white/60 text-sm mb-2 line-clamp-2">{item.content || "No description"}</p>
+                        {item.author_avatar_url && (
+                          <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10">
+                            <img src={item.author_avatar_url} alt="Creator" className="w-6 h-6 rounded-full" />
+                            <span className="text-white/80 text-xs">By {item.created_by.split('@')[0]}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
