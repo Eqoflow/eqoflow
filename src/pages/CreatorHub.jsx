@@ -132,7 +132,10 @@ export default function CreatorHub() {
               Creator View
             </Button>
             <Button
-              onClick={() => setViewMode('user')}
+              onClick={async () => {
+                setViewMode('user');
+                await loadPublishedContent();
+              }}
               className={`transition-all ${
                 viewMode === 'user'
                   ? 'text-white'
