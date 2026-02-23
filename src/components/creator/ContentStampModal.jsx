@@ -53,39 +53,22 @@ export default function ContentStampModal({ isOpen, onClose, userColorScheme, us
       const { data: hashData } = await generateContentHash({ content_url: finalContentUrl });
       const contentHash = hashData.hash;
 
-      // Create a stamped content record
+      // Create a stamped content record with proper user info
       const stampedContent = await base44.entities.Post.create({
         content: description || title,
         media_urls: finalContentUrl ? [finalContentUrl] : [],
         author_full_name: title,
-        author_username: "creator_stamp",
+        author_username: user.username || user.email.split('@')[0],
+        author_avatar_url: user.avatar_url,
         category: "general",
         moderation_status: "approved",
-        content_hash: contentHash
+        content_hash: contentHash,
+        privacy_level: publishToFeed ? "public" : "private",
+        is_creator_hub_published: publishToCreatorHub
       });
 
       // Trigger Phantom wallet for blockchain timestamp
       const result = await timestampContent(contentHash, stampedContent.id);
-
-      if (result.success) {
-        // Update the stamped content with publish flags
-        await base44.entities.Post.update(stampedContent.id, {
-          is_creator_hub_published: publishToCreatorHub
-        });
-
-        // If publish to feed is enabled, create a feed post
-        if (publishToFeed) {
-          await base44.entities.Post.create({
-            content: description || title,
-            media_urls: finalContentUrl ? [finalContentUrl] : [],
-            author_full_name: user.full_name,
-            author_username: user.username || user.email.split('@')[0],
-            author_avatar_url: user.avatar_url,
-            blockchain_tx_id: result.blockchain_tx_id,
-            content_hash: contentHash,
-            category: "general"
-          });
-        }
 
         setStampResult({
           hash: contentHash,
