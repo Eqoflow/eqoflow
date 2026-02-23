@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Shield, Edit, Trash2, ExternalLink, Save, X, Film, MessageSquare, Image as ImageIcon, Upload } from "lucide-react";
 
-export default function StampedContentGallery({ user, userColorScheme }) {
+export default function StampedContentGallery({ user, userColorScheme, onContentUpdate }) {
   const [stampedContent, setStampedContent] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editingItem, setEditingItem] = useState(null);
@@ -90,13 +90,13 @@ export default function StampedContentGallery({ user, userColorScheme }) {
         category: item.media_urls?.[0]?.match(/\.(mp4|webm|mov)$/i) ? "entertainment" : "general"
       });
       
-      setStampedContent(prev => 
-        prev.map(content => 
-          content.id === item.id 
-            ? { ...content, is_creator_hub_published: true }
-            : content
-        )
-      );
+      // Reload the content to get fresh data
+      await loadStampedContent();
+      
+      // Notify parent to refresh published content
+      if (onContentUpdate) {
+        onContentUpdate();
+      }
       
       alert("Content published to Creator Hub successfully!");
     } catch (error) {
@@ -115,13 +115,8 @@ export default function StampedContentGallery({ user, userColorScheme }) {
         category: item.media_urls?.[0]?.match(/\.(mp4|webm|mov)$/i) ? "entertainment" : "general"
       });
       
-      setStampedContent(prev => 
-        prev.map(content => 
-          content.id === item.id 
-            ? { ...content, privacy_level: "public" }
-            : content
-        )
-      );
+      // Reload the content to get fresh data
+      await loadStampedContent();
       
       alert("Content published to Feed successfully!");
     } catch (error) {

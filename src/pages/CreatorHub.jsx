@@ -397,7 +397,11 @@ export default function CreatorHub() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
           className="mb-8">
-          <StampedContentGallery user={user} userColorScheme={userColorScheme} />
+          <StampedContentGallery 
+            user={user} 
+            userColorScheme={userColorScheme}
+            onContentUpdate={loadPublishedContent}
+          />
         </motion.div>
       )}
 
