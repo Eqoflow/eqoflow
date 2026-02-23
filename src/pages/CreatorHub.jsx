@@ -366,6 +366,7 @@ export default function CreatorHub() {
         isOpen={showStampModal} 
         onClose={handleStampComplete} 
         userColorScheme={userColorScheme}
+        user={user}
       />
       <CreatorAnalyticsModal 
         isOpen={showAnalyticsModal} 
