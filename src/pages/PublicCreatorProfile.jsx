@@ -22,6 +22,7 @@ export default function PublicCreatorProfile() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [showTipModal, setShowTipModal] = useState(false);
   const [tipAmount, setTipAmount] = useState("");
+  const [subscriberCount, setSubscriberCount] = useState(0);
 
   const userColorScheme = {
     primary: user?.color_scheme ? getColorScheme(user.color_scheme).primary : '#8b5cf6',
@@ -44,6 +45,7 @@ export default function PublicCreatorProfile() {
       const profiles = await base44.entities.CreatorProfile.filter({ created_by: creatorEmail });
       if (profiles.length > 0) {
         setCreatorProfile(profiles[0]);
+        setSubscriberCount(profiles[0].subscriber_count || 0);
       }
 
       // Load creator's published content
@@ -65,9 +67,26 @@ export default function PublicCreatorProfile() {
   };
 
   const handleSubscribe = async () => {
-    // Implement subscription logic
-    setIsSubscribed(!isSubscribed);
-    // await base44.entities.Subscription.create({ ... });
+    if (!creatorProfile || !user) return;
+
+    try {
+      const newSubscribedState = !isSubscribed;
+      setIsSubscribed(newSubscribedState);
+
+      // Update subscriber count
+      const newCount = newSubscribedState ? subscriberCount + 1 : subscriberCount - 1;
+      setSubscriberCount(newCount);
+
+      // Update the creator profile subscriber count
+      await base44.entities.CreatorProfile.update(creatorProfile.id, {
+        subscriber_count: newCount
+      });
+    } catch (error) {
+      console.error("Error updating subscription:", error);
+      // Revert on error
+      setIsSubscribed(!isSubscribed);
+      setSubscriberCount(newSubscribedState ? subscriberCount - 1 : subscriberCount + 1);
+    }
   };
 
   const handleTip = async () => {
@@ -145,9 +164,11 @@ export default function PublicCreatorProfile() {
                 <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
                   {creatorProfile.channel_name}
                 </h1>
-                <p className="text-lg text-white/60">
-                  {creatorContent.length} Published Content
-                </p>
+                <div className="flex items-center gap-4 text-lg text-white/60">
+                  <span>{creatorContent.length} Published Content</span>
+                  <span>•</span>
+                  <span>{subscriberCount} Subscribers</span>
+                </div>
               </div>
             </div>
             
