@@ -85,12 +85,18 @@ export default function StampedContentGallery({ user, userColorScheme, onContent
   const handlePublishToCreatorHub = async (item) => {
     setPublishingItem(item.id);
     try {
+      console.log("Publishing item:", item.id);
+      
       const updated = await base44.entities.Post.update(item.id, {
         is_creator_hub_published: true,
         category: item.media_urls?.[0]?.match(/\.(mp4|webm|mov)$/i) ? "entertainment" : "general"
       });
       
-      console.log("Updated post:", updated);
+      console.log("Post updated successfully:", updated);
+      
+      // Verify the update by fetching the post again
+      const verification = await base44.entities.Post.filter({ id: item.id });
+      console.log("Verification fetch:", verification[0]);
       
       // Reload the content to get fresh data
       await loadStampedContent();
@@ -100,7 +106,7 @@ export default function StampedContentGallery({ user, userColorScheme, onContent
         await onContentUpdate();
       }
       
-      alert("Content published to Creator Hub successfully!");
+      alert("Content published to Creator Hub successfully! Switch to User View to see it.");
     } catch (error) {
       console.error("Error publishing content:", error);
       alert("Failed to publish content. Please try again.");

@@ -71,11 +71,13 @@ export default function CreatorHub() {
 
   const loadPublishedContent = async () => {
     try {
+      console.log("Loading published content...");
       const content = await base44.entities.Post.filter({ 
         is_creator_hub_published: true,
         blockchain_tx_id: { $ne: null }
       }, '-created_date', 50);
-      console.log("Loaded published content:", content);
+      console.log("Loaded published content count:", content.length);
+      console.log("Published content items:", content);
       setPublishedCreatorContent(content);
     } catch (error) {
       console.error("Error loading published creator content:", error);
