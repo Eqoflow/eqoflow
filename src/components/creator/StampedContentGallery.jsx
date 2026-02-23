@@ -180,7 +180,7 @@ export default function StampedContentGallery({ user, userColorScheme }) {
                           size="sm"
                           variant="outline"
                           onClick={() => handleEditClick(item)}
-                          className="flex-1 border-white/20 text-white hover:bg-white/10">
+                          className="flex-1 border-white/20 text-black hover:bg-white/10">
                           <Edit className="w-3 h-3 mr-1" />
                           Edit
                         </Button>
