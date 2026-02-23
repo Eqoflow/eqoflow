@@ -20,6 +20,7 @@ export default function CreatorHub() {
   const [showStampModal, setShowStampModal] = useState(false);
   const [showAnalyticsModal, setShowAnalyticsModal] = useState(false);
   const [viewMode, setViewMode] = useState('creator'); // 'creator' or 'user'
+  const [stampedContentCount, setStampedContentCount] = useState(0);
 
   const userColorScheme = {
     primary: user?.color_scheme ? getColorScheme(user.color_scheme).primary : '#8b5cf6',
@@ -29,6 +30,7 @@ export default function CreatorHub() {
 
   useEffect(() => {
     loadCreatorProfile();
+    loadStampedContent();
   }, [user]);
 
   const loadCreatorProfile = async () => {
@@ -50,8 +52,27 @@ export default function CreatorHub() {
     }
   };
 
+  const loadStampedContent = async () => {
+    if (!user) return;
+
+    try {
+      const stampedPosts = await base44.entities.Post.filter({ 
+        created_by: user.email, 
+        blockchain_tx_id: { $ne: null } 
+      });
+      setStampedContentCount(stampedPosts.length);
+    } catch (error) {
+      console.error("Error loading stamped content:", error);
+    }
+  };
+
   const handleOnboardingComplete = async (isCreator) => {
     await loadCreatorProfile();
+  };
+
+  const handleStampComplete = async () => {
+    setShowStampModal(false);
+    await loadStampedContent();
   };
 
   if (isLoading) {
@@ -169,12 +190,12 @@ export default function CreatorHub() {
           <Card className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border-purple-500/30">
             <CardHeader className="pb-2">
               <CardTitle className="text-white flex items-center gap-2">
-                <Video className="w-5 h-5" />
+                <Shield className="w-5 h-5" />
                 Content Stamped
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-white">0</p>
+              <p className="text-3xl font-bold text-white">{stampedContentCount}</p>
               <p className="text-sm text-white/60">Total pieces protected</p>
             </CardContent>
           </Card>
@@ -331,7 +352,7 @@ export default function CreatorHub() {
       {/* Modals */}
       <ContentStampModal 
         isOpen={showStampModal} 
-        onClose={() => setShowStampModal(false)} 
+        onClose={handleStampComplete} 
         userColorScheme={userColorScheme}
       />
       <CreatorAnalyticsModal 
