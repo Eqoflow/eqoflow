@@ -357,7 +357,10 @@ export default function CreatorHub() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {publishedCreatorContent.map((item) => (
-                    <div key={item.id} className="bg-black/40 rounded-lg border border-white/10 overflow-hidden group hover:border-purple-500/50 transition-all">
+                    <div 
+                      key={item.id} 
+                      onClick={() => navigate(createPageUrl("PublicCreatorProfile") + `?creator=${item.created_by}`)}
+                      className="bg-black/40 rounded-lg border border-white/10 overflow-hidden group hover:border-purple-500/50 transition-all cursor-pointer">
                       {item.media_urls && item.media_urls.length > 0 && (
                         <div className="aspect-video bg-black/60 relative overflow-hidden">
                           {item.media_urls[0].match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
