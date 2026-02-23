@@ -377,13 +377,6 @@ export default function CreatorHub() {
                               <Shield className="w-12 h-12 text-white/30" />
                             </div>
                           )}
-                          <div className="absolute top-2 left-2 bg-black/80 backdrop-blur-sm p-1 rounded-md">
-                            {item.creator_logo ? (
-                              <img src={item.creator_logo} alt="Creator Logo" className="w-6 h-6 object-contain" />
-                            ) : (
-                              <Sparkles className="w-6 h-6 text-yellow-400" />
-                            )}
-                          </div>
                           <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
                             <Shield className="w-4 h-4 text-green-400" />
                           </div>
@@ -392,12 +385,14 @@ export default function CreatorHub() {
                       <div className="p-4">
                         <h3 className="text-white font-semibold mb-1">{item.author_full_name || "Untitled"}</h3>
                         <p className="text-white/60 text-sm mb-2 line-clamp-2">{item.content || "No description"}</p>
-                        {item.author_avatar_url && (
-                          <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10">
-                            <img src={item.author_avatar_url} alt="Creator" className="w-6 h-6 rounded-full" />
-                            <span className="text-white/80 text-xs">By {item.creator_name || item.created_by.split('@')[0]}</span>
-                          </div>
-                        )}
+                        <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10">
+                          {item.creator_logo ? (
+                            <img src={item.creator_logo} alt="Creator Logo" className="w-6 h-6 object-contain" />
+                          ) : (
+                            <Sparkles className="w-6 h-6 text-yellow-400" />
+                          )}
+                          <span className="text-white/80 text-xs">By {item.creator_name || item.created_by.split('@')[0]}</span>
+                        </div>
                       </div>
                     </div>
                   ))}
