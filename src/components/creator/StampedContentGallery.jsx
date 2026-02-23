@@ -81,21 +81,23 @@ export default function StampedContentGallery({ user, userColorScheme }) {
     }
   };
 
-  const handlePublishToFeed = async (item) => {
+  const handlePublishToCreatorHub = async (item) => {
     setPublishingItem(item.id);
     try {
-      await base44.entities.Post.create({
-        content: item.content || "Check out my stamped content!",
-        media_urls: item.media_urls || [],
-        author_full_name: user.full_name,
-        author_username: user.username || user.email.split('@')[0],
-        author_avatar_url: user.avatar_url,
-        blockchain_tx_id: item.blockchain_tx_id,
-        content_hash: item.content_hash,
-        category: "general"
+      await base44.entities.Post.update(item.id, {
+        is_creator_hub_published: true,
+        category: item.media_urls?.[0]?.match(/\.(mp4|webm|mov)$/i) ? "entertainment" : "general"
       });
       
-      alert("Content published to EqoFlow feed successfully!");
+      setStampedContent(prev => 
+        prev.map(content => 
+          content.id === item.id 
+            ? { ...content, is_creator_hub_published: true }
+            : content
+        )
+      );
+      
+      alert("Content published to Creator Hub successfully!");
     } catch (error) {
       console.error("Error publishing content:", error);
       alert("Failed to publish content. Please try again.");
@@ -221,16 +223,22 @@ export default function StampedContentGallery({ user, userColorScheme }) {
                       </div>
 
                       <div className="space-y-2">
-                        {item.media_urls && item.media_urls.length > 0 && (
+                        {item.media_urls && item.media_urls.length > 0 && !item.is_creator_hub_published && (
                           <Button
                             size="sm"
-                            onClick={() => handlePublishToFeed(item)}
+                            onClick={() => handlePublishToCreatorHub(item)}
                             disabled={publishingItem === item.id}
                             className="w-full"
                             style={{ background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})` }}>
                             <Upload className="w-3 h-3 mr-2" />
-                            {publishingItem === item.id ? "Publishing..." : "Publish to Feed"}
+                            {publishingItem === item.id ? "Publishing..." : "Publish to Creator Hub"}
                           </Button>
+                        )}
+                        {item.is_creator_hub_published && (
+                          <div className="text-xs text-green-400 flex items-center justify-center gap-1 py-2">
+                            <Shield className="w-3 h-3" />
+                            Published to Creator Hub
+                          </div>
                         )}
                         
                         <div className="flex gap-2">
