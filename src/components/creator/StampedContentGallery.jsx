@@ -237,22 +237,22 @@ export default function StampedContentGallery({ user, userColorScheme }) {
 
           <div className="space-y-4 mt-4">
             <div>
-              <label className="text-white/80 text-sm mb-2 block">Title</label>
+              <label className="text-white text-sm mb-2 block">Title</label>
               <Input
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
                 placeholder="Content title"
-                className="bg-white/5 border-white/20 text-black"
+                className="bg-white border-white/20 text-black placeholder:text-gray-400"
               />
             </div>
 
             <div>
-              <label className="text-white/80 text-sm mb-2 block">Description</label>
+              <label className="text-white text-sm mb-2 block">Description</label>
               <Textarea
                 value={editDescription}
                 onChange={(e) => setEditDescription(e.target.value)}
                 placeholder="Content description"
-                className="bg-white/5 border-white/20 text-black h-32"
+                className="bg-white border-white/20 text-black placeholder:text-gray-400 h-32"
               />
             </div>
 
