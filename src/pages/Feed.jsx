@@ -532,7 +532,7 @@ export default function Feed() {
       if (currentFeedType === 'following') {
         if (currentFollowingList.length > 0) {
           const postsPromise = Post.filter(
-            { created_by: { $in: currentFollowingList }, moderation_status: 'approved' },
+            { created_by: { $in: currentFollowingList }, moderation_status: 'approved', privacy_level: 'public' },
             currentSortOrder,
             50
           );
@@ -548,13 +548,13 @@ export default function Feed() {
         }
       } else {
         const generalPostsPromise = Post.filter(
-          { moderation_status: 'approved', community_id: null },
+          { moderation_status: 'approved', community_id: null, privacy_level: 'public' },
           currentSortOrder,
           50
         );
 
         const sharedCommunityPostsPromise = Post.filter(
-          { moderation_status: 'approved', share_to_main_feed: true },
+          { moderation_status: 'approved', share_to_main_feed: true, privacy_level: 'public' },
           currentSortOrder,
           50
         );
