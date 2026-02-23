@@ -23,6 +23,7 @@ export default function CreatorHub() {
   const [viewMode, setViewMode] = useState('creator'); // 'creator' or 'user'
   const [stampedContentCount, setStampedContentCount] = useState(0);
   const [publishedCreatorContent, setPublishedCreatorContent] = useState([]);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
 
   const userColorScheme = {
     primary: user?.color_scheme ? getColorScheme(user.color_scheme).primary : '#8b5cf6',
@@ -87,10 +88,11 @@ export default function CreatorHub() {
               created_by: item.created_by 
             });
             const creatorName = creatorProfiles.length > 0 ? creatorProfiles[0].channel_name : item.created_by.split('@')[0];
-            return { ...item, creator_name: creatorName };
+            const creatorLogo = creatorProfiles.length > 0 ? creatorProfiles[0].logo_url : null;
+            return { ...item, creator_name: creatorName, creator_logo: creatorLogo };
           } catch (error) {
             console.error("Error fetching creator profile:", error);
-            return { ...item, creator_name: item.created_by.split('@')[0] };
+            return { ...item, creator_name: item.created_by.split('@')[0], creator_logo: null };
           }
         })
       );
@@ -109,6 +111,25 @@ export default function CreatorHub() {
     setShowStampModal(false);
     await loadStampedContent();
     await loadPublishedContent();
+  };
+
+  const handleLogoUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file || !creatorProfile) return;
+
+    setIsUploadingLogo(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      await base44.entities.CreatorProfile.update(creatorProfile.id, {
+        logo_url: file_url
+      });
+      await loadCreatorProfile();
+    } catch (error) {
+      console.error("Error uploading logo:", error);
+      alert("Failed to upload logo. Please try again.");
+    } finally {
+      setIsUploadingLogo(false);
+    }
   };
 
   if (isLoading) {
@@ -191,8 +212,30 @@ export default function CreatorHub() {
                 {showCreatorView ? "Your content creation command center" : "Discover amazing creator content"}
               </p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-              <Sparkles className="w-8 h-8 text-yellow-400" />
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 relative group">
+              {showCreatorView && creatorProfile?.logo_url ? (
+                <img src={creatorProfile.logo_url} alt="Channel Logo" className="w-8 h-8 object-contain" />
+              ) : (
+                <Sparkles className="w-8 h-8 text-yellow-400" />
+              )}
+              {showCreatorView && (
+                <>
+                  <input
+                    type="file"
+                    id="logo-upload"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="logo-upload"
+                    className="absolute inset-0 flex items-center justify-center bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-xl">
+                    <span className="text-white text-xs font-medium">
+                      {isUploadingLogo ? "Uploading..." : "Change Logo"}
+                    </span>
+                  </label>
+                </>
+              )}
             </div>
           </div>
 
@@ -334,6 +377,13 @@ export default function CreatorHub() {
                               <Shield className="w-12 h-12 text-white/30" />
                             </div>
                           )}
+                          <div className="absolute top-2 left-2 bg-black/80 backdrop-blur-sm p-1 rounded-md">
+                            {item.creator_logo ? (
+                              <img src={item.creator_logo} alt="Creator Logo" className="w-6 h-6 object-contain" />
+                            ) : (
+                              <Sparkles className="w-6 h-6 text-yellow-400" />
+                            )}
+                          </div>
                           <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
                             <Shield className="w-4 h-4 text-green-400" />
                           </div>
