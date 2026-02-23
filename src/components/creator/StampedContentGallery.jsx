@@ -86,6 +86,7 @@ export default function StampedContentGallery({ user, userColorScheme, onContent
     setPublishingItem(item.id);
     try {
       console.log("Publishing item:", item.id);
+      console.log("Item has blockchain_tx_id:", item.blockchain_tx_id);
       
       const updated = await base44.entities.Post.update(item.id, {
         is_creator_hub_published: true,
@@ -96,7 +97,9 @@ export default function StampedContentGallery({ user, userColorScheme, onContent
       
       // Verify the update by fetching the post again
       const verification = await base44.entities.Post.filter({ id: item.id });
-      console.log("Verification fetch:", verification[0]);
+      console.log("Verification fetch full:", verification[0]);
+      console.log("is_creator_hub_published value:", verification[0]?.is_creator_hub_published);
+      console.log("blockchain_tx_id value:", verification[0]?.blockchain_tx_id);
       
       // Reload the content to get fresh data
       await loadStampedContent();
