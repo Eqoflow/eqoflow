@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Shield, Edit, Trash2, ExternalLink, Save, X } from "lucide-react";
+import { Shield, Edit, Trash2, ExternalLink, Save, X, Film, MessageSquare, Image as ImageIcon } from "lucide-react";
 
 export default function StampedContentGallery({ user, userColorScheme }) {
   const [stampedContent, setStampedContent] = useState([]);
@@ -80,6 +80,18 @@ export default function StampedContentGallery({ user, userColorScheme }) {
     }
   };
 
+  const getContentTypeIcon = (item) => {
+    if (item.media_urls && item.media_urls.length > 0) {
+      const mediaUrl = item.media_urls[0];
+      if (mediaUrl.match(/\.(mp4|webm|mov)$/i)) {
+        return <Film className="w-4 h-4 text-blue-400" />;
+      } else if (mediaUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+        return <ImageIcon className="w-4 h-4 text-purple-400" />;
+      }
+    }
+    return <MessageSquare className="w-4 h-4 text-yellow-400" />;
+  };
+
   if (isLoading) {
     return (
       <Card className="bg-gradient-to-br from-white/5 to-white/10 border-white/20">
@@ -147,7 +159,8 @@ export default function StampedContentGallery({ user, userColorScheme }) {
                             <Shield className="w-12 h-12 text-white/30" />
                           </div>
                         )}
-                        <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md">
+                        <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
+                          {getContentTypeIcon(item)}
                           <Shield className="w-4 h-4 text-green-400" />
                         </div>
                       </div>
