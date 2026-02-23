@@ -89,11 +89,11 @@ export default function PublicCreatorProfile() {
           <img
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/687e8a7d9ad971203c39d072/942c1cf5d_EqoFlowLogoDesign-14.png"
             alt="Loading"
-            className="w-24 h-24 object-contain"
-          />
+            className="w-24 h-24 object-contain" />
+
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
   if (!creatorProfile) {
@@ -104,8 +104,8 @@ export default function PublicCreatorProfile() {
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Creator Hub
         </Button>
-      </div>
-    );
+      </div>);
+
   }
 
   return (
@@ -135,11 +135,11 @@ export default function PublicCreatorProfile() {
           <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
             <div className="flex items-center gap-4">
               <div className="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20">
-                {creatorProfile.logo_url ? (
-                  <img src={creatorProfile.logo_url} alt="Creator Logo" className="w-full h-full object-contain" />
-                ) : (
-                  <Sparkles className="w-full h-full text-yellow-400" />
-                )}
+                {creatorProfile.logo_url ?
+                <img src={creatorProfile.logo_url} alt="Creator Logo" className="w-full h-full object-contain" /> :
+
+                <Sparkles className="w-full h-full text-yellow-400" />
+                }
               </div>
               <div>
                 <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
@@ -158,51 +158,51 @@ export default function PublicCreatorProfile() {
                 style={!isSubscribed ? {
                   background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})`
                 } : {}}>
-                {isSubscribed ? (
-                  <>
+                {isSubscribed ?
+                <>
                     <UserCheck className="w-4 h-4 mr-2" />
                     Subscribed
-                  </>
-                ) : (
-                  <>
+                  </> :
+
+                <>
                     <UserPlus className="w-4 h-4 mr-2" />
                     Subscribe
                   </>
-                )}
+                }
               </Button>
               <Button
                 onClick={() => setShowTipModal(true)}
-                variant="outline"
-                className="border-white/20 text-white hover:bg-white/10">
+                variant="outline" className="bg-background text-slate-950 px-4 py-2 text-sm font-medium rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border shadow-sm hover:text-accent-foreground h-9 border-white/20 hover:bg-white/10">
+
                 <DollarSign className="w-4 h-4 mr-2" />
                 Tip Creator
               </Button>
             </div>
           </div>
 
-          {creatorProfile.description && (
-            <p className="text-white/80 text-lg mb-4 max-w-3xl">
+          {creatorProfile.description &&
+          <p className="text-white/80 text-lg mb-4 max-w-3xl">
               {creatorProfile.description}
             </p>
-          )}
+          }
 
-          {creatorProfile.social_links && creatorProfile.social_links.length > 0 && (
-            <div>
+          {creatorProfile.social_links && creatorProfile.social_links.length > 0 &&
+          <div>
               <h3 className="text-white font-semibold mb-3">Social Channels</h3>
               <div className="flex flex-wrap gap-2">
-                {creatorProfile.social_links.map((link, index) => (
-                  <a
-                    key={index}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-white/10 hover:bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 text-white text-sm transition-all duration-200 hover:scale-105 capitalize">
+                {creatorProfile.social_links.map((link, index) =>
+              <a
+                key={index}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-white/10 hover:bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 text-white text-sm transition-all duration-200 hover:scale-105 capitalize">
                     {link.platform}
                   </a>
-                ))}
+              )}
               </div>
             </div>
-          )}
+          }
         </div>
       </motion.div>
 
@@ -212,43 +212,43 @@ export default function PublicCreatorProfile() {
           <CardTitle className="text-white text-2xl">Published Content</CardTitle>
         </CardHeader>
         <CardContent>
-          {creatorContent.length === 0 ? (
-            <p className="text-white/60 text-center py-8">
+          {creatorContent.length === 0 ?
+          <p className="text-white/60 text-center py-8">
               No content published yet
-            </p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {creatorContent.map((item) => (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="bg-black/40 rounded-lg border border-white/10 overflow-hidden group hover:border-purple-500/50 transition-all">
+            </p> :
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {creatorContent.map((item) =>
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-black/40 rounded-lg border border-white/10 overflow-hidden group hover:border-purple-500/50 transition-all">
                   
-                  {item.media_urls && item.media_urls.length > 0 && (
-                    <div className="aspect-video bg-black/60 relative overflow-hidden">
-                      {item.media_urls[0].match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-                        <img
-                          src={item.media_urls[0]}
-                          alt={item.author_full_name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : item.media_urls[0].match(/\.(mp4|webm|mov)$/i) ? (
-                        <video
-                          src={item.media_urls[0]}
-                          className="w-full h-full object-cover"
-                          controls
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
+                  {item.media_urls && item.media_urls.length > 0 &&
+              <div className="aspect-video bg-black/60 relative overflow-hidden">
+                      {item.media_urls[0].match(/\.(jpg|jpeg|png|gif|webp)$/i) ?
+                <img
+                  src={item.media_urls[0]}
+                  alt={item.author_full_name}
+                  className="w-full h-full object-cover" /> :
+
+                item.media_urls[0].match(/\.(mp4|webm|mov)$/i) ?
+                <video
+                  src={item.media_urls[0]}
+                  className="w-full h-full object-cover"
+                  controls /> :
+
+
+                <div className="w-full h-full flex items-center justify-center">
                           <Shield className="w-12 h-12 text-white/30" />
                         </div>
-                      )}
+                }
                       <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
                         <Shield className="w-4 h-4 text-green-400" />
                       </div>
                     </div>
-                  )}
+              }
                   
                   <div className="p-4">
                     <h3 className="text-white font-semibold mb-1">{item.author_full_name || "Untitled"}</h3>
@@ -258,9 +258,9 @@ export default function PublicCreatorProfile() {
                     </div>
                   </div>
                 </motion.div>
-              ))}
+            )}
             </div>
-          )}
+          }
         </CardContent>
       </Card>
 
@@ -287,20 +287,20 @@ export default function PublicCreatorProfile() {
                 placeholder="5.00"
                 className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
                 min="0.01"
-                step="0.01"
-              />
+                step="0.01" />
+
             </div>
 
             <div className="flex gap-2">
-              {[5, 10, 20, 50].map((amount) => (
-                <Button
-                  key={amount}
-                  onClick={() => setTipAmount(amount.toString())}
-                  variant="outline"
-                  className="flex-1 border-white/20 text-white hover:bg-white/10">
+              {[5, 10, 20, 50].map((amount) =>
+              <Button
+                key={amount}
+                onClick={() => setTipAmount(amount.toString())}
+                variant="outline"
+                className="flex-1 border-white/20 text-white hover:bg-white/10">
                   ${amount}
                 </Button>
-              ))}
+              )}
             </div>
 
             <div className="flex gap-3 justify-end pt-4">
@@ -319,8 +319,8 @@ export default function PublicCreatorProfile() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+    </div>);
+
 }
 
 function getColorScheme(schemeName) {
