@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Shield, Edit, Trash2, ExternalLink, Save, X, Film, MessageSquare, Image as ImageIcon } from "lucide-react";
+import { Shield, Edit, Trash2, ExternalLink, Save, X, Film, MessageSquare, Image as ImageIcon, Upload } from "lucide-react";
 
 export default function StampedContentGallery({ user, userColorScheme }) {
   const [stampedContent, setStampedContent] = useState([]);
@@ -15,6 +15,7 @@ export default function StampedContentGallery({ user, userColorScheme }) {
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [publishingItem, setPublishingItem] = useState(null);
 
   useEffect(() => {
     loadStampedContent();
@@ -77,6 +78,29 @@ export default function StampedContentGallery({ user, userColorScheme }) {
     } catch (error) {
       console.error("Error deleting content:", error);
       alert("Failed to delete content. Please try again.");
+    }
+  };
+
+  const handlePublishToFeed = async (item) => {
+    setPublishingItem(item.id);
+    try {
+      await base44.entities.Post.create({
+        content: item.content || "Check out my stamped content!",
+        media_urls: item.media_urls || [],
+        author_full_name: user.full_name,
+        author_username: user.username || user.email.split('@')[0],
+        author_avatar_url: user.avatar_url,
+        blockchain_tx_id: item.blockchain_tx_id,
+        content_hash: item.content_hash,
+        category: "general"
+      });
+      
+      alert("Content published to EqoFlow feed successfully!");
+    } catch (error) {
+      console.error("Error publishing content:", error);
+      alert("Failed to publish content. Please try again.");
+    } finally {
+      setPublishingItem(null);
     }
   };
 
@@ -196,22 +220,36 @@ export default function StampedContentGallery({ user, userColorScheme }) {
                     }
                       </div>
 
-                      <div className="flex gap-2">
-                        <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleEditClick(item)}
-                      className="flex-1 border-white/20 text-black hover:bg-white/10">
-                          <Edit className="w-3 h-3 mr-1" />
-                          Edit
-                        </Button>
-                        <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setDeleteConfirm(item)}
-                      className="border-red-500/30 text-red-400 hover:bg-red-500/10">
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
+                      <div className="space-y-2">
+                        {item.media_urls && item.media_urls.length > 0 && (
+                          <Button
+                            size="sm"
+                            onClick={() => handlePublishToFeed(item)}
+                            disabled={publishingItem === item.id}
+                            className="w-full"
+                            style={{ background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})` }}>
+                            <Upload className="w-3 h-3 mr-2" />
+                            {publishingItem === item.id ? "Publishing..." : "Publish to Feed"}
+                          </Button>
+                        )}
+                        
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleEditClick(item)}
+                            className="flex-1 border-white/20 text-black hover:bg-white/10">
+                            <Edit className="w-3 h-3 mr-1" />
+                            Edit
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setDeleteConfirm(item)}
+                            className="border-red-500/30 text-red-400 hover:bg-red-500/10">
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </motion.div>
