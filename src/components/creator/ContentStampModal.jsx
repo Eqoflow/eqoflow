@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Shield, Upload, Link as LinkIcon, CheckCircle } from "lucide-react";
+import { Shield, Upload, Link as LinkIcon, CheckCircle, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { timestampOnBlockchain } from "@/functions/timestampOnBlockchain";
 import { generateContentHash } from "@/functions/generateContentHash";
+import { useBlockchainTimestamp } from '../blockchain/useBlockchainTimestamp';
 
 export default function ContentStampModal({ isOpen, onClose, userColorScheme }) {
   const [title, setTitle] = useState("");
@@ -16,6 +16,7 @@ export default function ContentStampModal({ isOpen, onClose, userColorScheme }) 
   const [file, setFile] = useState(null);
   const [isStamping, setIsStamping] = useState(false);
   const [stampResult, setStampResult] = useState(null);
+  const { timestampContent, isProcessing } = useBlockchainTimestamp();
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -49,26 +50,40 @@ export default function ContentStampModal({ isOpen, onClose, userColorScheme }) 
       const { data: hashData } = await generateContentHash({ content_url: finalContentUrl });
       const contentHash = hashData.hash;
 
-      // Timestamp on blockchain
-      const { data: txData } = await timestampOnBlockchain({ 
-        content_hash: contentHash,
-        content_title: title
+      // Create a stamped content record
+      const stampedContent = await base44.entities.Post.create({
+        content: description || title,
+        media_urls: finalContentUrl ? [finalContentUrl] : [],
+        author_full_name: title,
+        author_username: "creator_stamp",
+        category: "general",
+        moderation_status: "approved",
+        content_hash: contentHash
       });
 
-      setStampResult({
-        hash: contentHash,
-        txId: txData.tx_id,
-        contentUrl: finalContentUrl
-      });
+      // Trigger Phantom wallet for blockchain timestamp
+      const result = await timestampContent(contentHash, stampedContent.id);
 
-      // Reset form
-      setTitle("");
-      setDescription("");
-      setContentUrl("");
-      setFile(null);
+      if (result.success) {
+        setStampResult({
+          hash: contentHash,
+          txId: result.blockchain_tx_id,
+          contentUrl: finalContentUrl
+        });
+
+        // Reset form
+        setTitle("");
+        setDescription("");
+        setContentUrl("");
+        setFile(null);
+      }
     } catch (error) {
       console.error("Error stamping content:", error);
-      alert("Failed to stamp content. Please try again.");
+      if (error.message?.includes('Wallet not connected')) {
+        alert("Please connect your Phantom wallet using the wallet button before stamping content.");
+      } else {
+        alert("Failed to stamp content. Please try again.");
+      }
     } finally {
       setIsStamping(false);
     }
@@ -156,10 +171,17 @@ export default function ContentStampModal({ isOpen, onClose, userColorScheme }) 
 
             <Button
               onClick={handleStamp}
-              disabled={isStamping}
+              disabled={isStamping || isProcessing}
               className="w-full text-lg h-12"
               style={{ background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})` }}>
-              {isStamping ? "Stamping..." : "Stamp Content on Blockchain"}
+              {isStamping || isProcessing ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>{isProcessing ? "Approve in Phantom..." : "Stamping..."}</span>
+                </div>
+              ) : (
+                "Stamp Content on Blockchain"
+              )}
             </Button>
           </div>
         ) : (
