@@ -4,18 +4,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Shield, Upload, Link as LinkIcon, CheckCircle, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { generateContentHash } from "@/functions/generateContentHash";
 import { useBlockchainTimestamp } from '../blockchain/useBlockchainTimestamp';
 
-export default function ContentStampModal({ isOpen, onClose, userColorScheme }) {
+export default function ContentStampModal({ isOpen, onClose, userColorScheme, user }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [contentUrl, setContentUrl] = useState("");
   const [file, setFile] = useState(null);
   const [isStamping, setIsStamping] = useState(false);
   const [stampResult, setStampResult] = useState(null);
+  const [publishToFeed, setPublishToFeed] = useState(false);
+  const [publishToCreatorHub, setPublishToCreatorHub] = useState(false);
   const { timestampContent, isProcessing } = useBlockchainTimestamp();
 
   const handleFileChange = (e) => {
@@ -65,6 +68,25 @@ export default function ContentStampModal({ isOpen, onClose, userColorScheme }) 
       const result = await timestampContent(contentHash, stampedContent.id);
 
       if (result.success) {
+        // Update the stamped content with publish flags
+        await base44.entities.Post.update(stampedContent.id, {
+          is_creator_hub_published: publishToCreatorHub
+        });
+
+        // If publish to feed is enabled, create a feed post
+        if (publishToFeed) {
+          await base44.entities.Post.create({
+            content: description || title,
+            media_urls: finalContentUrl ? [finalContentUrl] : [],
+            author_full_name: user.full_name,
+            author_username: user.username || user.email.split('@')[0],
+            author_avatar_url: user.avatar_url,
+            blockchain_tx_id: result.blockchain_tx_id,
+            content_hash: contentHash,
+            category: "general"
+          });
+        }
+
         setStampResult({
           hash: contentHash,
           txId: result.blockchain_tx_id,
@@ -76,6 +98,8 @@ export default function ContentStampModal({ isOpen, onClose, userColorScheme }) 
         setDescription("");
         setContentUrl("");
         setFile(null);
+        setPublishToFeed(false);
+        setPublishToCreatorHub(false);
       }
     } catch (error) {
       console.error("Error stamping content:", error);
@@ -95,6 +119,8 @@ export default function ContentStampModal({ isOpen, onClose, userColorScheme }) 
     setDescription("");
     setContentUrl("");
     setFile(null);
+    setPublishToFeed(false);
+    setPublishToCreatorHub(false);
     onClose();
   };
 
@@ -166,6 +192,32 @@ export default function ContentStampModal({ isOpen, onClose, userColorScheme }) 
                   <Upload className="w-4 h-4 mr-2" />
                   {file ? file.name : "Choose File"}
                 </Button>
+              </div>
+            </div>
+
+            <div className="border-t border-white/10 pt-4 space-y-3">
+              <Label className="text-white text-sm font-semibold">Publishing Options</Label>
+              
+              <div className="flex items-center justify-between bg-white/5 p-3 rounded-lg">
+                <div className="flex-1">
+                  <p className="text-white font-medium">Publish to Feed</p>
+                  <p className="text-white/60 text-xs">Share to main EqoFlow feed</p>
+                </div>
+                <Switch
+                  checked={publishToFeed}
+                  onCheckedChange={setPublishToFeed}
+                />
+              </div>
+
+              <div className="flex items-center justify-between bg-white/5 p-3 rounded-lg">
+                <div className="flex-1">
+                  <p className="text-white font-medium">Publish to Creator Hub</p>
+                  <p className="text-white/60 text-xs">Share to Creator Hub discovery</p>
+                </div>
+                <Switch
+                  checked={publishToCreatorHub}
+                  onCheckedChange={setPublishToCreatorHub}
+                />
               </div>
             </div>
 
