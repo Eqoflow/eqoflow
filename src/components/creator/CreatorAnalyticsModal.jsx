@@ -10,6 +10,7 @@ export default function CreatorAnalyticsModal({ isOpen, onClose, user, userColor
   const [analytics, setAnalytics] = useState(null);
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [stampedCount, setStampedCount] = useState(0);
 
   useEffect(() => {
     if (isOpen && user) {
@@ -27,6 +28,10 @@ export default function CreatorAnalyticsModal({ isOpen, onClose, user, userColor
       // Fetch user's posts
       const userPosts = await base44.entities.Post.filter({ created_by: user.email }, '-created_date', 50);
       setPosts(userPosts);
+
+      // Count stamped content
+      const stampedContent = userPosts.filter(post => post.blockchain_tx_id);
+      setStampedCount(stampedContent.length);
     } catch (error) {
       console.error("Error loading analytics:", error);
     } finally {
