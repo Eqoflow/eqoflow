@@ -75,6 +75,7 @@ export default function CreatorHub() {
         is_creator_hub_published: true,
         blockchain_tx_id: { $ne: null }
       }, '-created_date', 50);
+      console.log("Loaded published content:", content);
       setPublishedCreatorContent(content);
     } catch (error) {
       console.error("Error loading published creator content:", error);

@@ -85,17 +85,19 @@ export default function StampedContentGallery({ user, userColorScheme, onContent
   const handlePublishToCreatorHub = async (item) => {
     setPublishingItem(item.id);
     try {
-      await base44.entities.Post.update(item.id, {
+      const updated = await base44.entities.Post.update(item.id, {
         is_creator_hub_published: true,
         category: item.media_urls?.[0]?.match(/\.(mp4|webm|mov)$/i) ? "entertainment" : "general"
       });
+      
+      console.log("Updated post:", updated);
       
       // Reload the content to get fresh data
       await loadStampedContent();
       
       // Notify parent to refresh published content
       if (onContentUpdate) {
-        onContentUpdate();
+        await onContentUpdate();
       }
       
       alert("Content published to Creator Hub successfully!");
