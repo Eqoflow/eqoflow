@@ -70,6 +70,7 @@ export default function ContentStampModal({ isOpen, onClose, userColorScheme, us
       // Trigger Phantom wallet for blockchain timestamp
       const result = await timestampContent(contentHash, stampedContent.id);
 
+      if (result.success) {
         setStampResult({
           hash: contentHash,
           txId: result.blockchain_tx_id,
