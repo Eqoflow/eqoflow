@@ -16,6 +16,7 @@ export default function StampedContentGallery({ user, userColorScheme }) {
   const [editDescription, setEditDescription] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [publishingItem, setPublishingItem] = useState(null);
+  const [publishingToFeed, setPublishingToFeed] = useState(null);
 
   useEffect(() => {
     loadStampedContent();
@@ -103,6 +104,31 @@ export default function StampedContentGallery({ user, userColorScheme }) {
       alert("Failed to publish content. Please try again.");
     } finally {
       setPublishingItem(null);
+    }
+  };
+
+  const handlePublishToFeed = async (item) => {
+    setPublishingToFeed(item.id);
+    try {
+      await base44.entities.Post.update(item.id, {
+        privacy_level: "public",
+        category: item.media_urls?.[0]?.match(/\.(mp4|webm|mov)$/i) ? "entertainment" : "general"
+      });
+      
+      setStampedContent(prev => 
+        prev.map(content => 
+          content.id === item.id 
+            ? { ...content, privacy_level: "public" }
+            : content
+        )
+      );
+      
+      alert("Content published to Feed successfully!");
+    } catch (error) {
+      console.error("Error publishing to feed:", error);
+      alert("Failed to publish to feed. Please try again.");
+    } finally {
+      setPublishingToFeed(null);
     }
   };
 
@@ -238,6 +264,24 @@ export default function StampedContentGallery({ user, userColorScheme }) {
                           <div className="text-xs text-green-400 flex items-center justify-center gap-1 py-2">
                             <Shield className="w-3 h-3" />
                             Published to Creator Hub
+                          </div>
+                        )}
+
+                        {item.privacy_level === "private" && (
+                          <Button
+                            size="sm"
+                            onClick={() => handlePublishToFeed(item)}
+                            disabled={publishingToFeed === item.id}
+                            className="w-full"
+                            style={{ background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})` }}>
+                            <Upload className="w-3 h-3 mr-2" />
+                            {publishingToFeed === item.id ? "Publishing..." : "Publish to Feed"}
+                          </Button>
+                        )}
+                        {item.privacy_level === "public" && (
+                          <div className="text-xs text-green-400 flex items-center justify-center gap-1 py-2">
+                            <Shield className="w-3 h-3" />
+                            Published to Feed
                           </div>
                         )}
                         
