@@ -158,7 +158,7 @@ export default function CreatorContentCard({ item, userColorScheme, onUpdate }) 
       )}
       
       <div className="p-4">
-        <h3 className="text-white font-semibold mb-1">{item.author_full_name || "Untitled"}</h3>
+        <h3 className="text-white font-semibold mb-1">{item.gated_content_title || "Untitled"}</h3>
         <p className="text-white/60 text-sm mb-3 line-clamp-2">{item.content || "No description"}</p>
         
         {/* Interactions */}
