@@ -4,7 +4,7 @@ import { createPageUrl } from "@/utils";
 import { useUser } from "@/components/contexts/UserContext";
 import { base44 } from "@/api/base44Client";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Shield, DollarSign, UserPlus, UserCheck, Sparkles, Heart, MessageSquare, Eye } from "lucide-react";
+import { ArrowLeft, Shield, DollarSign, UserPlus, UserCheck, Sparkles, Heart, MessageSquare, Eye, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -488,9 +488,9 @@ function ContentCard({ item, user, userColorScheme, onUpdate }) {
             onPlay={recordView} />
 
               {!hasRecordedView &&
-          <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
-                  <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                    <div className="w-0 h-0 border-t-8 border-t-transparent border-l-12 border-l-white border-b-8 border-b-transparent ml-1" />
+          <div className="absolute inset-0 flex items-center justify-center bg-black/40 pointer-events-none">
+                  <div className="w-16 h-16 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center border-2 border-white/30">
+                    <Play className="w-8 h-8 text-white fill-white" />
                   </div>
                 </div>
           }
@@ -502,6 +502,10 @@ function ContentCard({ item, user, userColorScheme, onUpdate }) {
         }
           <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md text-xs text-white/80">
             On-chain
+          </div>
+          <div className="absolute bottom-2 left-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
+            <Eye className="w-3 h-3 text-white/70" />
+            <span className="text-xs text-white/70">{viewsCount}</span>
           </div>
         </div>
       }
