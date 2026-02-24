@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { useUser } from "@/components/contexts/UserContext";
-import { Heart, MessageSquare, Shield, Sparkles } from "lucide-react";
+import { Heart, MessageSquare, Shield, Sparkles, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { motion, AnimatePresence } from "framer-motion";
@@ -152,6 +152,10 @@ export default function CreatorContentCard({ item, userColorScheme, onUpdate }) 
           )}
           <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
             <Shield className="w-4 h-4 text-green-400" />
+          </div>
+          <div className="absolute bottom-2 left-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
+            <Eye className="w-3 h-3 text-white/70" />
+            <span className="text-xs text-white/70">{item.impressions_count || 0}</span>
           </div>
         </div>
       )}
