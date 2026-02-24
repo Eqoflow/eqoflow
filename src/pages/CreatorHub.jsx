@@ -13,7 +13,7 @@ import CreatorAnalyticsModal from "@/components/creator/CreatorAnalyticsModal";
 import StampedContentGallery from "@/components/creator/StampedContentGallery";
 import InlineStampingSection from "@/components/creator/InlineStampingSection";
 import CreatorStatsCard from "@/components/creator/CreatorStatsCard";
-import RecentActivityPanel from "@/components/creator/RecentActivityPanel";
+import RewardsPanel from "@/components/creator/RewardsPanel";
 
 export default function CreatorHub() {
   const { user } = useUser();
@@ -302,7 +302,10 @@ export default function CreatorHub() {
                 delay={0.3}
               />
             </div>
-            <RecentActivityPanel />
+            <RewardsPanel 
+              currentSubs={creatorProfile?.subscriber_count || 0}
+              userColorScheme={userColorScheme}
+            />
           </div>
         </div>
       )}
