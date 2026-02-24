@@ -15,6 +15,7 @@ export default function CreatorContentCard({ item, userColorScheme, onUpdate }) 
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasRecordedImpression, setHasRecordedImpression] = useState(false);
 
   useEffect(() => {
     if (user && item.liked_by) {
@@ -29,6 +30,25 @@ export default function CreatorContentCard({ item, userColorScheme, onUpdate }) 
       loadComments();
     }
   }, [showComments]);
+
+  // Record impression when card is viewed
+  useEffect(() => {
+    if (!hasRecordedImpression && item.id) {
+      recordImpression();
+      setHasRecordedImpression(true);
+    }
+  }, [item.id, hasRecordedImpression]);
+
+  const recordImpression = async () => {
+    try {
+      const currentImpressions = item.impressions_count || 0;
+      await base44.entities.Post.update(item.id, {
+        impressions_count: currentImpressions + 1
+      });
+    } catch (error) {
+      console.error("Error recording impression:", error);
+    }
+  };
 
   const loadComments = async () => {
     try {

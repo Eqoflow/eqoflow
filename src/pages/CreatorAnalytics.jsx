@@ -25,23 +25,40 @@ export default function CreatorAnalytics() {
 
   useEffect(() => {
     loadData();
-    
-    // Set up real-time updates every 5 seconds
-    const interval = setInterval(() => {
-      loadData();
-    }, 5000);
-
-    return () => clearInterval(interval);
   }, [user]);
 
-  // Real-time subscription for posts
+  // Real-time subscription for posts updates (likes, comments, impressions)
   useEffect(() => {
     if (!user) return;
 
     const unsubscribe = base44.entities.Post.subscribe((event) => {
-      if (event.data.created_by === user.email) {
+      if (event.data?.created_by === user.email || event.data?.blockchain_tx_id) {
         loadData();
       }
+    });
+
+    return unsubscribe;
+  }, [user]);
+
+  // Real-time subscription for CreatorProfile updates (subscriber count)
+  useEffect(() => {
+    if (!user) return;
+
+    const unsubscribe = base44.entities.CreatorProfile.subscribe((event) => {
+      if (event.data?.created_by === user.email) {
+        loadData();
+      }
+    });
+
+    return unsubscribe;
+  }, [user]);
+
+  // Real-time subscription for Comment entity (to update comment counts)
+  useEffect(() => {
+    if (!user) return;
+
+    const unsubscribe = base44.entities.Comment.subscribe(() => {
+      loadData();
     });
 
     return unsubscribe;
