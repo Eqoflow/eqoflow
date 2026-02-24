@@ -332,10 +332,23 @@ export default function CreatorHub() {
         <div className="mb-8">
           <Card className="bg-gradient-to-br from-white/5 to-white/10 border-white/20">
             <CardHeader>
-              <CardTitle className="text-white text-2xl">Featured Creator Content</CardTitle>
-              <CardDescription className="text-white/70">
-                Discover and enjoy content from EqoFlow creators
-              </CardDescription>
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex-1">
+                  <CardTitle className="text-white text-2xl">Featured Creator Content</CardTitle>
+                  <CardDescription className="text-white/70">
+                    Discover and enjoy content from EqoFlow creators
+                  </CardDescription>
+                </div>
+                <Button
+                  onClick={() => setShowOnboarding(true)}
+                  className="text-white"
+                  style={{
+                    background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})`
+                  }}>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Create a Creator Profile
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               {publishedCreatorContent.length === 0 ? (
