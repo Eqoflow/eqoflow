@@ -35,7 +35,7 @@ export default function EditCreatorProfileModal({ isOpen, onClose, creatorProfil
     setIsUploading(true);
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setFormData(prev => ({ ...prev, logo_url: file_url }));
+      setFormData((prev) => ({ ...prev, logo_url: file_url }));
     } catch (error) {
       console.error("Error uploading logo:", error);
       alert("Failed to upload logo. Please try again.");
@@ -45,23 +45,23 @@ export default function EditCreatorProfileModal({ isOpen, onClose, creatorProfil
   };
 
   const addSocialLink = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       social_links: [...prev.social_links, { platform: "", url: "" }]
     }));
   };
 
   const updateSocialLink = (index, field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      social_links: prev.social_links.map((link, i) => 
-        i === index ? { ...link, [field]: value } : link
+      social_links: prev.social_links.map((link, i) =>
+      i === index ? { ...link, [field]: value } : link
       )
     }));
   };
 
   const removeSocialLink = (index) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       social_links: prev.social_links.filter((_, i) => i !== index)
     }));
@@ -77,7 +77,7 @@ export default function EditCreatorProfileModal({ isOpen, onClose, creatorProfil
     try {
       // Filter out empty social links
       const validSocialLinks = formData.social_links.filter(
-        link => link.platform && link.url
+        (link) => link.platform && link.url
       );
 
       await base44.entities.CreatorProfile.update(creatorProfile.id, {
@@ -116,11 +116,11 @@ export default function EditCreatorProfileModal({ isOpen, onClose, creatorProfil
             <Label className="text-white mb-2 block">Channel Logo</Label>
             <div className="flex items-center gap-4">
               <div className="w-20 h-20 bg-white/10 rounded-xl p-2 border-2 border-white/20 flex items-center justify-center">
-                {formData.logo_url ? (
-                  <img src={formData.logo_url} alt="Logo" className="w-full h-full object-contain" />
-                ) : (
-                  <Sparkles className="w-8 h-8 text-white/40" />
-                )}
+                {formData.logo_url ?
+                <img src={formData.logo_url} alt="Logo" className="w-full h-full object-contain" /> :
+
+                <Sparkles className="w-8 h-8 text-white/40" />
+                }
               </div>
               <div className="flex-1">
                 <input
@@ -129,13 +129,13 @@ export default function EditCreatorProfileModal({ isOpen, onClose, creatorProfil
                   onChange={handleLogoUpload}
                   className="hidden"
                   id="logo-upload"
-                  disabled={isUploading}
-                />
+                  disabled={isUploading} />
+
                 <label htmlFor="logo-upload">
                   <Button
                     type="button"
-                    variant="outline"
-                    className="border-white/20 text-white hover:bg-white/10"
+                    variant="outline" className="bg-background text-slate-950 px-4 py-2 text-sm font-medium rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border shadow-sm hover:text-accent-foreground h-9 border-white/20 hover:bg-white/10"
+
                     disabled={isUploading}
                     onClick={() => document.getElementById('logo-upload').click()}>
                     <Upload className="w-4 h-4 mr-2" />
@@ -151,10 +151,10 @@ export default function EditCreatorProfileModal({ isOpen, onClose, creatorProfil
             <Label className="text-white mb-2 block">Channel Name *</Label>
             <Input
               value={formData.channel_name}
-              onChange={(e) => setFormData(prev => ({ ...prev, channel_name: e.target.value }))}
+              onChange={(e) => setFormData((prev) => ({ ...prev, channel_name: e.target.value }))}
               placeholder="Enter your channel name"
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
-            />
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/40" />
+
           </div>
 
           {/* Description */}
@@ -162,10 +162,10 @@ export default function EditCreatorProfileModal({ isOpen, onClose, creatorProfil
             <Label className="text-white mb-2 block">Description</Label>
             <Textarea
               value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
               placeholder="Tell viewers about your channel"
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/40 min-h-[100px]"
-            />
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/40 min-h-[100px]" />
+
           </div>
 
           {/* Social Links */}
@@ -183,13 +183,13 @@ export default function EditCreatorProfileModal({ isOpen, onClose, creatorProfil
             </div>
 
             <div className="space-y-3">
-              {formData.social_links.map((link, index) => (
-                <div key={index} className="flex gap-2 items-start">
+              {formData.social_links.map((link, index) =>
+              <div key={index} className="flex gap-2 items-start">
                   <div className="flex-1 grid grid-cols-2 gap-2">
                     <select
-                      value={link.platform}
-                      onChange={(e) => updateSocialLink(index, 'platform', e.target.value)}
-                      className="bg-white/10 border border-white/20 text-white rounded-md px-3 py-2">
+                    value={link.platform}
+                    onChange={(e) => updateSocialLink(index, 'platform', e.target.value)}
+                    className="bg-white/10 border border-white/20 text-white rounded-md px-3 py-2">
                       <option value="">Select Platform</option>
                       <option value="youtube">YouTube</option>
                       <option value="x">X (Twitter)</option>
@@ -200,22 +200,22 @@ export default function EditCreatorProfileModal({ isOpen, onClose, creatorProfil
                       <option value="other">Other</option>
                     </select>
                     <Input
-                      value={link.url}
-                      onChange={(e) => updateSocialLink(index, 'url', e.target.value)}
-                      placeholder="https://..."
-                      className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
-                    />
+                    value={link.url}
+                    onChange={(e) => updateSocialLink(index, 'url', e.target.value)}
+                    placeholder="https://..."
+                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40" />
+
                   </div>
                   <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => removeSocialLink(index)}
-                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10">
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => removeSocialLink(index)}
+                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10">
                     <X className="w-4 h-4" />
                   </Button>
                 </div>
-              ))}
+              )}
             </div>
           </div>
 
@@ -223,8 +223,8 @@ export default function EditCreatorProfileModal({ isOpen, onClose, creatorProfil
           <div className="flex gap-3 justify-end pt-4 border-t border-white/10">
             <Button
               variant="outline"
-              onClick={onClose}
-              className="border-white/20 text-white hover:bg-white/10"
+              onClick={onClose} className="bg-background text-slate-950 px-4 py-2 text-sm font-medium rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border shadow-sm hover:text-accent-foreground h-9 border-white/20 hover:bg-white/10"
+
               disabled={isSaving}>
               Cancel
             </Button>
@@ -239,6 +239,6 @@ export default function EditCreatorProfileModal({ isOpen, onClose, creatorProfil
           </div>
         </div>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>);
+
 }
