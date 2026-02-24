@@ -275,27 +275,33 @@ export default function CreatorHub() {
               delay={0}
               isWalletConnected={isWalletConnected}
             />
-            <CreatorStatsCard
-              icon={TrendingUp}
-              title="Engagement"
-              subtitle="Total interactions"
-              userColorScheme={userColorScheme}
-              delay={0.1}
-            />
-            <CreatorStatsCard
-              icon={Users}
-              title="Subscribers"
-              subtitle={`${creatorProfile?.subscriber_count || 0} members`}
-              userColorScheme={userColorScheme}
-              delay={0.2}
-            />
-            <CreatorStatsCard
-              icon={DollarSign}
-              title="Revenue"
-              subtitle="Lifetime earnings"
-              userColorScheme={userColorScheme}
-              delay={0.3}
-            />
+            <div onClick={() => navigate(createPageUrl("CreatorAnalytics"))} className="cursor-pointer">
+              <CreatorStatsCard
+                icon={TrendingUp}
+                title="Engagement"
+                subtitle="Total interactions"
+                userColorScheme={userColorScheme}
+                delay={0.1}
+              />
+            </div>
+            <div onClick={() => navigate(createPageUrl("CreatorAnalytics"))} className="cursor-pointer">
+              <CreatorStatsCard
+                icon={Users}
+                title="Subscribers"
+                subtitle={`${creatorProfile?.subscriber_count || 0} members`}
+                userColorScheme={userColorScheme}
+                delay={0.2}
+              />
+            </div>
+            <div onClick={() => navigate(createPageUrl("CreatorAnalytics"))} className="cursor-pointer">
+              <CreatorStatsCard
+                icon={DollarSign}
+                title="Revenue"
+                subtitle="Lifetime earnings"
+                userColorScheme={userColorScheme}
+                delay={0.3}
+              />
+            </div>
             <RecentActivityPanel />
           </div>
         </div>
