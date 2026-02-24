@@ -123,10 +123,10 @@ export default function CreatorAnalytics() {
         </Button>
 
         <div 
-          className="rounded-3xl p-8 relative overflow-hidden border"
+          className="rounded-3xl p-8 relative overflow-hidden border-2"
           style={{
-            background: 'rgba(0, 0, 0, 0.6)',
-            borderColor: `${userColorScheme.primary}40`
+            background: 'rgba(0, 0, 0, 0.8)',
+            borderColor: userColorScheme.primary
           }}>
           <div className="relative z-10">
             <h1 className="text-4xl font-bold text-white mb-2">Analytics dashboard</h1>
@@ -142,10 +142,10 @@ export default function CreatorAnalytics() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}>
           <div 
-            className="rounded-2xl p-6 border text-center"
+            className="rounded-2xl p-6 border-2 text-center"
             style={{
-              background: 'rgba(0, 0, 0, 0.4)',
-              borderColor: `${userColorScheme.primary}40`
+              background: 'rgba(0, 0, 0, 0.8)',
+              borderColor: userColorScheme.primary
             }}>
             <p className="text-white/50 text-xs uppercase tracking-wider mb-2">IMPRESSIONS</p>
             <p className="text-4xl font-bold text-white">{totalImpressions > 0 ? totalImpressions.toLocaleString() : '0'}</p>
@@ -157,10 +157,10 @@ export default function CreatorAnalytics() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}>
           <div 
-            className="rounded-2xl p-6 border text-center"
+            className="rounded-2xl p-6 border-2 text-center"
             style={{
-              background: 'rgba(0, 0, 0, 0.4)',
-              borderColor: `${userColorScheme.primary}40`
+              background: 'rgba(0, 0, 0, 0.8)',
+              borderColor: userColorScheme.primary
             }}>
             <p className="text-white/50 text-xs uppercase tracking-wider mb-2">LIKES</p>
             <p className="text-4xl font-bold text-white">{totalLikes > 0 ? totalLikes.toLocaleString() : '0'}</p>
@@ -172,10 +172,10 @@ export default function CreatorAnalytics() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}>
           <div 
-            className="rounded-2xl p-6 border text-center"
+            className="rounded-2xl p-6 border-2 text-center"
             style={{
-              background: 'rgba(0, 0, 0, 0.4)',
-              borderColor: `${userColorScheme.primary}40`
+              background: 'rgba(0, 0, 0, 0.8)',
+              borderColor: userColorScheme.primary
             }}>
             <p className="text-white/50 text-xs uppercase tracking-wider mb-2">COMMENTS</p>
             <p className="text-4xl font-bold text-white">{totalComments > 0 ? totalComments.toLocaleString() : '0'}</p>
@@ -187,10 +187,10 @@ export default function CreatorAnalytics() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}>
           <div 
-            className="rounded-2xl p-6 border text-center"
+            className="rounded-2xl p-6 border-2 text-center"
             style={{
-              background: 'rgba(0, 0, 0, 0.4)',
-              borderColor: `${userColorScheme.primary}40`
+              background: 'rgba(0, 0, 0, 0.8)',
+              borderColor: userColorScheme.primary
             }}>
             <p className="text-white/50 text-xs uppercase tracking-wider mb-2">REPOSTS</p>
             <p className="text-4xl font-bold text-white">{totalReposts > 0 ? totalReposts.toLocaleString() : '0'}</p>
