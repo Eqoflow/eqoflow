@@ -14,6 +14,7 @@ import StampedContentGallery from "@/components/creator/StampedContentGallery";
 import InlineStampingSection from "@/components/creator/InlineStampingSection";
 import CreatorStatsCard from "@/components/creator/CreatorStatsCard";
 import RewardsPanel from "@/components/creator/RewardsPanel";
+import CreatorContentCard from "@/components/creator/CreatorContentCard";
 
 export default function CreatorHub() {
   const { user } = useUser();
@@ -328,47 +329,12 @@ export default function CreatorHub() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {publishedCreatorContent.map((item) => (
-                    <div 
-                      key={item.id} 
-                      onClick={() => navigate(createPageUrl("PublicCreatorProfile") + `?creator=${item.created_by}`)}
-                      className="bg-black/40 rounded-lg border border-white/10 overflow-hidden group hover:border-purple-500/50 transition-all cursor-pointer">
-                      {item.media_urls && item.media_urls.length > 0 && (
-                        <div className="aspect-video bg-black/60 relative overflow-hidden">
-                          {item.media_urls[0].match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-                            <img
-                              src={item.media_urls[0]}
-                              alt={item.author_full_name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : item.media_urls[0].match(/\.(mp4|webm|mov)$/i) ? (
-                            <video
-                              src={item.media_urls[0]}
-                              className="w-full h-full object-cover"
-                              controls
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <Shield className="w-12 h-12 text-white/30" />
-                            </div>
-                          )}
-                          <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
-                            <Shield className="w-4 h-4 text-green-400" />
-                          </div>
-                        </div>
-                      )}
-                      <div className="p-4">
-                        <h3 className="text-white font-semibold mb-1">{item.author_full_name || "Untitled"}</h3>
-                        <p className="text-white/60 text-sm mb-2 line-clamp-2">{item.content || "No description"}</p>
-                        <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10">
-                          {item.creator_logo ? (
-                            <img src={item.creator_logo} alt="Creator Logo" className="w-6 h-6 object-contain" />
-                          ) : (
-                            <Sparkles className="w-6 h-6 text-yellow-400" />
-                          )}
-                          <span className="text-white/80 text-xs">By {item.creator_name || item.created_by.split('@')[0]}</span>
-                        </div>
-                      </div>
-                    </div>
+                    <CreatorContentCard
+                      key={item.id}
+                      item={item}
+                      userColorScheme={userColorScheme}
+                      onUpdate={loadPublishedContent}
+                    />
                   ))}
                 </div>
               )}
