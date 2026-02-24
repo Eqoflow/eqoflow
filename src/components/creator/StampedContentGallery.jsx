@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Shield, Edit, Trash2, ExternalLink, Save, X, Film, MessageSquare, Image as ImageIcon, Upload, Download } from "lucide-react";
+import { Shield, Edit, Trash2, ExternalLink, Save, X, Film, MessageSquare, Image as ImageIcon, Upload, Download, RefreshCw } from "lucide-react";
 
 export default function StampedContentGallery({ user, userColorScheme, onContentUpdate }) {
   const [stampedContent, setStampedContent] = useState([]);
@@ -199,10 +199,19 @@ export default function StampedContentGallery({ user, userColorScheme, onContent
     <>
       <Card className="bg-gradient-to-br from-white/5 to-white/10 border-white/20">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <Shield className="w-6 h-6" style={{ color: userColorScheme.primary }} />
-            Stamped Content ({stampedContent.length})
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-white flex items-center gap-2">
+              <Shield className="w-6 h-6" style={{ color: userColorScheme.primary }} />
+              Stamped Content ({stampedContent.length})
+            </CardTitle>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={loadStampedContent}
+              className="text-white/60 hover:text-white hover:bg-white/10 h-8 w-8">
+              <RefreshCw className="w-4 h-4" />
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {stampedContent.length === 0 ?
