@@ -4,13 +4,16 @@ import { createPageUrl } from "@/utils";
 import { useUser } from "@/components/contexts/UserContext";
 import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
-import { Video, TrendingUp, Users, DollarSign, BarChart3, Shield, Sparkles } from "lucide-react";
+import { Video, TrendingUp, Users, DollarSign, BarChart3, Shield, Sparkles, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import CreatorOnboarding from "@/components/creator/CreatorOnboarding";
 import ContentStampModal from "@/components/creator/ContentStampModal";
 import CreatorAnalyticsModal from "@/components/creator/CreatorAnalyticsModal";
 import StampedContentGallery from "@/components/creator/StampedContentGallery";
+import InlineStampingSection from "@/components/creator/InlineStampingSection";
+import CreatorStatsCard from "@/components/creator/CreatorStatsCard";
+import RecentActivityPanel from "@/components/creator/RecentActivityPanel";
 
 export default function CreatorHub() {
   const { user } = useUser();
@@ -175,6 +178,7 @@ export default function CreatorHub() {
           <div className="bg-white/5 border border-white/20 rounded-lg p-1 flex gap-1">
             <Button
               onClick={() => setViewMode('creator')}
+              size="sm"
               className={`transition-all ${
                 viewMode === 'creator'
                   ? 'text-white'
@@ -190,6 +194,7 @@ export default function CreatorHub() {
                 setViewMode('user');
                 await loadPublishedContent();
               }}
+              size="sm"
               className={`transition-all ${
                 viewMode === 'user'
                   ? 'text-white'
@@ -204,156 +209,96 @@ export default function CreatorHub() {
         </div>
       )}
 
-      {/* Hero Section */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-8 rounded-2xl p-8 relative overflow-hidden"
-        style={{
-          background: `linear-gradient(135deg, ${userColorScheme.accent}E6, ${userColorScheme.primary}40)`,
-          border: `2px solid ${userColorScheme.primary}60`
-        }}>
-        
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-3xl" />
-        
-        <div className="relative z-10">
-          <div className="flex items-start justify-between mb-6">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
-                {showCreatorView ? (creatorProfile?.channel_name || "Creator Hub") : "Creator Hub"}
-              </h1>
-              <p className="text-xl text-white/70">
-                {showCreatorView ? "Your content creation command center" : "Discover amazing creator content"}
-              </p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 relative group">
-              {showCreatorView && creatorProfile?.logo_url ? (
-                <img src={creatorProfile.logo_url} alt="Channel Logo" className="w-8 h-8 object-contain" />
-              ) : (
-                <Sparkles className="w-8 h-8 text-yellow-400" />
-              )}
-              {showCreatorView && (
-                <>
-                  <input
-                    type="file"
-                    id="logo-upload"
-                    accept="image/*"
-                    onChange={handleLogoUpload}
-                    className="hidden"
-                  />
-                  <label
-                    htmlFor="logo-upload"
-                    className="absolute inset-0 flex items-center justify-center bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-xl">
-                    <span className="text-white text-xs font-medium">
-                      {isUploadingLogo ? "Uploading..." : "Change Logo"}
-                    </span>
-                  </label>
-                </>
-              )}
-            </div>
+      {/* Creator View Layout */}
+      {showCreatorView && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Main Content - Left Column */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Inline Stamping Section */}
+            <InlineStampingSection
+              user={user}
+              userColorScheme={userColorScheme}
+              onComplete={handleStampComplete}
+            />
+
+            {/* Stamped Content Gallery */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {stampedContentCount > 0 ? (
+                  // This will be populated by StampedContentGallery component below
+                  <div className="col-span-full">
+                    <StampedContentGallery 
+                      user={user} 
+                      userColorScheme={userColorScheme}
+                      onContentUpdate={loadPublishedContent}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    {[1, 2, 3, 4].map((i) => (
+                      <div
+                        key={i}
+                        className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10">
+                        <div className="aspect-video bg-black/40 flex items-center justify-center relative">
+                          <Shield className="w-12 h-12 text-white/20" />
+                          <div className="absolute top-2 right-2 bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full text-xs text-white/60">
+                            On-chain
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <h3 className="text-white font-semibold mb-2">Stamped Hub</h3>
+                          <div className="flex items-center gap-2 text-white/60 text-sm">
+                            <Lock className="w-4 h-4" />
+                            <span>On-chain</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
+            </motion.div>
           </div>
 
-          {showCreatorView && creatorProfile?.description && (
-            <p className="text-white/80 text-lg max-w-2xl">
-              {creatorProfile.description}
-            </p>
-          )}
-
-          {showCreatorView && creatorProfile?.social_links && creatorProfile.social_links.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-4">
-              {creatorProfile.social_links.map((link, index) => (
-                <a
-                  key={index}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 text-white text-sm transition-all duration-200 hover:scale-105">
-                  {link.platform}
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
-      </motion.div>
-
-      {/* Stats Grid - Only for Creators */}
-      {showCreatorView && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}>
-          <Card className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border-purple-500/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-white flex items-center gap-2">
-                <Shield className="w-5 h-5" />
-                Content Stamped
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-white">{stampedContentCount}</p>
-              <p className="text-sm text-white/60">Total pieces protected</p>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}>
-          <Card className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border-blue-500/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-white flex items-center gap-2">
-                <TrendingUp className="w-5 h-5" />
-                Engagement
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-white">0</p>
-              <p className="text-sm text-white/60">Total interactions</p>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}>
-          <Card className="bg-gradient-to-br from-green-500/20 to-green-600/20 border-green-500/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-white flex items-center gap-2">
-                <Users className="w-5 h-5" />
-                Subscribers
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-white">{creatorProfile?.subscriber_count || 0}</p>
-              <p className="text-sm text-white/60">Community members</p>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}>
-          <Card className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border-yellow-500/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-white flex items-center gap-2">
-                <DollarSign className="w-5 h-5" />
-                Revenue
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-white">$0</p>
-              <p className="text-sm text-white/60">Lifetime earnings</p>
-            </CardContent>
-          </Card>
-        </motion.div>
+          {/* Sidebar - Right Column */}
+          <div className="space-y-4">
+            <CreatorStatsCard
+              icon={Shield}
+              title="Stamped"
+              subtitle={creatorProfile?.channel_name || "Connected channel"}
+              userColorScheme={userColorScheme}
+              delay={0}
+            />
+            <CreatorStatsCard
+              icon={TrendingUp}
+              title="Engagement"
+              subtitle="Total interactions"
+              userColorScheme={userColorScheme}
+              delay={0.1}
+            />
+            <CreatorStatsCard
+              icon={Users}
+              title="Subscribers"
+              subtitle={`${creatorProfile?.subscriber_count || 0} members`}
+              userColorScheme={userColorScheme}
+              delay={0.2}
+            />
+            <CreatorStatsCard
+              icon={DollarSign}
+              title="Revenue"
+              subtitle="Lifetime earnings"
+              userColorScheme={userColorScheme}
+              delay={0.3}
+            />
+            <RecentActivityPanel />
+          </div>
         </div>
       )}
 
-      {/* Content Section */}
+      {/* User View - Published Content */}
       {!showCreatorView && (
         <div className="mb-8">
           <Card className="bg-gradient-to-br from-white/5 to-white/10 border-white/20">
@@ -420,75 +365,7 @@ export default function CreatorHub() {
         </div>
       )}
 
-      {/* Features Grid - Only for Creators */}
-      {showCreatorView && (
-      <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5 }}>
-          <Card className="bg-gradient-to-br from-white/5 to-white/10 border-white/20 h-full">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <Shield className="w-6 h-6" style={{ color: userColorScheme.primary }} />
-                Blockchain Protection
-              </CardTitle>
-              <CardDescription className="text-white/70">
-                Stamp your content with immutable proof of creation and ownership
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                onClick={() => setShowStampModal(true)}
-                className="w-full"
-                style={{ background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})` }}>
-                Stamp New Content
-              </Button>
-            </CardContent>
-          </Card>
-        </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.6 }}>
-          <Card className="bg-gradient-to-br from-white/5 to-white/10 border-white/20 h-full">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <BarChart3 className="w-6 h-6" style={{ color: userColorScheme.secondary }} />
-                Analytics Dashboard
-              </CardTitle>
-              <CardDescription className="text-white/70">
-                Track your content performance and audience insights
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                onClick={() => setShowAnalyticsModal(true)}
-                variant="outline"
-                className="w-full border-white/20 text-black hover:bg-white/10">
-                View Analytics
-              </Button>
-            </CardContent>
-          </Card>
-        </motion.div>
-        </div>
-      )}
-
-      {/* Stamped Content Gallery - Only for Creators */}
-      {showCreatorView && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          className="mb-8">
-          <StampedContentGallery 
-            user={user} 
-            userColorScheme={userColorScheme}
-            onContentUpdate={loadPublishedContent}
-          />
-        </motion.div>
-      )}
 
       {/* Coming Soon Section */}
       <motion.div

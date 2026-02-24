@@ -98,6 +98,7 @@ import Privacy from './pages/Privacy';
 import Profile from './pages/Profile';
 import ProfileSyncTool from './pages/ProfileSyncTool';
 import ProjectDetails from './pages/ProjectDetails';
+import PublicCreatorProfile from './pages/PublicCreatorProfile';
 import PublicProfile from './pages/PublicProfile';
 import QuantumChat from './pages/QuantumChat';
 import QuantumNFTManagement from './pages/QuantumNFTManagement';
@@ -121,7 +122,6 @@ import UserPayroll from './pages/UserPayroll';
 import VirtualSpaces from './pages/VirtualSpaces';
 import Wallet from './pages/Wallet';
 import WelcomeBonusManager from './pages/WelcomeBonusManager';
-import PublicCreatorProfile from './pages/PublicCreatorProfile';
 import __Layout from './Layout.jsx';
 
 
@@ -177,6 +177,7 @@ export const PAGES = {
     "Profile": Profile,
     "ProfileSyncTool": ProfileSyncTool,
     "ProjectDetails": ProjectDetails,
+    "PublicCreatorProfile": PublicCreatorProfile,
     "PublicProfile": PublicProfile,
     "QuantumChat": QuantumChat,
     "QuantumNFTManagement": QuantumNFTManagement,
@@ -200,7 +201,6 @@ export const PAGES = {
     "VirtualSpaces": VirtualSpaces,
     "Wallet": Wallet,
     "WelcomeBonusManager": WelcomeBonusManager,
-    "PublicCreatorProfile": PublicCreatorProfile,
 }
 
 export const pagesConfig = {
