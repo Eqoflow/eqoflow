@@ -339,16 +339,11 @@ function ContentCard({ item, user, userColorScheme, onUpdate }) {
     }
   }, [showComments]);
 
-  // Record view when card is viewed
-  useEffect(() => {
-    if (!hasRecordedView && item.id) {
-      recordView();
-      setHasRecordedView(true);
-    }
-  }, [item.id, hasRecordedView]);
-
   const recordView = async () => {
+    if (hasRecordedView) return;
+
     try {
+      setHasRecordedView(true);
       const currentViews = item.impressions_count || 0;
       const newViewsCount = currentViews + 1;
       await base44.entities.Post.update(item.id, {
@@ -448,13 +443,15 @@ function ContentCard({ item, user, userColorScheme, onUpdate }) {
             <img
               src={item.media_urls[0]}
               alt={item.author_full_name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover cursor-pointer"
+              onClick={recordView}
             />
           ) : item.media_urls[0].match(/\.(mp4|webm|mov)$/i) ? (
             <video
               src={item.media_urls[0]}
               className="w-full h-full object-cover"
               controls
+              onPlay={recordView}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">

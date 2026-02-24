@@ -34,16 +34,11 @@ export default function CreatorContentCard({ item, userColorScheme, onUpdate }) 
     }
   }, [showComments]);
 
-  // Record impression when card is viewed
-  useEffect(() => {
-    if (!hasRecordedImpression && item.id) {
-      recordImpression();
-      setHasRecordedImpression(true);
-    }
-  }, [item.id, hasRecordedImpression]);
-
   const recordImpression = async () => {
+    if (hasRecordedImpression) return;
+    
     try {
+      setHasRecordedImpression(true);
       const currentImpressions = item.impressions_count || 0;
       await base44.entities.Post.update(item.id, {
         impressions_count: currentImpressions + 1
@@ -137,13 +132,15 @@ export default function CreatorContentCard({ item, userColorScheme, onUpdate }) 
             <img
               src={item.media_urls[0]}
               alt={item.author_full_name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover cursor-pointer"
+              onClick={recordImpression}
             />
           ) : item.media_urls[0].match(/\.(mp4|webm|mov)$/i) ? (
             <video
               src={item.media_urls[0]}
               className="w-full h-full object-cover"
               controls
+              onPlay={recordImpression}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
