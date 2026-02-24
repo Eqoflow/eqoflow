@@ -271,6 +271,7 @@ export default function CreatorHub() {
               subtitle={creatorProfile?.channel_name || "Connected channel"}
               userColorScheme={userColorScheme}
               delay={0}
+              isWalletConnected={!!user?.solana_wallet_address}
             />
             <CreatorStatsCard
               icon={TrendingUp}

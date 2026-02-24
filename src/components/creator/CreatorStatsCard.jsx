@@ -1,7 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { Check, X } from "lucide-react";
 
-export default function CreatorStatsCard({ icon: Icon, title, subtitle, userColorScheme, delay = 0 }) {
+export default function CreatorStatsCard({ icon: Icon, title, subtitle, userColorScheme, delay = 0, isWalletConnected }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -20,6 +21,17 @@ export default function CreatorStatsCard({ icon: Icon, title, subtitle, userColo
           <h3 className="text-white font-semibold text-sm">{title}</h3>
           <p className="text-white/60 text-xs truncate">{subtitle}</p>
         </div>
+        {isWalletConnected !== undefined && (
+          <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
+            isWalletConnected ? 'bg-green-500/20' : 'bg-red-500/20'
+          }`}>
+            {isWalletConnected ? (
+              <Check className="w-4 h-4 text-green-400" />
+            ) : (
+              <X className="w-4 h-4 text-red-400" />
+            )}
+          </div>
+        )}
       </div>
     </motion.div>
   );
