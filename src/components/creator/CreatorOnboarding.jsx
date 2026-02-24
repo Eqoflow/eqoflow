@@ -265,7 +265,7 @@ export default function CreatorOnboarding({ onComplete, userColorScheme }) {
                 <Button
                   onClick={() => setStep("choice")}
                   variant="outline"
-                  className="flex-1 border-white/20 text-white hover:bg-white/10"
+                  className="flex-1 border-white/20 text-black bg-white hover:bg-white/90"
                   disabled={isSubmitting}>
                   Back
                 </Button>
