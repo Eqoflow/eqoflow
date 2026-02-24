@@ -61,13 +61,13 @@ export default function InlineStampingSection({ user, userColorScheme, onComplet
       });
 
       // Timestamp on blockchain with postId
-      const result = await timestamp(contentHash, stampedContent.id);
+      const result = await timestampContent(contentHash, stampedContent.id);
 
       if (!result.success) {
         throw new Error(result.error || 'Failed to timestamp on blockchain');
       }
 
-      alert(`Content stamped successfully! Transaction ID: ${txId}`);
+      alert(`Content stamped successfully! Transaction ID: ${result.blockchain_tx_id}`);
       
       // Reset form
       setFile(null);
