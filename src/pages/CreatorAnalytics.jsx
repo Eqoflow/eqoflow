@@ -55,8 +55,11 @@ export default function CreatorAnalytics() {
       const { data: analyticsData } = await getProfileAnalytics();
       setAnalytics(analyticsData);
 
-      // Fetch user's posts
-      const userPosts = await base44.entities.Post.filter({ created_by: user.email }, '-created_date', 100);
+      // Fetch only Creator Hub stamped/published posts (not regular echoes)
+      const userPosts = await base44.entities.Post.filter({ 
+        created_by: user.email,
+        blockchain_tx_id: { $ne: null }
+      }, '-created_date', 100);
       setPosts(userPosts);
 
       // Fetch creator profile
@@ -103,27 +106,14 @@ export default function CreatorAnalytics() {
         </Button>
 
         <div 
-          className="rounded-3xl p-8 relative overflow-hidden"
+          className="rounded-3xl p-8 relative overflow-hidden border"
           style={{
-            background: `linear-gradient(135deg, ${userColorScheme.accent}E6, ${userColorScheme.primary}40)`,
-            border: `2px solid ${userColorScheme.primary}60`
+            background: 'rgba(0, 0, 0, 0.6)',
+            borderColor: `${userColorScheme.primary}40`
           }}>
-          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-3xl" />
-          
           <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-3">
-              <div 
-                className="w-16 h-16 rounded-2xl flex items-center justify-center"
-                style={{
-                  background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})`
-                }}>
-                <BarChart3 className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold text-white">Analytics Dashboard</h1>
-                <p className="text-white/70 text-lg">Real-time performance insights</p>
-              </div>
-            </div>
+            <h1 className="text-4xl font-bold text-white mb-2">Analytics dashboard</h1>
+            <p className="text-white/50 text-base">Your content sync too channels command center</p>
           </div>
         </div>
       </motion.div>
@@ -134,72 +124,60 @@ export default function CreatorAnalytics() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}>
-          <Card className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border-purple-500/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-white text-sm flex items-center gap-2">
-                <Eye className="w-4 h-4" />
-                Impressions
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-white">{totalImpressions.toLocaleString()}</p>
-              <p className="text-xs text-white/60 mt-1">Total views</p>
-            </CardContent>
-          </Card>
+          <div 
+            className="rounded-2xl p-6 border text-center"
+            style={{
+              background: 'rgba(0, 0, 0, 0.4)',
+              borderColor: `${userColorScheme.primary}40`
+            }}>
+            <p className="text-white/50 text-xs uppercase tracking-wider mb-2">IMPRESSIONS</p>
+            <p className="text-4xl font-bold text-white">{totalImpressions > 0 ? totalImpressions.toLocaleString() : '0'}</p>
+          </div>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}>
-          <Card className="bg-gradient-to-br from-pink-500/20 to-pink-600/20 border-pink-500/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-white text-sm flex items-center gap-2">
-                <Heart className="w-4 h-4" />
-                Total Likes
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-white">{totalLikes.toLocaleString()}</p>
-              <p className="text-xs text-white/60 mt-1">Across all content</p>
-            </CardContent>
-          </Card>
+          <div 
+            className="rounded-2xl p-6 border text-center"
+            style={{
+              background: 'rgba(0, 0, 0, 0.4)',
+              borderColor: `${userColorScheme.primary}40`
+            }}>
+            <p className="text-white/50 text-xs uppercase tracking-wider mb-2">LIKES</p>
+            <p className="text-4xl font-bold text-white">{totalLikes > 0 ? totalLikes.toLocaleString() : '0'}</p>
+          </div>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}>
-          <Card className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border-blue-500/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-white text-sm flex items-center gap-2">
-                <MessageSquare className="w-4 h-4" />
-                Comments
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-white">{totalComments.toLocaleString()}</p>
-              <p className="text-xs text-white/60 mt-1">Community engagement</p>
-            </CardContent>
-          </Card>
+          <div 
+            className="rounded-2xl p-6 border text-center"
+            style={{
+              background: 'rgba(0, 0, 0, 0.4)',
+              borderColor: `${userColorScheme.primary}40`
+            }}>
+            <p className="text-white/50 text-xs uppercase tracking-wider mb-2">COMMENTS</p>
+            <p className="text-4xl font-bold text-white">{totalComments > 0 ? totalComments.toLocaleString() : '0'}</p>
+          </div>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}>
-          <Card className="bg-gradient-to-br from-green-500/20 to-green-600/20 border-green-500/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-white text-sm flex items-center gap-2">
-                <TrendingUp className="w-4 h-4" />
-                Reposts
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-white">{totalReposts.toLocaleString()}</p>
-              <p className="text-xs text-white/60 mt-1">Content shares</p>
-            </CardContent>
-          </Card>
+          <div 
+            className="rounded-2xl p-6 border text-center"
+            style={{
+              background: 'rgba(0, 0, 0, 0.4)',
+              borderColor: `${userColorScheme.primary}40`
+            }}>
+            <p className="text-white/50 text-xs uppercase tracking-wider mb-2">REPOSTS</p>
+            <p className="text-4xl font-bold text-white">{totalReposts > 0 ? totalReposts.toLocaleString() : '0'}</p>
+          </div>
         </motion.div>
       </div>
 
@@ -211,71 +189,163 @@ export default function CreatorAnalytics() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5 }}
           className="lg:col-span-2">
-          <Card className="bg-gradient-to-br from-white/5 to-white/10 border-white/20 h-full">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <Activity className="w-5 h-5" style={{ color: userColorScheme.primary }} />
-                Engagement Overview
-              </CardTitle>
-              <CardDescription className="text-white/70">Your content performance metrics</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-black/40 rounded-xl p-4 border border-white/10">
-                  <p className="text-white/60 text-sm mb-1">Total Posts</p>
-                  <p className="text-3xl font-bold text-white">{posts.length}</p>
+          <div 
+            className="rounded-3xl p-6 border h-full"
+            style={{
+              background: 'rgba(0, 0, 0, 0.6)',
+              borderColor: `${userColorScheme.primary}40`
+            }}>
+            <h2 className="text-2xl font-bold text-white mb-6">Engagement over time</h2>
+            
+            <div className="flex justify-between items-center mb-6">
+              <p className="text-white/40 text-sm uppercase tracking-wider">LAST 30 DAYS</p>
+              <div className="flex gap-6 text-sm">
+                <div>
+                  <span className="text-white/50">TOTAL POSTS: </span>
+                  <span className="text-white font-bold">{posts.length}</span>
                 </div>
-                <div className="bg-black/40 rounded-xl p-4 border border-white/10">
-                  <p className="text-white/60 text-sm mb-1">Engagement Rate</p>
-                  <p className="text-3xl font-bold text-white">{engagementRate}%</p>
+                <div>
+                  <span className="text-white/50">TOTAL RATE: </span>
+                  <span className="text-white font-bold">{engagementRate}%</span>
                 </div>
-                <div className="bg-black/40 rounded-xl p-4 border border-white/10">
-                  <p className="text-white/60 text-sm mb-1">Avg. Likes/Post</p>
-                  <p className="text-3xl font-bold text-white">{posts.length > 0 ? Math.round(totalLikes / posts.length) : 0}</p>
-                </div>
-                <div className="bg-black/40 rounded-xl p-4 border border-white/10">
-                  <p className="text-white/60 text-sm mb-1">Avg. Comments/Post</p>
-                  <p className="text-3xl font-bold text-white">{posts.length > 0 ? Math.round(totalComments / posts.length) : 0}</p>
+                <div>
+                  <span className="text-white/50">AVG LIKES/POST: </span>
+                  <span className="text-white font-bold">{posts.length > 0 ? Math.round(totalLikes / posts.length) : 0}</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+
+            {/* Chart Area */}
+            <div className="relative h-64 rounded-xl overflow-hidden" style={{ background: 'rgba(0, 0, 0, 0.4)' }}>
+              <div className="absolute inset-0 flex items-end justify-center p-4">
+                {posts.length === 0 ? (
+                  <p className="text-white/40 text-center">No engagement data yet. Start creating content!</p>
+                ) : (
+                  <div className="w-full h-full relative">
+                    {/* Simulated chart visualization */}
+                    <div 
+                      className="absolute bottom-0 left-0 right-0 h-full"
+                      style={{
+                        background: `linear-gradient(to top, ${userColorScheme.primary}60, transparent)`,
+                        clipPath: 'polygon(0% 100%, 5% 80%, 10% 85%, 15% 70%, 20% 75%, 25% 60%, 30% 65%, 35% 50%, 40% 55%, 45% 45%, 50% 40%, 55% 50%, 60% 45%, 65% 55%, 70% 50%, 75% 40%, 80% 35%, 85% 45%, 90% 30%, 95% 25%, 100% 20%, 100% 100%)'
+                      }}
+                    />
+                    <div 
+                      className="absolute bottom-0 left-0 right-0"
+                      style={{
+                        height: '2px',
+                        background: userColorScheme.primary,
+                        clipPath: 'polygon(0% 80%, 5% 80%, 10% 85%, 15% 70%, 20% 75%, 25% 60%, 30% 65%, 35% 50%, 40% 55%, 45% 45%, 50% 40%, 55% 50%, 60% 45%, 65% 55%, 70% 50%, 75% 40%, 80% 35%, 85% 45%, 90% 30%, 95% 25%, 100% 20%)',
+                        boxShadow: `0 0 10px ${userColorScheme.primary}`
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </motion.div>
 
         {/* Audience Stats */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.6 }}>
-          <Card className="bg-gradient-to-br from-white/5 to-white/10 border-white/20 h-full">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <Users className="w-5 h-5" style={{ color: userColorScheme.secondary }} />
-                Audience
-              </CardTitle>
-              <CardDescription className="text-white/70">Community statistics</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <p className="text-white/60 text-sm mb-2">Followers</p>
-                <p className="text-4xl font-bold text-white">{user?.follower_count || 0}</p>
-              </div>
-              <div>
-                <p className="text-white/60 text-sm mb-2">Following</p>
-                <p className="text-4xl font-bold text-white">{user?.following_count || 0}</p>
-              </div>
-              <div>
-                <p className="text-white/60 text-sm mb-2">Subscribers</p>
-                <p className="text-4xl font-bold text-white">{creatorProfile?.subscriber_count || 0}</p>
-              </div>
-              {analytics?.total_profile_views && (
-                <div>
-                  <p className="text-white/60 text-sm mb-2">Profile Views</p>
-                  <p className="text-4xl font-bold text-white">{analytics.total_profile_views.toLocaleString()}</p>
+          transition={{ delay: 0.6 }}
+          className="space-y-6">
+          
+          {/* Audience Card */}
+          <div 
+            className="rounded-3xl p-6 border"
+            style={{
+              background: 'rgba(0, 0, 0, 0.6)',
+              borderColor: `${userColorScheme.primary}40`
+            }}>
+            <div className="flex items-center gap-2 mb-4">
+              <div 
+                className="w-6 h-6 rounded"
+                style={{ background: userColorScheme.primary }}
+              />
+              <h3 className="text-white font-semibold">Audience</h3>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="text-center">
+                <div className="relative w-20 h-20 mx-auto mb-2">
+                  <svg className="transform -rotate-90" width="80" height="80">
+                    <circle cx="40" cy="40" r="35" stroke="rgba(255,255,255,0.1)" strokeWidth="6" fill="none" />
+                    <circle 
+                      cx="40" cy="40" r="35" 
+                      stroke={userColorScheme.primary} 
+                      strokeWidth="6" 
+                      fill="none"
+                      strokeDasharray={`${(user?.follower_count || 0) / 20000000 * 220} 220`}
+                      style={{ filter: `drop-shadow(0 0 6px ${userColorScheme.primary})` }}
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <p className="text-white font-bold text-sm">{((user?.follower_count || 0) / 1000000).toFixed(1)}M</p>
+                    <p className="text-white/50 text-xs">20M</p>
+                  </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+              </div>
+              <div className="text-center">
+                <div className="relative w-20 h-20 mx-auto mb-2">
+                  <svg className="transform -rotate-90" width="80" height="80">
+                    <circle cx="40" cy="40" r="35" stroke="rgba(255,255,255,0.1)" strokeWidth="6" fill="none" />
+                    <circle 
+                      cx="40" cy="40" r="35" 
+                      stroke={userColorScheme.secondary} 
+                      strokeWidth="6" 
+                      fill="none"
+                      strokeDasharray={`${(user?.following_count || 0) / 300 * 220} 220`}
+                      style={{ filter: `drop-shadow(0 0 6px ${userColorScheme.secondary})` }}
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <p className="text-white font-bold text-sm">{((user?.following_count || 0) / 1000000).toFixed(1)}M</p>
+                    <p className="text-white/50 text-xs">300</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Subscribers Card */}
+          <div 
+            className="rounded-3xl p-6 border"
+            style={{
+              background: 'rgba(0, 0, 0, 0.6)',
+              borderColor: `${userColorScheme.primary}40`
+            }}>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-400 to-pink-400 flex items-center justify-center">
+                <span className="text-white text-xs font-bold">♪</span>
+              </div>
+              <h3 className="text-white font-semibold">Subscribers</h3>
+            </div>
+            <p className="text-3xl font-bold text-white">{creatorProfile?.subscriber_count || 0}</p>
+          </div>
+
+          {/* Top Content Card */}
+          <div 
+            className="rounded-3xl p-6 border"
+            style={{
+              background: 'rgba(0, 0, 0, 0.6)',
+              borderColor: `${userColorScheme.primary}40`
+            }}>
+            <h3 className="text-white font-semibold mb-4">Top content</h3>
+            {posts.length > 0 ? (
+              <div className="space-y-3">
+                {posts.slice(0, 2).map((post) => (
+                  <div key={post.id} className="text-white/60 text-sm">
+                    <p className="line-clamp-1">{post.content}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-white/40 text-sm">No content yet</p>
+            )}
+          </div>
         </motion.div>
       </div>
 
@@ -284,96 +354,60 @@ export default function CreatorAnalytics() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7 }}>
-        <Card className="bg-gradient-to-br from-white/5 to-white/10 border-white/20">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <Target className="w-5 h-5" style={{ color: userColorScheme.primary }} />
-              Top Performing Content
-            </CardTitle>
-            <CardDescription className="text-white/70">Your most engaged posts</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {posts
-                .sort((a, b) => (b.likes_count + b.comments_count) - (a.likes_count + a.comments_count))
-                .slice(0, 10)
-                .map((post, index) => (
-                  <div key={post.id} className="bg-black/40 rounded-xl p-4 border border-white/10 hover:border-white/20 transition-all">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div 
-                            className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                            style={{
-                              background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})`
-                            }}>
-                            {index + 1}
-                          </div>
-                          <p className="text-white text-sm line-clamp-2">{post.content}</p>
+        <div 
+          className="rounded-3xl p-6 border"
+          style={{
+            background: 'rgba(0, 0, 0, 0.6)',
+            borderColor: `${userColorScheme.primary}40`
+          }}>
+          <h2 className="text-2xl font-bold text-white mb-6">Top Performing Content</h2>
+          <div className="space-y-3">
+            {posts
+              .sort((a, b) => (b.likes_count + b.comments_count) - (a.likes_count + a.comments_count))
+              .slice(0, 10)
+              .map((post, index) => (
+                <div key={post.id} className="bg-black/40 rounded-xl p-4 border border-white/10 hover:border-white/20 transition-all">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div 
+                          className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                          style={{
+                            background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})`
+                          }}>
+                          {index + 1}
                         </div>
-                        <p className="text-white/40 text-xs">
-                          {new Date(post.created_date).toLocaleDateString()}
-                        </p>
+                        <p className="text-white text-sm line-clamp-2">{post.content}</p>
                       </div>
-                      <div className="flex gap-4 text-sm text-white/70">
-                        <span className="flex items-center gap-1">
-                          <Heart className="w-4 h-4" />
-                          {post.likes_count || 0}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <MessageSquare className="w-4 h-4" />
-                          {post.comments_count || 0}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Eye className="w-4 h-4" />
-                          {post.impressions_count || 0}
-                        </span>
-                      </div>
+                      <p className="text-white/40 text-xs">
+                        {new Date(post.created_date).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="flex gap-4 text-sm text-white/70">
+                      <span className="flex items-center gap-1">
+                        <Heart className="w-4 h-4" />
+                        {post.likes_count || 0}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <MessageSquare className="w-4 h-4" />
+                        {post.comments_count || 0}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Eye className="w-4 h-4" />
+                        {post.impressions_count || 0}
+                      </span>
                     </div>
                   </div>
-                ))}
-              {posts.length === 0 && (
-                <div className="text-center py-12">
-                  <BarChart3 className="w-16 h-16 mx-auto mb-4 text-white/20" />
-                  <p className="text-white/50">No content yet. Start creating to see analytics!</p>
                 </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      {/* Revenue Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8 }}
-        className="mt-6">
-        <Card className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border-yellow-500/30">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <DollarSign className="w-5 h-5" />
-              Revenue
-            </CardTitle>
-            <CardDescription className="text-white/70">Your earnings overview</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-3 gap-4">
-              <div>
-                <p className="text-white/60 text-sm mb-2">Lifetime Earnings</p>
-                <p className="text-4xl font-bold text-white">$0.00</p>
+              ))}
+            {posts.length === 0 && (
+              <div className="text-center py-12">
+                <BarChart3 className="w-16 h-16 mx-auto mb-4 text-white/20" />
+                <p className="text-white/50">No content yet. Start creating to see analytics!</p>
               </div>
-              <div>
-                <p className="text-white/60 text-sm mb-2">This Month</p>
-                <p className="text-4xl font-bold text-white">$0.00</p>
-              </div>
-              <div>
-                <p className="text-white/60 text-sm mb-2">Pending</p>
-                <p className="text-4xl font-bold text-white">$0.00</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            )}
+          </div>
+        </div>
       </motion.div>
     </div>
   );
