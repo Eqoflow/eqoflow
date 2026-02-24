@@ -48,6 +48,12 @@ export default function PublicCreatorProfile() {
       if (profiles.length > 0) {
         setCreatorProfile(profiles[0]);
         setSubscriberCount(profiles[0].subscriber_count || 0);
+        
+        // Check if current user is subscribed
+        if (user) {
+          const subscriberEmails = profiles[0].subscriber_emails || [];
+          setIsSubscribed(subscriberEmails.includes(user.email));
+        }
       }
 
       // Load creator's published content
@@ -57,10 +63,6 @@ export default function PublicCreatorProfile() {
         blockchain_tx_id: { $ne: null }
       }, '-created_date', 50);
       setCreatorContent(content);
-
-      // Check if current user is subscribed (placeholder - implement subscription logic)
-      // const subscriptions = await base44.entities.Subscription.filter({ ... });
-      // setIsSubscribed(subscriptions.length > 0);
     } catch (error) {
       console.error("Error loading creator data:", error);
     } finally {
@@ -72,22 +74,47 @@ export default function PublicCreatorProfile() {
     if (!creatorProfile || !user) return;
 
     try {
+      const subscriberEmails = creatorProfile.subscriber_emails || [];
       const newSubscribedState = !isSubscribed;
-      setIsSubscribed(newSubscribedState);
+      
+      let updatedSubscriberEmails;
+      let newCount;
 
-      // Update subscriber count
-      const newCount = newSubscribedState ? subscriberCount + 1 : subscriberCount - 1;
+      if (newSubscribedState) {
+        // Subscribe: add user email if not already subscribed
+        if (!subscriberEmails.includes(user.email)) {
+          updatedSubscriberEmails = [...subscriberEmails, user.email];
+          newCount = subscriberCount + 1;
+        } else {
+          // Already subscribed, no changes needed
+          return;
+        }
+      } else {
+        // Unsubscribe: remove user email
+        updatedSubscriberEmails = subscriberEmails.filter(email => email !== user.email);
+        newCount = Math.max(0, subscriberCount - 1);
+      }
+
+      setIsSubscribed(newSubscribedState);
       setSubscriberCount(newCount);
 
-      // Update the creator profile subscriber count
+      // Update the creator profile
       await base44.entities.CreatorProfile.update(creatorProfile.id, {
-        subscriber_count: newCount
+        subscriber_count: newCount,
+        subscriber_emails: updatedSubscriberEmails
+      });
+
+      // Update local state to reflect the change
+      setCreatorProfile({
+        ...creatorProfile,
+        subscriber_count: newCount,
+        subscriber_emails: updatedSubscriberEmails
       });
     } catch (error) {
       console.error("Error updating subscription:", error);
       // Revert on error
       setIsSubscribed(!isSubscribed);
-      setSubscriberCount(newSubscribedState ? subscriberCount - 1 : subscriberCount + 1);
+      setSubscriberCount(isSubscribed ? subscriberCount + 1 : subscriberCount - 1);
     }
   };
 
