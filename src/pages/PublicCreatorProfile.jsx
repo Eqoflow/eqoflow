@@ -129,7 +129,7 @@ export default function PublicCreatorProfile() {
 
   }
 
-  const filteredContent = creatorContent.filter(item => {
+  const filteredContent = creatorContent.filter((item) => {
     if (contentFilter === "all") return true;
     if (contentFilter === "video") {
       return item.media_urls && item.media_urls.length > 0 && item.media_urls[0].match(/\.(mp4|webm|mov)$/i);
@@ -162,11 +162,11 @@ export default function PublicCreatorProfile() {
           <div className="flex items-start justify-between mb-4 flex-wrap gap-4">
             <div className="flex items-start gap-4">
               <div className="w-20 h-20 bg-cyan-500/20 rounded-2xl p-2 border-2 border-cyan-500/50 flex-shrink-0">
-                {creatorProfile.logo_url ? (
-                  <img src={creatorProfile.logo_url} alt="Creator Logo" className="w-full h-full object-contain" />
-                ) : (
-                  <Sparkles className="w-full h-full text-cyan-400" />
-                )}
+                {creatorProfile.logo_url ?
+                <img src={creatorProfile.logo_url} alt="Creator Logo" className="w-full h-full object-contain" /> :
+
+                <Sparkles className="w-full h-full text-cyan-400" />
+                }
               </div>
               <div className="flex-1">
                 <h1 className="text-3xl font-bold text-white mb-1">
@@ -177,11 +177,11 @@ export default function PublicCreatorProfile() {
                   <span>•</span>
                   <span>{subscriberCount} Subscriber{subscriberCount !== 1 ? 's' : ''}</span>
                 </div>
-                {creatorProfile.description && (
-                  <p className="text-white/70 text-sm mt-2 line-clamp-2">
+                {creatorProfile.description &&
+                <p className="text-white/70 text-sm mt-2 line-clamp-2">
                     {creatorProfile.description}
                   </p>
-                )}
+                }
               </div>
             </div>
           </div>
@@ -190,22 +190,22 @@ export default function PublicCreatorProfile() {
             <Button
               onClick={handleSubscribe}
               className={`${isSubscribed ? 'bg-white/10 text-white' : 'bg-cyan-500 hover:bg-cyan-600 text-black'} font-medium`}>
-              {isSubscribed ? (
-                <>
+              {isSubscribed ?
+              <>
                   <UserCheck className="w-4 h-4 mr-2" />
                   Subscribed
-                </>
-              ) : (
-                <>
+                </> :
+
+              <>
                   <UserPlus className="w-4 h-4 mr-2" />
                   Subscribe
                 </>
-              )}
+              }
             </Button>
             <Button
               onClick={() => setShowTipModal(true)}
-              variant="outline"
-              className="border-white/20 text-white hover:bg-white/10">
+              variant="outline" className="bg-background text-slate-950 px-4 py-2 text-sm font-medium rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border shadow-sm hover:text-accent-foreground h-9 border-white/20 hover:bg-white/10">
+
               <DollarSign className="w-4 h-4 mr-2" />
               Tip Creator
             </Button>
@@ -213,30 +213,30 @@ export default function PublicCreatorProfile() {
         </motion.div>
 
         {/* Social Channels - Takes 1 column */}
-        {creatorProfile.social_links && creatorProfile.social_links.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="rounded-2xl p-6 bg-gradient-to-br from-gray-900/80 to-black/60 border border-white/10">
+        {creatorProfile.social_links && creatorProfile.social_links.length > 0 &&
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="rounded-2xl p-6 bg-gradient-to-br from-gray-900/80 to-black/60 border border-white/10">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="w-5 h-5 text-cyan-400" />
               <h3 className="text-white font-semibold">Social channels</h3>
             </div>
             <div className="space-y-2">
-              {creatorProfile.social_links.map((link, index) => (
-                <a
-                  key={index}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg border border-white/10 text-white text-sm transition-all duration-200 capitalize">
+              {creatorProfile.social_links.map((link, index) =>
+            <a
+              key={index}
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg border border-white/10 text-white text-sm transition-all duration-200 capitalize">
                   {link.platform}
                 </a>
-              ))}
+            )}
             </div>
           </motion.div>
-        )}
+        }
       </div>
 
       {/* Published Content Section */}
@@ -266,23 +266,23 @@ export default function PublicCreatorProfile() {
         </div>
 
         {/* Content Grid */}
-        {filteredContent.length === 0 ? (
-          <p className="text-white/60 text-center py-8">
+        {filteredContent.length === 0 ?
+        <p className="text-white/60 text-center py-8">
             No content published yet
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filteredContent.map((item) => (
-              <ContentCard
-                key={item.id}
-                item={item}
-                user={user}
-                userColorScheme={userColorScheme}
-                onUpdate={loadCreatorData}
-              />
-            ))}
+          </p> :
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {filteredContent.map((item) =>
+          <ContentCard
+            key={item.id}
+            item={item}
+            user={user}
+            userColorScheme={userColorScheme}
+            onUpdate={loadCreatorData} />
+
+          )}
           </div>
-        )}
+        }
       </div>
 
       {/* Tip Modal */}
@@ -402,7 +402,7 @@ function ContentCard({ item, user, userColorScheme, onUpdate }) {
     try {
       const currentLikedBy = item.liked_by || [];
       const newIsLiked = !isLiked;
-      
+
       let updatedLikedBy;
       let newLikesCount;
 
@@ -410,7 +410,7 @@ function ContentCard({ item, user, userColorScheme, onUpdate }) {
         updatedLikedBy = [...currentLikedBy, user.email];
         newLikesCount = likesCount + 1;
       } else {
-        updatedLikedBy = currentLikedBy.filter(email => email !== user.email);
+        updatedLikedBy = currentLikedBy.filter((email) => email !== user.email);
         newLikesCount = Math.max(0, likesCount - 1);
       }
 
@@ -470,41 +470,41 @@ function ContentCard({ item, user, userColorScheme, onUpdate }) {
       animate={{ opacity: 1, scale: 1 }}
       className="bg-gradient-to-br from-gray-900/80 to-black/60 rounded-xl border border-white/10 overflow-hidden group hover:border-cyan-500/50 transition-all">
       
-      {item.media_urls && item.media_urls.length > 0 && (
-        <div className="aspect-video bg-black/60 relative overflow-hidden">
-          {item.media_urls[0].match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-            <img
-              src={item.media_urls[0]}
-              alt={item.author_full_name}
-              className="w-full h-full object-cover cursor-pointer"
-              onClick={recordView}
-            />
-          ) : isVideo ? (
-            <>
+      {item.media_urls && item.media_urls.length > 0 &&
+      <div className="aspect-video bg-black/60 relative overflow-hidden">
+          {item.media_urls[0].match(/\.(jpg|jpeg|png|gif|webp)$/i) ?
+        <img
+          src={item.media_urls[0]}
+          alt={item.author_full_name}
+          className="w-full h-full object-cover cursor-pointer"
+          onClick={recordView} /> :
+
+        isVideo ?
+        <>
               <video
-                src={item.media_urls[0]}
-                className="w-full h-full object-cover"
-                controls
-                onPlay={recordView}
-              />
-              {!hasRecordedView && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
+            src={item.media_urls[0]}
+            className="w-full h-full object-cover"
+            controls
+            onPlay={recordView} />
+
+              {!hasRecordedView &&
+          <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
                   <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
                     <div className="w-0 h-0 border-t-8 border-t-transparent border-l-12 border-l-white border-b-8 border-b-transparent ml-1" />
                   </div>
                 </div>
-              )}
-            </>
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
+          }
+            </> :
+
+        <div className="w-full h-full flex items-center justify-center">
               <Shield className="w-12 h-12 text-white/30" />
             </div>
-          )}
+        }
           <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md text-xs text-white/80">
             On-chain
           </div>
         </div>
-      )}
+      }
       
       <div className="p-4">
         <h3 className="text-white font-semibold mb-1 line-clamp-1">{item.content || "Untitled"}</h3>
@@ -514,8 +514,8 @@ function ContentCard({ item, user, userColorScheme, onUpdate }) {
           {new Date(item.created_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </div>
       </div>
-    </motion.div>
-  );
+    </motion.div>);
+
 }
 
 function getColorScheme(schemeName) {
