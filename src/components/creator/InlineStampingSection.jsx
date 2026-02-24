@@ -11,7 +11,7 @@ export default function InlineStampingSection({ user, userColorScheme, onComplet
   const [filePreview, setFilePreview] = useState(null);
   const [isStamping, setIsStamping] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
-  const { timestamp } = useBlockchainTimestamp();
+  const { timestampContent } = useBlockchainTimestamp();
 
   const handleFileSelect = (event) => {
     const selectedFile = event.target.files?.[0];
