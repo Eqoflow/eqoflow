@@ -52,7 +52,7 @@ export default function InlineStampingSection({ user, userColorScheme, onComplet
 
       // Create stamped content record
       const stampedContent = await base44.entities.Post.create({
-        author_full_name: file.name,
+        author_full_name: user.full_name,
         content: `Stamped content - ${new Date().toLocaleDateString()}`,
         media_urls: [file_url],
         privacy_level: "private",
@@ -60,13 +60,12 @@ export default function InlineStampingSection({ user, userColorScheme, onComplet
         category: "entertainment"
       });
 
-      // Timestamp on blockchain
-      const txId = await timestamp(contentHash);
+      // Timestamp on blockchain with postId
+      const result = await timestamp(contentHash, stampedContent.id);
 
-      // Update post with blockchain tx ID
-      await base44.entities.Post.update(stampedContent.id, {
-        blockchain_tx_id: txId
-      });
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to timestamp on blockchain');
+      }
 
       alert(`Content stamped successfully! Transaction ID: ${txId}`);
       
