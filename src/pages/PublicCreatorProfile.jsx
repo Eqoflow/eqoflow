@@ -541,7 +541,85 @@ function ContentCard({ item, user, userColorScheme, onUpdate }) {
         <h3 className="text-white font-semibold mb-1 line-clamp-1">{item.content || "Untitled"}</h3>
         <p className="text-white/50 text-xs mb-3 line-clamp-2">{item.author_full_name}</p>
         
-        <div className="text-xs text-white/40">
+        {/* Interactions */}
+        <div className="flex items-center gap-4 mb-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLike}
+            className={`flex items-center gap-2 p-0 h-auto hover:bg-transparent ${isLiked ? 'text-red-400' : 'text-white/60'} hover:text-red-400`}>
+            <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+            <span className="text-sm">{likesCount}</span>
+          </Button>
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowComments(!showComments);
+            }}
+            className="flex items-center gap-2 p-0 h-auto hover:bg-transparent text-white/60 hover:text-white">
+            <MessageSquare className="w-4 h-4" />
+            <span className="text-sm">{commentsCount}</span>
+          </Button>
+        </div>
+
+        {/* Comments Section */}
+        <AnimatePresence>
+          {showComments && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="border-t border-white/10 pt-3 space-y-3"
+              onClick={(e) => e.stopPropagation()}>
+              
+              {/* Comment Form */}
+              {user && (
+                <form onSubmit={handleComment} className="space-y-2">
+                  <Textarea
+                    placeholder="Write a comment..."
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    className="bg-black/40 border-white/20 text-white placeholder:text-white/40 min-h-[60px]"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                  <Button
+                    type="submit"
+                    size="sm"
+                    disabled={!newComment.trim() || isSubmitting}
+                    style={{
+                      background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})`
+                    }}>
+                    {isSubmitting ? "Posting..." : "Post Comment"}
+                  </Button>
+                </form>
+              )}
+
+              {/* Comments List */}
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {comments.length === 0 ? (
+                  <p className="text-white/40 text-xs text-center py-2">No comments yet</p>
+                ) : (
+                  comments.map((comment) => (
+                    <div key={comment.id} className="bg-white/5 rounded-lg p-2">
+                      <div className="flex items-start gap-2">
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white text-xs font-semibold">{comment.author_full_name}</p>
+                          <p className="text-white/70 text-xs mt-1">{comment.content}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="text-xs text-white/40 mt-3 pt-3 border-t border-white/10">
           {new Date(item.created_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </div>
       </div>
