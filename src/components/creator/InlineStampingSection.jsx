@@ -9,6 +9,8 @@ import { useBlockchainTimestamp } from "@/components/blockchain/useBlockchainTim
 export default function InlineStampingSection({ user, userColorScheme, onComplete }) {
   const [file, setFile] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [isStamping, setIsStamping] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
   const { timestampContent } = useBlockchainTimestamp();
@@ -53,7 +55,8 @@ export default function InlineStampingSection({ user, userColorScheme, onComplet
       // Create stamped content record
       const stampedContent = await base44.entities.Post.create({
         author_full_name: user.full_name,
-        content: `Stamped content - ${new Date().toLocaleDateString()}`,
+        content: description || `Stamped content - ${new Date().toLocaleDateString()}`,
+        gated_content_title: title || file.name,
         media_urls: [file_url],
         privacy_level: "private",
         content_hash: contentHash,
@@ -72,6 +75,8 @@ export default function InlineStampingSection({ user, userColorScheme, onComplet
       // Reset form
       setFile(null);
       setFilePreview(null);
+      setTitle("");
+      setDescription("");
       setSelectedPlatforms([]);
       
       if (onComplete) {
@@ -138,6 +143,29 @@ export default function InlineStampingSection({ user, userColorScheme, onComplet
             </button>
           </div>
         )}
+      </div>
+
+      <div className="space-y-4 mb-6">
+        <div>
+          <label className="text-white/60 text-sm mb-2 block">Title</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter content title"
+            className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-white/20"
+          />
+        </div>
+        <div>
+          <label className="text-white/60 text-sm mb-2 block">Description</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Enter content description"
+            rows={3}
+            className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-white/20 resize-none"
+          />
+        </div>
       </div>
 
       <div className="mb-6">
