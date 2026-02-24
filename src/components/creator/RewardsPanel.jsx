@@ -10,7 +10,13 @@ export default function RewardsPanel({ currentSubs = 0, userColorScheme }) {
     { subs: 5000, reward: 500 },
     { subs: 10000, reward: 1000 },
     { subs: 50000, reward: 5000 },
-    { subs: 100000, reward: 10000 }
+    { subs: 100000, reward: 10000 },
+    { subs: 250000, reward: 25000 },
+    { subs: 500000, reward: 50000 },
+    { subs: 1000000, reward: 100000 },
+    { subs: 2500000, reward: 250000 },
+    { subs: 5000000, reward: 500000 },
+    { subs: 10000000, reward: 1000000 }
   ];
 
   const getProgressToNextTier = () => {
