@@ -339,15 +339,17 @@ export default function CreatorHub() {
                     Discover and enjoy content from EqoFlow creators
                   </CardDescription>
                 </div>
-                <Button
-                  onClick={() => setShowOnboarding(true)}
-                  className="text-white"
-                  style={{
-                    background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})`
-                  }}>
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Create a Creator Profile
-                </Button>
+                {creatorProfile && !creatorProfile.is_creator && (
+                  <Button
+                    onClick={() => setShowOnboarding(true)}
+                    className="text-white"
+                    style={{
+                      background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})`
+                    }}>
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Create a Creator Profile
+                  </Button>
+                )}
               </div>
             </CardHeader>
             <CardContent>
