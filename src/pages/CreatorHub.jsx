@@ -15,6 +15,7 @@ import InlineStampingSection from "@/components/creator/InlineStampingSection";
 import CreatorStatsCard from "@/components/creator/CreatorStatsCard";
 import RewardsPanel from "@/components/creator/RewardsPanel";
 import CreatorContentCard from "@/components/creator/CreatorContentCard";
+import EditCreatorProfileModal from "@/components/creator/EditCreatorProfileModal";
 
 export default function CreatorHub() {
   const { user } = useUser();
@@ -25,6 +26,7 @@ export default function CreatorHub() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showStampModal, setShowStampModal] = useState(false);
   const [showAnalyticsModal, setShowAnalyticsModal] = useState(false);
+  const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [viewMode, setViewMode] = useState(searchParams.get('view') || 'creator'); // 'creator' or 'user'
   const [stampedContentCount, setStampedContentCount] = useState(0);
   const [publishedCreatorContent, setPublishedCreatorContent] = useState([]);
@@ -224,6 +226,20 @@ export default function CreatorHub() {
               onComplete={handleStampComplete}
             />
 
+            {/* Edit Profile Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}>
+              <Button
+                onClick={() => setShowEditProfileModal(true)}
+                className="w-full bg-white/5 border border-white/20 text-white hover:bg-white/10"
+                variant="outline">
+                <Sparkles className="w-4 h-4 mr-2" />
+                Edit Creator Profile
+              </Button>
+            </motion.div>
+
             {/* Stamped Content Gallery */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -375,6 +391,13 @@ export default function CreatorHub() {
         onClose={() => setShowAnalyticsModal(false)} 
         user={user}
         userColorScheme={userColorScheme}
+      />
+      <EditCreatorProfileModal
+        isOpen={showEditProfileModal}
+        onClose={() => setShowEditProfileModal(false)}
+        creatorProfile={creatorProfile}
+        userColorScheme={userColorScheme}
+        onUpdate={loadCreatorProfile}
       />
     </div>
   );
