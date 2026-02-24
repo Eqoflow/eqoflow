@@ -79,8 +79,9 @@ export default function InlineStampingSection({ user, userColorScheme, onComplet
       setDescription("");
       setSelectedPlatforms([]);
       
+      // Trigger immediate refresh of parent components
       if (onComplete) {
-        onComplete();
+        await onComplete();
       }
     } catch (error) {
       console.error("Error stamping content:", error);

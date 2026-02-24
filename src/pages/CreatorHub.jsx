@@ -131,8 +131,10 @@ export default function CreatorHub() {
 
   const handleStampComplete = async () => {
     setShowStampModal(false);
-    await loadStampedContent();
-    await loadPublishedContent();
+    await Promise.all([
+      loadStampedContent(),
+      loadPublishedContent()
+    ]);
   };
 
   const handleLogoUpload = async (event) => {
