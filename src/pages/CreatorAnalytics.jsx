@@ -130,13 +130,10 @@ export default function CreatorAnalytics() {
           }}>
           <div className="relative z-10">
             <h1 className="text-4xl font-bold text-white mb-2">Analytics dashboard</h1>
-            <p className="text-white/50 text-base">Your content sync too channels command center</p>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Key Metrics Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <p className="text-white/50 text-base mb-8">Your content sync too channels command center</p>
+          
+            {/* Key Metrics Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -196,7 +193,10 @@ export default function CreatorAnalytics() {
             <p className="text-4xl font-bold text-white">{totalReposts > 0 ? totalReposts.toLocaleString() : '0'}</p>
           </div>
         </motion.div>
-      </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
 
       {/* Main Content Grid */}
       <div className="grid lg:grid-cols-3 gap-6 mb-8">
