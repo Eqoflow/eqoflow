@@ -123,7 +123,11 @@ export default function StampedContentGallery({ user, userColorScheme, onContent
     try {
       await base44.entities.Post.update(item.id, {
         privacy_level: "public",
-        category: item.media_urls?.[0]?.match(/\.(mp4|webm|mov)$/i) ? "entertainment" : "general"
+        moderation_status: "approved",
+        category: item.media_urls?.[0]?.match(/\.(mp4|webm|mov)$/i) ? "entertainment" : "general",
+        author_username: user?.username || user?.email?.split('@')[0] || "creator",
+        author_avatar_url: user?.avatar_url || null,
+        author_banner_url: user?.banner_url || null
       });
       
       // Reload the content to get fresh data
