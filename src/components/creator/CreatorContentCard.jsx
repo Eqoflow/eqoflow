@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { useUser } from "@/components/contexts/UserContext";
 import { Heart, MessageSquare, Shield, Sparkles } from "lucide-react";
@@ -8,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function CreatorContentCard({ item, userColorScheme, onUpdate }) {
   const { user } = useUser();
+  const navigate = useNavigate();
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(item.likes_count || 0);
   const [commentsCount, setCommentsCount] = useState(item.comments_count || 0);
@@ -236,7 +239,12 @@ export default function CreatorContentCard({ item, userColorScheme, onUpdate }) 
         </AnimatePresence>
 
         {/* Creator Info */}
-        <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10">
+        <div 
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(createPageUrl(`PublicCreatorProfile?creator=${encodeURIComponent(item.created_by)}`));
+          }}
+          className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10 cursor-pointer hover:bg-white/5 -mx-4 px-4 py-2 transition-colors">
           {item.creator_logo ? (
             <img src={item.creator_logo} alt="Creator Logo" className="w-6 h-6 object-contain" />
           ) : (
