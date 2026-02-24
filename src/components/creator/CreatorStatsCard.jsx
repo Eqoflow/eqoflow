@@ -1,6 +1,5 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Check, X } from "lucide-react";
 
 export default function CreatorStatsCard({ icon: Icon, title, subtitle, userColorScheme, delay = 0, isWalletConnected }) {
   return (
@@ -22,14 +21,23 @@ export default function CreatorStatsCard({ icon: Icon, title, subtitle, userColo
           <p className="text-white/60 text-xs truncate">{subtitle}</p>
         </div>
         {isWalletConnected !== undefined && (
-          <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-            isWalletConnected ? 'bg-green-500/20' : 'bg-red-500/20'
-          }`}>
-            {isWalletConnected ? (
-              <Check className="w-4 h-4 text-green-400" />
-            ) : (
-              <X className="w-4 h-4 text-red-400" />
-            )}
+          <div className="relative flex items-center justify-center flex-shrink-0">
+            <div 
+              className={`w-3 h-3 rounded-full ${
+                isWalletConnected ? 'bg-green-400' : 'bg-red-400'
+              }`}
+              style={{
+                boxShadow: isWalletConnected 
+                  ? '0 0 10px rgba(74, 222, 128, 0.6), 0 0 20px rgba(74, 222, 128, 0.4)' 
+                  : '0 0 10px rgba(248, 113, 113, 0.6), 0 0 20px rgba(248, 113, 113, 0.4)'
+              }}
+            />
+            <div 
+              className={`absolute w-3 h-3 rounded-full animate-ping ${
+                isWalletConnected ? 'bg-green-400' : 'bg-red-400'
+              }`}
+              style={{ opacity: 0.4 }}
+            />
           </div>
         )}
       </div>

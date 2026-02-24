@@ -28,6 +28,7 @@ export default function CreatorHub() {
   const [stampedContentCount, setStampedContentCount] = useState(0);
   const [publishedCreatorContent, setPublishedCreatorContent] = useState([]);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
 
   const userColorScheme = {
     primary: user?.color_scheme ? getColorScheme(user.color_scheme).primary : '#8b5cf6',
@@ -39,7 +40,8 @@ export default function CreatorHub() {
     loadCreatorProfile();
     loadStampedContent();
     loadPublishedContent();
-  }, [user]);
+    setIsWalletConnected(!!user?.solana_wallet_address);
+  }, [user, user?.solana_wallet_address]);
 
   // Real-time subscription for creator profile updates
   useEffect(() => {
@@ -267,11 +269,11 @@ export default function CreatorHub() {
           <div className="space-y-4">
             <CreatorStatsCard
               icon={Shield}
-              title="Stamped"
+              title={`Stamped (${isWalletConnected ? 'wallet connected' : 'wallet disconnected'})`}
               subtitle={creatorProfile?.channel_name || "Connected channel"}
               userColorScheme={userColorScheme}
               delay={0}
-              isWalletConnected={!!user?.solana_wallet_address}
+              isWalletConnected={isWalletConnected}
             />
             <CreatorStatsCard
               icon={TrendingUp}
