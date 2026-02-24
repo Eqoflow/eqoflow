@@ -24,6 +24,7 @@ export default function PublicCreatorProfile() {
   const [showTipModal, setShowTipModal] = useState(false);
   const [tipAmount, setTipAmount] = useState("");
   const [subscriberCount, setSubscriberCount] = useState(0);
+  const [contentFilter, setContentFilter] = useState("all");
 
   const userColorScheme = {
     primary: user?.color_scheme ? getColorScheme(user.color_scheme).primary : '#8b5cf6',
@@ -128,131 +129,161 @@ export default function PublicCreatorProfile() {
 
   }
 
+  const filteredContent = creatorContent.filter(item => {
+    if (contentFilter === "all") return true;
+    if (contentFilter === "video") {
+      return item.media_urls && item.media_urls.length > 0 && item.media_urls[0].match(/\.(mp4|webm|mov)$/i);
+    }
+    if (contentFilter === "image") {
+      return item.media_urls && item.media_urls.length > 0 && item.media_urls[0].match(/\.(jpg|jpeg|png|gif|webp)$/i);
+    }
+    return true;
+  });
+
   return (
     <div className="min-h-screen pb-20">
       {/* Back Button */}
       <Button
         onClick={() => navigate(createPageUrl("CreatorHub") + "?view=user")}
-        variant="outline" className="bg-background text-slate-950 mb-6 px-4 py-2 text-sm font-medium rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border shadow-sm hover:text-accent-foreground h-9 border-white/20 hover:bg-white/10">
-
+        variant="ghost"
+        className="mb-6 text-white/60 hover:text-white hover:bg-white/5">
         <ArrowLeft className="w-4 h-4 mr-2" />
-        Back to Creator Hub
+        Back
       </Button>
 
-      {/* Creator Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-8 rounded-2xl p-8 relative overflow-hidden"
-        style={{
-          background: `linear-gradient(135deg, ${userColorScheme.accent}E6, ${userColorScheme.primary}40)`,
-          border: `2px solid ${userColorScheme.primary}60`
-        }}>
-        
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-3xl" />
-        
-        <div className="relative z-10">
-          <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20">
-                {creatorProfile.logo_url ?
-                <img src={creatorProfile.logo_url} alt="Creator Logo" className="w-full h-full object-contain" /> :
-
-                <Sparkles className="w-full h-full text-yellow-400" />
-                }
+      {/* Creator Header & Social Channels Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        {/* Creator Header - Takes 2 columns */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="lg:col-span-2 rounded-2xl p-6 bg-gradient-to-br from-gray-900/80 to-black/60 border border-white/10">
+          
+          <div className="flex items-start justify-between mb-4 flex-wrap gap-4">
+            <div className="flex items-start gap-4">
+              <div className="w-20 h-20 bg-cyan-500/20 rounded-2xl p-2 border-2 border-cyan-500/50 flex-shrink-0">
+                {creatorProfile.logo_url ? (
+                  <img src={creatorProfile.logo_url} alt="Creator Logo" className="w-full h-full object-contain" />
+                ) : (
+                  <Sparkles className="w-full h-full text-cyan-400" />
+                )}
               </div>
-              <div>
-                <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
+              <div className="flex-1">
+                <h1 className="text-3xl font-bold text-white mb-1">
                   {creatorProfile.channel_name}
                 </h1>
-                <div className="flex items-center gap-4 text-lg text-white/60">
+                <div className="flex items-center gap-3 text-sm text-white/60 mb-2">
                   <span>{creatorContent.length} Published Content</span>
                   <span>•</span>
-                  <span>{subscriberCount} Subscribers</span>
+                  <span>{subscriberCount} Subscriber{subscriberCount !== 1 ? 's' : ''}</span>
                 </div>
+                {creatorProfile.description && (
+                  <p className="text-white/70 text-sm mt-2 line-clamp-2">
+                    {creatorProfile.description}
+                  </p>
+                )}
               </div>
-            </div>
-            
-            <div className="flex gap-3">
-              <Button
-                onClick={handleSubscribe}
-                className={`${isSubscribed ? 'bg-white/10' : ''}`}
-                style={!isSubscribed ? {
-                  background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})`
-                } : {}}>
-                {isSubscribed ?
-                <>
-                    <UserCheck className="w-4 h-4 mr-2" />
-                    Subscribed
-                  </> :
-
-                <>
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    Subscribe
-                  </>
-                }
-              </Button>
-              <Button
-                onClick={() => setShowTipModal(true)}
-                variant="outline" className="bg-background text-slate-950 px-4 py-2 text-sm font-medium rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border shadow-sm hover:text-accent-foreground h-9 border-white/20 hover:bg-white/10">
-
-                <DollarSign className="w-4 h-4 mr-2" />
-                Tip Creator
-              </Button>
             </div>
           </div>
-
-          {creatorProfile.description &&
-          <p className="text-white/80 text-lg mb-4 max-w-3xl">
-              {creatorProfile.description}
-            </p>
-          }
-
-          {creatorProfile.social_links && creatorProfile.social_links.length > 0 &&
-          <div>
-              <h3 className="text-white font-semibold mb-3">Social Channels</h3>
-              <div className="flex flex-wrap gap-2">
-                {creatorProfile.social_links.map((link, index) =>
-              <a
-                key={index}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white/10 hover:bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 text-white text-sm transition-all duration-200 hover:scale-105 capitalize">
-                    {link.platform}
-                  </a>
+          
+          <div className="flex gap-3 mt-4">
+            <Button
+              onClick={handleSubscribe}
+              className={`${isSubscribed ? 'bg-white/10 text-white' : 'bg-cyan-500 hover:bg-cyan-600 text-black'} font-medium`}>
+              {isSubscribed ? (
+                <>
+                  <UserCheck className="w-4 h-4 mr-2" />
+                  Subscribed
+                </>
+              ) : (
+                <>
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Subscribe
+                </>
               )}
-              </div>
+            </Button>
+            <Button
+              onClick={() => setShowTipModal(true)}
+              variant="outline"
+              className="border-white/20 text-white hover:bg-white/10">
+              <DollarSign className="w-4 h-4 mr-2" />
+              Tip Creator
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Social Channels - Takes 1 column */}
+        {creatorProfile.social_links && creatorProfile.social_links.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="rounded-2xl p-6 bg-gradient-to-br from-gray-900/80 to-black/60 border border-white/10">
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles className="w-5 h-5 text-cyan-400" />
+              <h3 className="text-white font-semibold">Social channels</h3>
             </div>
-          }
+            <div className="space-y-2">
+              {creatorProfile.social_links.map((link, index) => (
+                <a
+                  key={index}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg border border-white/10 text-white text-sm transition-all duration-200 capitalize">
+                  {link.platform}
+                </a>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </div>
+
+      {/* Published Content Section */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-white mb-4">Published content</h2>
+        
+        {/* Content Filter Tabs */}
+        <div className="flex gap-2 mb-6">
+          <Button
+            onClick={() => setContentFilter("all")}
+            variant={contentFilter === "all" ? "default" : "ghost"}
+            className={`${contentFilter === "all" ? 'bg-white/10 text-white' : 'text-white/60 hover:text-white hover:bg-white/5'}`}>
+            All Video
+          </Button>
+          <Button
+            onClick={() => setContentFilter("image")}
+            variant={contentFilter === "image" ? "default" : "ghost"}
+            className={`${contentFilter === "image" ? 'bg-white/10 text-white' : 'text-white/60 hover:text-white hover:bg-white/5'}`}>
+            Image
+          </Button>
+          <Button
+            onClick={() => setContentFilter("video")}
+            variant={contentFilter === "video" ? "default" : "ghost"}
+            className={`${contentFilter === "video" ? 'bg-white/10 text-white' : 'text-white/60 hover:text-white hover:bg-white/5'}`}>
+            Thread
+          </Button>
         </div>
-      </motion.div>
 
-      {/* Creator Content Grid */}
-      <Card className="bg-gradient-to-br from-white/5 to-white/10 border-white/20">
-        <CardHeader>
-          <CardTitle className="text-white text-2xl">Published Content</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {creatorContent.length === 0 ?
+        {/* Content Grid */}
+        {filteredContent.length === 0 ? (
           <p className="text-white/60 text-center py-8">
-              No content published yet
-            </p> :
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {creatorContent.map((item) =>
-            <ContentCard
-              key={item.id}
-              item={item}
-              user={user}
-              userColorScheme={userColorScheme}
-              onUpdate={loadCreatorData}
-            />
-            )}
-            </div>
-          }
-        </CardContent>
-      </Card>
+            No content published yet
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {filteredContent.map((item) => (
+              <ContentCard
+                key={item.id}
+                item={item}
+                user={user}
+                userColorScheme={userColorScheme}
+                onUpdate={loadCreatorData}
+              />
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Tip Modal */}
       <Dialog open={showTipModal} onOpenChange={setShowTipModal}>
@@ -431,11 +462,13 @@ function ContentCard({ item, user, userColorScheme, onUpdate }) {
     }
   };
 
+  const isVideo = item.media_urls && item.media_urls.length > 0 && item.media_urls[0].match(/\.(mp4|webm|mov)$/i);
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="bg-black/40 rounded-lg border border-white/10 overflow-hidden group hover:border-purple-500/50 transition-all">
+      className="bg-gradient-to-br from-gray-900/80 to-black/60 rounded-xl border border-white/10 overflow-hidden group hover:border-cyan-500/50 transition-all">
       
       {item.media_urls && item.media_urls.length > 0 && (
         <div className="aspect-video bg-black/60 relative overflow-hidden">
@@ -446,113 +479,39 @@ function ContentCard({ item, user, userColorScheme, onUpdate }) {
               className="w-full h-full object-cover cursor-pointer"
               onClick={recordView}
             />
-          ) : item.media_urls[0].match(/\.(mp4|webm|mov)$/i) ? (
-            <video
-              src={item.media_urls[0]}
-              className="w-full h-full object-cover"
-              controls
-              onPlay={recordView}
-            />
+          ) : isVideo ? (
+            <>
+              <video
+                src={item.media_urls[0]}
+                className="w-full h-full object-cover"
+                controls
+                onPlay={recordView}
+              />
+              {!hasRecordedView && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
+                  <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                    <div className="w-0 h-0 border-t-8 border-t-transparent border-l-12 border-l-white border-b-8 border-b-transparent ml-1" />
+                  </div>
+                </div>
+              )}
+            </>
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <Shield className="w-12 h-12 text-white/30" />
             </div>
           )}
-          <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
-            <Shield className="w-4 h-4 text-green-400" />
+          <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md text-xs text-white/80">
+            On-chain
           </div>
         </div>
       )}
       
       <div className="p-4">
-        <h3 className="text-white font-semibold mb-1">{item.author_full_name || "Untitled"}</h3>
-        <p className="text-white/60 text-sm mb-3 line-clamp-2">{item.content || "No description"}</p>
+        <h3 className="text-white font-semibold mb-1 line-clamp-1">{item.content || "Untitled"}</h3>
+        <p className="text-white/50 text-xs mb-3 line-clamp-2">{item.author_full_name}</p>
         
-        {/* Interactions */}
-        <div className="flex items-center gap-4 mb-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleLike}
-            className={`flex items-center gap-2 ${isLiked ? 'text-red-400' : 'text-white/60'} hover:text-red-400`}>
-            <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
-            <span className="text-sm">{likesCount}</span>
-          </Button>
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowComments(!showComments);
-            }}
-            className="flex items-center gap-2 text-white/60 hover:text-white">
-            <MessageSquare className="w-4 h-4" />
-            <span className="text-sm">{commentsCount}</span>
-          </Button>
-
-          <div className="flex items-center gap-2 text-white/60 text-sm ml-auto">
-            <Eye className="w-4 h-4" />
-            <span>{viewsCount}</span>
-          </div>
-        </div>
-
-        {/* Comments Section */}
-        <AnimatePresence>
-          {showComments && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="border-t border-white/10 pt-3 space-y-3"
-              onClick={(e) => e.stopPropagation()}>
-              
-              {/* Comment Form */}
-              {user && (
-                <form onSubmit={handleComment} className="space-y-2">
-                  <Textarea
-                    placeholder="Write a comment..."
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    className="bg-black/40 border-white/20 text-white placeholder:text-white/40 min-h-[60px]"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                  <Button
-                    type="submit"
-                    size="sm"
-                    disabled={!newComment.trim() || isSubmitting}
-                    style={{
-                      background: `linear-gradient(135deg, ${userColorScheme.primary}, ${userColorScheme.secondary})`
-                    }}>
-                    {isSubmitting ? "Posting..." : "Post Comment"}
-                  </Button>
-                </form>
-              )}
-
-              {/* Comments List */}
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {comments.length === 0 ? (
-                  <p className="text-white/40 text-xs text-center py-2">No comments yet</p>
-                ) : (
-                  comments.map((comment) => (
-                    <div key={comment.id} className="bg-white/5 rounded-lg p-2">
-                      <div className="flex items-start gap-2">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-white text-xs font-semibold">{comment.author_full_name}</p>
-                          <p className="text-white/70 text-xs mt-1">{comment.content}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <div className="text-xs text-white/40 mt-3 pt-3 border-t border-white/10">
-          {new Date(item.created_date).toLocaleDateString()}
+        <div className="text-xs text-white/40">
+          {new Date(item.created_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </div>
       </div>
     </motion.div>
