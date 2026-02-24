@@ -41,7 +41,7 @@ export default function StampedContentGallery({ user, userColorScheme, onContent
 
   const handleEditClick = (item) => {
     setEditingItem(item);
-    setEditTitle(item.author_full_name || "");
+    setEditTitle(item.gated_content_title || "");
     setEditDescription(item.content || "");
   };
 
@@ -50,14 +50,14 @@ export default function StampedContentGallery({ user, userColorScheme, onContent
 
     try {
       await base44.entities.Post.update(editingItem.id, {
-        author_full_name: editTitle,
+        gated_content_title: editTitle,
         content: editDescription
       });
 
       setStampedContent((prev) =>
       prev.map((item) =>
       item.id === editingItem.id ?
-      { ...item, author_full_name: editTitle, content: editDescription } :
+      { ...item, gated_content_title: editTitle, content: editDescription } :
       item
       )
       );
@@ -254,7 +254,7 @@ export default function StampedContentGallery({ user, userColorScheme, onContent
                     <div className="p-4">
                       <div className="flex items-center justify-between mb-1">
                         <h3 className="text-white font-semibold truncate flex-1">
-                          {item.author_full_name || "Untitled"}
+                          {item.gated_content_title || "Untitled"}
                         </h3>
                         {(!item.media_urls || item.media_urls.length === 0) &&
                     <div className="bg-black/60 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
@@ -443,7 +443,7 @@ export default function StampedContentGallery({ user, userColorScheme, onContent
             }
 
             <p className="text-white font-semibold mb-1">
-              {deleteConfirm?.author_full_name || "Untitled"}
+              {deleteConfirm?.gated_content_title || "Untitled"}
             </p>
             <p className="text-white/60 text-sm mb-4">
               {deleteConfirm?.content || "No description"}
