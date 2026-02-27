@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Upload, Loader2, Film } from "lucide-react";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import PlatformSelector from "./PlatformSelector";
 import { useBlockchainTimestamp } from "@/components/blockchain/useBlockchainTimestamp";
