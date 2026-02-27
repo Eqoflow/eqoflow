@@ -52,9 +52,7 @@ export default function InlineStampingSection({ user, userColorScheme, onComplet
 
     try {
       // Upload file to S3 (supports large files)
-      const formData = new FormData();
-      formData.append('file', file);
-      const uploadResponse = await uploadToS3(formData);
+      const uploadResponse = await uploadToS3({ file }, { rawFormData: true });
       const { file_url } = uploadResponse.data;
 
       // Generate content hash
