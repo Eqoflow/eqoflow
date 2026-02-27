@@ -9,11 +9,11 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const formData = await req.formData();
-    const file = formData.get('file');
+    const body = await req.json();
+    const { fileBase64, fileName, fileType } = body;
 
-    if (!file) {
-      return Response.json({ error: 'No file provided' }, { status: 400 });
+    if (!fileBase64 || !fileName || !fileType) {
+      return Response.json({ error: 'Missing file data (fileBase64, fileName, fileType required)' }, { status: 400 });
     }
 
     const accessKeyId = Deno.env.get('AWS_ACCESS_KEY_ID');
@@ -21,12 +21,16 @@ Deno.serve(async (req) => {
     const bucketName = Deno.env.get('AWS_S3_BUCKET_NAME');
     const region = Deno.env.get('AWS_S3_REGION');
 
-    const fileBuffer = await file.arrayBuffer();
-    const fileBytes = new Uint8Array(fileBuffer);
+    // Decode base64 to bytes
+    const binaryString = atob(fileBase64);
+    const fileBytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      fileBytes[i] = binaryString.charCodeAt(i);
+    }
 
     // Generate a unique file key
     const timestamp = Date.now();
-    const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const sanitizedName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
     const key = `uploads/${user.id}/${timestamp}_${sanitizedName}`;
 
     // AWS Signature V4 signing
@@ -44,7 +48,7 @@ Deno.serve(async (req) => {
       .map(b => b.toString(16).padStart(2, '0'))
       .join('');
 
-    const canonicalHeaders = `content-type:${file.type}\nhost:${host}\nx-amz-content-sha256:${payloadHash}\nx-amz-date:${amzDate}\n`;
+    const canonicalHeaders = `content-type:${fileType}\nhost:${host}\nx-amz-content-sha256:${payloadHash}\nx-amz-date:${amzDate}\n`;
     const signedHeaders = 'content-type;host;x-amz-content-sha256;x-amz-date';
     const canonicalRequest = `${method}\n/${key}\n\n${canonicalHeaders}\n${signedHeaders}\n${payloadHash}`;
 
@@ -75,7 +79,7 @@ Deno.serve(async (req) => {
     const s3Response = await fetch(url, {
       method: 'PUT',
       headers: {
-        'Content-Type': file.type,
+        'Content-Type': fileType,
         'x-amz-date': amzDate,
         'x-amz-content-sha256': payloadHash,
         'Authorization': authorizationHeader,
