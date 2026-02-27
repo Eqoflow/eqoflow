@@ -50,8 +50,8 @@ export default function InlineStampingSection({ user, userColorScheme, onComplet
     setIsStamping(true);
 
     try {
-      // Upload file to S3 (supports large files)
-      const uploadResponse = await uploadToS3({ file }, { rawFormData: true });
+      // Upload file to S3 (supports large files) - passing File object triggers multipart/form-data automatically
+      const uploadResponse = await base44.functions.invoke('uploadToS3', { file });
       const { file_url } = uploadResponse.data;
 
       // Generate content hash
