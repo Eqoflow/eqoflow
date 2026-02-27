@@ -51,8 +51,11 @@ export default function InlineStampingSection({ user, userColorScheme, onComplet
     setIsStamping(true);
 
     try {
-      // Upload file
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      // Upload file to S3 (supports large files)
+      const formData = new FormData();
+      formData.append('file', file);
+      const uploadResponse = await uploadToS3(formData);
+      const { file_url } = uploadResponse.data;
 
       // Generate content hash
       const hashResponse = await base44.functions.invoke('generateContentHash', {
