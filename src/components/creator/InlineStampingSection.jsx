@@ -50,20 +50,22 @@ export default function InlineStampingSection({ user, userColorScheme, onComplet
     setIsStamping(true);
 
     try {
-      // Convert file to base64 for JSON transport to backend
-      const fileBase64 = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(',')[1]);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-
-      const uploadResponse = await base44.functions.invoke('uploadToS3', {
-        fileBase64,
+      // Get a presigned URL from backend, then upload directly from browser to S3
+      const presignResponse = await base44.functions.invoke('getS3PresignedUrl', {
         fileName: file.name,
         fileType: file.type || 'application/octet-stream',
       });
-      const { file_url } = uploadResponse.data;
+      const { presigned_url, file_url } = presignResponse.data;
+
+      const s3Upload = await fetch(presigned_url, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type || 'application/octet-stream' },
+        body: file,
+      });
+
+      if (!s3Upload.ok) {
+        throw new Error(`S3 upload failed: ${s3Upload.status}`);
+      }
 
       // Generate content hash
       const hashResponse = await base44.functions.invoke('generateContentHash', {
