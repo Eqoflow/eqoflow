@@ -50,8 +50,19 @@ export default function InlineStampingSection({ user, userColorScheme, onComplet
     setIsStamping(true);
 
     try {
-      // Upload file to S3 (supports large files) - passing File object triggers multipart/form-data automatically
-      const uploadResponse = await base44.functions.invoke('uploadToS3', { file });
+      // Convert file to base64 for JSON transport to backend
+      const fileBase64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const uploadResponse = await base44.functions.invoke('uploadToS3', {
+        fileBase64,
+        fileName: file.name,
+        fileType: file.type || 'application/octet-stream',
+      });
       const { file_url } = uploadResponse.data;
 
       // Generate content hash
