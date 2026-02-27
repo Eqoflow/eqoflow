@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import PlatformSelector from "./PlatformSelector";
 import { useBlockchainTimestamp } from "@/components/blockchain/useBlockchainTimestamp";
 
-const MAX_FILE_SIZE_MB = 50;
+const MAX_FILE_SIZE_MB = 5120; // 5GB
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 export default function InlineStampingSection({ user, userColorScheme, onComplete }) {
