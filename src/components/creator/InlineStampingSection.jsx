@@ -131,7 +131,7 @@ export default function InlineStampingSection({ user, userColorScheme, onComplet
                 <Upload className="w-6 h-6 text-white/60" />
               </div>
               <p className="text-white/60 text-sm">Click to upload content</p>
-              <p className="text-white/40 text-xs mt-1">Supports images and videos (max {MAX_FILE_SIZE_MB}MB)</p>
+              <p className="text-white/40 text-xs mt-1">Supports images and videos (max 5GB)</p>
             </div>
           </label>
         ) : (
