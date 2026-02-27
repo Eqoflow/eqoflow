@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import PlatformSelector from "./PlatformSelector";
 import { useBlockchainTimestamp } from "@/components/blockchain/useBlockchainTimestamp";
 
+const MAX_FILE_SIZE_MB = 50;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
 export default function InlineStampingSection({ user, userColorScheme, onComplete }) {
   const [file, setFile] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
@@ -13,20 +16,29 @@ export default function InlineStampingSection({ user, userColorScheme, onComplet
   const [description, setDescription] = useState("");
   const [isStamping, setIsStamping] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
+  const [fileSizeError, setFileSizeError] = useState(null);
   const { timestampContent } = useBlockchainTimestamp();
 
   const handleFileSelect = (event) => {
     const selectedFile = event.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      
-      // Create preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFilePreview(reader.result);
-      };
-      reader.readAsDataURL(selectedFile);
+    if (!selectedFile) return;
+
+    if (selectedFile.size > MAX_FILE_SIZE_BYTES) {
+      setFileSizeError(`File is too large (${(selectedFile.size / 1024 / 1024).toFixed(1)}MB). Maximum allowed size is ${MAX_FILE_SIZE_MB}MB.`);
+      setFile(null);
+      setFilePreview(null);
+      event.target.value = "";
+      return;
     }
+
+    setFileSizeError(null);
+    setFile(selectedFile);
+    
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFilePreview(reader.result);
+    };
+    reader.readAsDataURL(selectedFile);
   };
 
   const handleStamp = async () => {
@@ -79,7 +91,6 @@ export default function InlineStampingSection({ user, userColorScheme, onComplet
       setDescription("");
       setSelectedPlatforms([]);
       
-      // Trigger immediate refresh of parent components
       if (onComplete) {
         await onComplete();
       }
@@ -116,7 +127,7 @@ export default function InlineStampingSection({ user, userColorScheme, onComplet
                 <Upload className="w-6 h-6 text-white/60" />
               </div>
               <p className="text-white/60 text-sm">Click to upload content</p>
-              <p className="text-white/40 text-xs mt-1">Supports images and videos</p>
+              <p className="text-white/40 text-xs mt-1">Supports images and videos (max {MAX_FILE_SIZE_MB}MB)</p>
             </div>
           </label>
         ) : (
@@ -143,6 +154,9 @@ export default function InlineStampingSection({ user, userColorScheme, onComplet
               <Film className="w-4 h-4" />
             </button>
           </div>
+        )}
+        {fileSizeError && (
+          <p className="text-red-400 text-sm mt-3 text-center">{fileSizeError}</p>
         )}
       </div>
 
