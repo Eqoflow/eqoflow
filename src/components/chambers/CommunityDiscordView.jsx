@@ -182,7 +182,7 @@ export default function CommunityDiscordView({
         {/* Welcome banner */}
         <div className="flex-shrink-0 flex flex-col items-center justify-center py-4 px-4 border-b border-white/5">
           <div className="border rounded-full px-6 py-2 text-center" style={{ borderColor: '#00e5a0', background: 'rgba(0,229,160,0.04)' }}>
-            <h1 className="text-white font-bold text-lg leading-tight">Welcome to EqoChambers</h1>
+            <h1 className="text-white font-bold text-lg leading-tight">Welcome to {community.name}</h1>
             <p className="text-gray-400 text-xs mt-0.5">Connect, share, and build communities around your passions.</p>
           </div>
         </div>
