@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Hash, Volume2, Users, ChevronDown, Mic, MicOff, PhoneOff } from 'lucide-react';
-import CommunityFeed from '../communities/CommunityFeed';
+import CommunityChannelChat from './CommunityChannelChat';
 
 const DEFAULT_TEXT_CHANNELS = [
   { id: 'general', name: 'general', type: 'text' },
