@@ -18,7 +18,6 @@ const DEFAULT_VOICE_CHANNELS = [
 ];
 
 const NAV_ITEMS = [
-  { label: 'Home',     icon: Home,           page: 'Feed' },
   { label: 'Chambers', icon: Layers,          page: 'Communities', highlight: true },
   { label: 'DMs',      icon: MessageSquare,   page: 'Messages' },
   { label: 'Settings', icon: Settings,        page: 'Profile' },

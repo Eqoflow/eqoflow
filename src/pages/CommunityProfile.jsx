@@ -744,16 +744,6 @@ export default function CommunityProfilePage() {
       )}
 
       <div className="p-2 md:p-4">
-        <div className="flex items-center justify-between mb-3">
-          <Link to={createPageUrl("Communities")}>
-            <Button variant="outline" className="border-purple-500/30 text-white hover:bg-purple-500/10 text-sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-          </Link>
-
-        </div>
-
         <CommunityDiscordView
           community={community}
           user={user}
