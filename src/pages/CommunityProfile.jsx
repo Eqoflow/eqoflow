@@ -751,16 +751,7 @@ export default function CommunityProfilePage() {
               Back
             </Button>
           </Link>
-          {isCreator && (
-            <Button
-              variant="outline"
-              className="border-purple-500/30 text-white hover:bg-purple-500/10 text-sm"
-              onClick={() => setShowEditModal(true)}
-            >
-              <Edit3 className="w-4 h-4 mr-2" />
-              Edit Community
-            </Button>
-          )}
+
         </div>
 
         <CommunityDiscordView
