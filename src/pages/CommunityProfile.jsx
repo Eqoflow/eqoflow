@@ -38,9 +38,7 @@ export default function CommunityProfilePage() {
   const [communityPosts, setCommunityPosts] = useState([]);
   const [relatedCommunities, setRelatedCommunities] = useState([]);
   const [latestActivities, setLatestActivities] = useState([]);
-  const [showWidgetManager, setShowWidgetManager] = useState(false);
-  const [widgetConfig, setWidgetConfig] = useState(null);
-  const [isDragMode, setIsDragMode] = useState(false);
+
 
   const location = useLocation();
 
