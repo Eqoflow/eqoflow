@@ -360,6 +360,15 @@ export default function CommunityProfilePage() {
     setShowEditPostModal(true);
   };
 
+  const handleUpdateChannels = async (updatedChannels) => {
+    try {
+      await base44.entities.Community.update(community.id, { channels: updatedChannels });
+      setCommunity(prev => ({ ...prev, channels: updatedChannels }));
+    } catch (error) {
+      console.error("Error updating channels:", error);
+    }
+  };
+
   const handleSaveEditedPost = async (postId, updatedData) => {
     try {
       await base44.entities.Post.update(postId, updatedData);
@@ -753,6 +762,7 @@ export default function CommunityProfilePage() {
           communityPosts={communityPosts}
           latestActivities={latestActivities}
           onEditPost={handleEditPost}
+          onUpdateChannels={handleUpdateChannels}
         />
       </div>
 
