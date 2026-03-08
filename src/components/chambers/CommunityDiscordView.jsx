@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Hash, Volume2, ChevronDown, ChevronRight,
   Mic, MicOff, PhoneOff, PanelLeft,
-  MessageSquare, Settings, Layers,
+  Home, MessageSquare, Settings, Layers,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -18,6 +18,7 @@ const DEFAULT_VOICE_CHANNELS = [
 ];
 
 const NAV_ITEMS = [
+  { label: 'Home',     icon: Home,            page: 'Communities' },
   { label: 'Chambers', icon: Layers,          page: 'Communities', highlight: true },
   { label: 'DMs',      icon: MessageSquare,   page: 'Messages' },
   { label: 'Settings', icon: Settings,        page: 'Profile' },
