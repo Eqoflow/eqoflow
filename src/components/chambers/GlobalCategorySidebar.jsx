@@ -1,12 +1,19 @@
 import React from 'react';
-import { ChevronDown, Globe, Gamepad2, Headphones, Mic, TrendingUp } from 'lucide-react';
+import { ChevronDown, Globe, Gamepad2, Cpu, Briefcase, DollarSign, Trophy, BarChart2, Music, Film, Heart, BookOpen, TrendingUp } from 'lucide-react';
 
 const CATEGORIES = [
   { id: 'general', label: 'General', icon: Globe },
-  { id: 'gaming', label: 'Gaming', icon: Gamepad2 },
-  { id: 'support', label: 'Support', icon: Headphones },
-  { id: 'voice_chats', label: 'Voice Chats', icon: Mic },
   { id: 'trending', label: 'Trending', icon: TrendingUp },
+  { id: 'technology', label: 'Technology', icon: Cpu },
+  { id: 'gaming', label: 'Gaming', icon: Gamepad2 },
+  { id: 'business', label: 'Business', icon: Briefcase },
+  { id: 'finance', label: 'Finance', icon: DollarSign },
+  { id: 'trading', label: 'Trading', icon: BarChart2 },
+  { id: 'sports', label: 'Sports', icon: Trophy },
+  { id: 'music', label: 'Music', icon: Music },
+  { id: 'entertainment', label: 'Entertainment', icon: Film },
+  { id: 'health', label: 'Health & Fitness', icon: Heart },
+  { id: 'education', label: 'Education', icon: BookOpen },
 ];
 
 export default function GlobalCategorySidebar({ selectedCategory, onCategorySelect, searchQuery, onSearchChange }) {
