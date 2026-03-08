@@ -57,9 +57,6 @@ export default function CommunityProfilePage() {
       setUser(currentUser);
       setCommunity(fetchedCommunity);
 
-      // Load widget configuration
-      setWidgetConfig(fetchedCommunity.widget_config || { left: ['media', 'following'], right: ['updates', 'activeMembers', 'groups'] });
-
       const isUserCreator = fetchedCommunity.created_by === currentUser?.email;
       setIsCreator(isUserCreator);
       
