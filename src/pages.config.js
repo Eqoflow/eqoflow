@@ -58,7 +58,6 @@ import AuthCallback from './pages/AuthCallback';
 import BadgeManager from './pages/BadgeManager';
 import BlogManager from './pages/BlogManager';
 import Checkout from './pages/Checkout';
-import Communities from './pages/Communities';
 import CommunityProfile from './pages/CommunityProfile';
 import CourseViewer from './pages/CourseViewer';
 import CreatorAnalytics from './pages/CreatorAnalytics';
@@ -138,7 +137,6 @@ export const PAGES = {
     "BadgeManager": BadgeManager,
     "BlogManager": BlogManager,
     "Checkout": Checkout,
-    "Communities": Communities,
     "CommunityProfile": CommunityProfile,
     "CourseViewer": CourseViewer,
     "CreatorAnalytics": CreatorAnalytics,
