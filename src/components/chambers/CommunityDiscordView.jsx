@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Hash, Volume2, ChevronDown, ChevronRight,
   Mic, MicOff, PhoneOff, PanelLeft,
-  Home, MessageSquare, Settings, Layers,
+  MessageSquare, Settings, Layers,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
