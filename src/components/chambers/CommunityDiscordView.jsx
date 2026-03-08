@@ -202,33 +202,71 @@ export default function CommunityDiscordView({
                 <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.05)' }} />
                 <p className="text-[9px] font-bold tracking-widest uppercase flex-shrink-0" style={{ color: '#2d3748' }}>Text</p>
                 <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.05)' }} />
+                {canManageChannels && (
+                  <button onClick={() => { setAddingType('text'); setNewChannelName(''); }} className="flex-shrink-0" title="Add text channel">
+                    <Plus className="w-3 h-3" style={{ color: '#00e5a0' }} />
+                  </button>
+                )}
               </div>
               {textChannels.map(ch => (
-                <button
-                  key={ch.id}
-                  onClick={() => setActiveChannel(ch.id)}
-                  className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs transition-all duration-150 text-left mb-0.5"
-                  style={{
-                    background: activeChannel === ch.id ? 'rgba(0,229,160,0.09)' : 'transparent',
-                    color:      activeChannel === ch.id ? '#e5e7eb' : '#4b5563',
-                    fontWeight: activeChannel === ch.id ? 500 : 400,
-                    outline:    activeChannel === ch.id ? '1px solid rgba(0,229,160,0.2)' : '1px solid transparent',
-                  }}
-                >
-                  <Hash className="w-3.5 h-3.5 flex-shrink-0"
-                    style={{ color: activeChannel === ch.id ? '#00e5a0' : '#2d3748' }} />
-                  <span className="truncate flex-1">{ch.name}</span>
-                  <span
-                    className="flex-shrink-0 text-[9px] px-1.5 py-0.5 rounded-full leading-none"
-                    style={{
-                      background: activeChannel === ch.id ? 'rgba(0,229,160,0.15)' : 'rgba(255,255,255,0.04)',
-                      color: activeChannel === ch.id ? '#00e5a0' : '#374151',
-                    }}
-                  >
-                    {ch.type === 'announcement' ? 'Ann' : 'Text'}
-                  </span>
-                </button>
+                <div key={ch.id} className="group/ch relative mb-0.5">
+                  {editingChannelId === ch.id ? (
+                    <div className="flex items-center gap-1 px-2 py-1">
+                      <Hash className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#00e5a0' }} />
+                      <input
+                        autoFocus
+                        value={editingChannelName}
+                        onChange={e => setEditingChannelName(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') handleSaveEdit(); if (e.key === 'Escape') setEditingChannelId(null); }}
+                        className="flex-1 bg-transparent text-xs text-white outline-none border-b"
+                        style={{ borderColor: '#00e5a0' }}
+                      />
+                      <button onClick={handleSaveEdit}><Check className="w-3 h-3 text-green-400" /></button>
+                      <button onClick={() => setEditingChannelId(null)}><X className="w-3 h-3 text-red-400" /></button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setActiveChannel(ch.id)}
+                      className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs transition-all duration-150 text-left"
+                      style={{
+                        background: activeChannel === ch.id ? 'rgba(0,229,160,0.09)' : 'transparent',
+                        color:      activeChannel === ch.id ? '#e5e7eb' : '#4b5563',
+                        fontWeight: activeChannel === ch.id ? 500 : 400,
+                        outline:    activeChannel === ch.id ? '1px solid rgba(0,229,160,0.2)' : '1px solid transparent',
+                      }}
+                    >
+                      <Hash className="w-3.5 h-3.5 flex-shrink-0"
+                        style={{ color: activeChannel === ch.id ? '#00e5a0' : '#2d3748' }} />
+                      <span className="truncate flex-1">{ch.name}</span>
+                      {canManageChannels && (
+                        <button
+                          onClick={e => handleStartEdit(ch, e)}
+                          className="opacity-0 group-hover/ch:opacity-100 transition-opacity"
+                          title="Rename channel"
+                        >
+                          <Pencil className="w-2.5 h-2.5" style={{ color: '#6b7280' }} />
+                        </button>
+                      )}
+                    </button>
+                  )}
+                </div>
               ))}
+              {addingType === 'text' && (
+                <div className="flex items-center gap-1 px-2 py-1">
+                  <Hash className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#00e5a0' }} />
+                  <input
+                    autoFocus
+                    value={newChannelName}
+                    onChange={e => setNewChannelName(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') handleAddChannel(); if (e.key === 'Escape') setAddingType(null); }}
+                    placeholder="channel-name"
+                    className="flex-1 bg-transparent text-xs text-white outline-none border-b placeholder-gray-600"
+                    style={{ borderColor: '#00e5a0' }}
+                  />
+                  <button onClick={handleAddChannel}><Check className="w-3 h-3 text-green-400" /></button>
+                  <button onClick={() => setAddingType(null)}><X className="w-3 h-3 text-red-400" /></button>
+                </div>
+              )}
             </div>
 
             {/* Voice Channels */}
