@@ -3,6 +3,7 @@ import {
   Hash, Volume2, ChevronDown, ChevronRight,
   Mic, MicOff, PhoneOff, PanelLeft,
   Home, MessageSquare, Settings, Layers,
+  Plus, Pencil, Check, X,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -42,6 +43,7 @@ function playJoinSound() {
 export default function CommunityDiscordView({
   community, user, isMember, isCreator,
   memberProfiles, communityPosts, latestActivities,
+  onUpdateChannels,
 }) {
   const [activeChannel, setActiveChannel]       = useState('general');
   const [activeVoice, setActiveVoice]           = useState(null);
@@ -50,13 +52,20 @@ export default function CommunityDiscordView({
   const [updatesOpen, setUpdatesOpen]           = useState(false);
   const [membersOpen, setMembersOpen]           = useState(false);
 
-  const textChannels = community.channels
-    ? community.channels.filter(c => c.type === 'text' || c.type === 'announcement')
-    : DEFAULT_TEXT_CHANNELS;
+  // Channel management state
+  const [editingChannelId, setEditingChannelId] = useState(null);
+  const [editingChannelName, setEditingChannelName] = useState('');
+  const [addingType, setAddingType]             = useState(null); // 'text' | 'voice'
+  const [newChannelName, setNewChannelName]     = useState('');
 
-  const voiceChannels = community.channels
-    ? community.channels.filter(c => c.type === 'voice')
-    : DEFAULT_VOICE_CHANNELS;
+  const canManageChannels = isCreator || user?.role === 'admin';
+
+  const allChannels = community.channels && community.channels.length > 0
+    ? community.channels
+    : [...DEFAULT_TEXT_CHANNELS, ...DEFAULT_VOICE_CHANNELS];
+
+  const textChannels = allChannels.filter(c => c.type === 'text' || c.type === 'announcement');
+  const voiceChannels = allChannels.filter(c => c.type === 'voice');
 
   const activeChannelName = textChannels.find(c => c.id === activeChannel)?.name || 'general';
 
@@ -64,6 +73,30 @@ export default function CommunityDiscordView({
     if (activeVoice?.id === ch.id) return;
     playJoinSound();
     setActiveVoice(ch);
+  };
+
+  const handleStartEdit = (ch, e) => {
+    e.stopPropagation();
+    setEditingChannelId(ch.id);
+    setEditingChannelName(ch.name);
+  };
+
+  const handleSaveEdit = async (e) => {
+    e?.stopPropagation();
+    const name = editingChannelName.trim();
+    if (!name) { setEditingChannelId(null); return; }
+    const updated = allChannels.map(c => c.id === editingChannelId ? { ...c, name } : c);
+    setEditingChannelId(null);
+    await onUpdateChannels(updated);
+  };
+
+  const handleAddChannel = async () => {
+    const name = newChannelName.trim();
+    if (!name) return;
+    const newCh = { id: `${addingType}-${Date.now()}`, name, type: addingType };
+    await onUpdateChannels([...allChannels, newCh]);
+    setAddingType(null);
+    setNewChannelName('');
   };
 
   return (
