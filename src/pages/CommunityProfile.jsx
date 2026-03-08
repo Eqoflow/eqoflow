@@ -775,7 +775,7 @@ export default function CommunityProfilePage() {
     );
   }
 
-  // Full community profile for members and creators
+  // Full community profile for members and creators — Discord-style
   return (
     <div className="min-h-screen bg-black text-white">
       {(successMessage || errorMessage) && (
@@ -808,217 +808,61 @@ export default function CommunityProfilePage() {
         </AnimatePresence>
       )}
 
-      <div className="max-w-7xl mx-auto p-4">
-        <Link to={createPageUrl("Communities")} className="block mb-4">
-          <Button variant="outline" className="border-purple-500/30 text-white hover:bg-purple-500/10 text-sm">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Communities
-          </Button>
-        </Link>
-
-        <div className="relative mb-6">
-          <div className="h-48 rounded-2xl overflow-hidden">
-            {community.banner_url ? (
-              <img src={community.banner_url} alt={community.name} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-r from-purple-900 to-pink-900" />
-            )}
-          </div>
-
-          <div className="absolute -bottom-12 left-6 flex items-end gap-4">
-            <div className="w-24 h-24 rounded-2xl bg-black border-4 border-black p-2">
-              <div className="w-full h-full rounded-lg bg-black flex items-center justify-center overflow-hidden">
-                {community.logo_url ? (
-                  <img src={community.logo_url} alt={community.name} className="w-full h-full object-cover rounded-lg" />
-                ) : (
-                  <span className="text-3xl font-bold text-white">{community.name?.[0]}</span>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-16 mb-6 flex flex-col md:flex-row justify-between items-start gap-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-3xl font-bold text-white">
-                {community.name}
-              </h1>
-              {community.pricing_model === 'free' ? (
-                <Badge className="bg-green-500/20 text-green-300 border-green-500/40">
-                  Free
-                </Badge>
-              ) : (
-                <Badge className="bg-yellow-500/20 text-yellow-300 border-yellow-500/40">
-                  {community.currency === 'QFLOW' ? '$EQOFLO' : community.currency} {community.membership_fee}
-                </Badge>
-              )}
-              {isPrivateCommunity && (
-                <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/40">
-                  <Lock className="w-3 h-3 mr-1" />
-                  Private
-                </Badge>
-              )}
-            </div>
-            <p className="text-gray-400 mb-3">{community.description}</p>
-            <div className="flex items-center gap-4 text-sm text-gray-400">
-              <div className="flex items-center gap-1">
-                <Users className="w-4 h-4" />
-                <span>{community.member_emails?.length || 0} members</span>
-              </div>
-              {creatorInfo && (
-                <div className="flex items-center gap-1">
-                  <span>Created by</span>
-                  <Link to={`${createPageUrl("PublicProfile")}?username=${creatorInfo.username}`} className="text-purple-400 hover:text-purple-300">
-                    {creatorInfo.full_name}
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
-
+      <div className="p-2 md:p-4">
+        <div className="flex items-center justify-between mb-3">
+          <Link to={createPageUrl("Communities")}>
+            <Button variant="outline" className="border-purple-500/30 text-white hover:bg-purple-500/10 text-sm">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+          </Link>
           {isCreator && (
-            <div className="flex gap-2">
-              {isDragMode ? (
-                <Button 
-                  variant="outline" 
-                  className="border-green-500/30 text-green-300 hover:bg-green-500/10" 
-                  onClick={() => setIsDragMode(false)}
-                >
-                  <Check className="w-4 h-4 mr-2" />
-                  Done Moving
-                </Button>
-              ) : (
-                <>
-                  <Button 
-                    variant="outline" 
-                    className="border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/10" 
-                    onClick={() => setIsDragMode(true)}
-                  >
-                    <Move className="w-4 h-4 mr-2" />
-                    Move Widgets
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="border-purple-500/30 text-white hover:bg-purple-500/10" 
-                    onClick={() => setShowWidgetManager(true)}
-                  >
-                    <LayoutDashboard className="w-4 h-4 mr-2" />
-                    Manage Widgets
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="border-purple-500/30 text-white hover:bg-purple-500/10" 
-                    onClick={() => setShowEditModal(true)}
-                  >
-                    <Edit3 className="w-4 h-4 mr-2" />
-                    Edit Community
-                  </Button>
-                </>
-              )}
-            </div>
+            <Button
+              variant="outline"
+              className="border-purple-500/30 text-white hover:bg-purple-500/10 text-sm"
+              onClick={() => setShowEditModal(true)}
+            >
+              <Edit3 className="w-4 h-4 mr-2" />
+              Edit Community
+            </Button>
           )}
         </div>
 
-        {isDragMode && (
-          <div className="mb-4 p-3 bg-cyan-900/20 border border-cyan-500/30 rounded-lg text-center">
-            <p className="text-cyan-300 text-sm font-medium">
-              <Move className="w-4 h-4 inline mr-2" />
-              Drag and drop widgets to reorder them. Changes save automatically.
-            </p>
-          </div>
-        )}
-
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-            <Droppable droppableId="left" isDropDisabled={!isDragMode}>
-              {(provided, snapshot) => (
-                <div 
-                  ref={provided.innerRef} 
-                  {...provided.droppableProps}
-                  className={`lg:col-span-3 space-y-4 ${isDragMode && snapshot.isDraggingOver ? 'bg-purple-500/10 rounded-xl p-2' : ''}`}
-                >
-                  {widgetConfig?.left?.map((widgetId, index) => (
-                    <Draggable key={widgetId} draggableId={widgetId} index={index} isDragDisabled={!isDragMode}>
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          className={`${isDragMode ? 'cursor-move' : ''} ${snapshot.isDragging ? 'opacity-50 rotate-2' : ''}`}
-                        >
-                          {renderWidget(widgetId)}
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-
-            <div className="lg:col-span-6">
-              <CommunityFeed 
-                community={community} 
-                user={user} 
-                isMember={isMember} 
-                isCreator={isCreator} 
-                onEditPost={handleEditPost} 
-              />
-            </div>
-
-            <Droppable droppableId="right" isDropDisabled={!isDragMode}>
-              {(provided, snapshot) => (
-                <div 
-                  ref={provided.innerRef} 
-                  {...provided.droppableProps}
-                  className={`lg:col-span-3 space-y-4 ${isDragMode && snapshot.isDraggingOver ? 'bg-pink-500/10 rounded-xl p-2' : ''}`}
-                >
-                  {widgetConfig?.right?.map((widgetId, index) => (
-                    <Draggable key={widgetId} draggableId={widgetId} index={index} isDragDisabled={!isDragMode}>
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          className={`${isDragMode ? 'cursor-move' : ''} ${snapshot.isDragging ? 'opacity-50 rotate-2' : ''}`}
-                        >
-                          {renderWidget(widgetId)}
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </div>
-        </DragDropContext>
+        <CommunityDiscordView
+          community={community}
+          user={user}
+          isMember={isMember}
+          isCreator={isCreator}
+          memberProfiles={memberProfiles}
+          communityPosts={communityPosts}
+          latestActivities={latestActivities}
+          onEditPost={handleEditPost}
+        />
       </div>
 
       <AnimatePresence>
         {showEditModal && (
-          <EditCommunityModal 
-            community={community} 
-            onClose={() => setShowEditModal(false)} 
+          <EditCommunityModal
+            community={community}
+            onClose={() => setShowEditModal(false)}
             onSubmit={handleUpdateCommunity}
             onCommunityUpdated={() => loadData(community.id, new URLSearchParams(location.search).get('inviteCode'))}
           />
         )}
         {showKickBanModal && selectedMember && (
-          <KickBanModal 
-            communityName={community.name} 
-            member={selectedMember} 
-            onClose={() => {setShowKickBanModal(false);setSelectedMember(null);}} 
-            onAction={handleKickOrBan} 
+          <KickBanModal
+            communityName={community.name}
+            member={selectedMember}
+            onClose={() => { setShowKickBanModal(false); setSelectedMember(null); }}
+            onAction={handleKickOrBan}
           />
         )}
         {showPaymentModal && (
-          <CommunityPaymentModal 
-            community={community} 
-            user={user} 
-            onClose={() => setShowPaymentModal(false)} 
-            onSuccess={handlePaymentSuccess} 
+          <CommunityPaymentModal
+            community={community}
+            user={user}
+            onClose={() => setShowPaymentModal(false)}
+            onSuccess={handlePaymentSuccess}
           />
         )}
         {showEditPostModal && editingPost && (
@@ -1030,14 +874,6 @@ export default function CommunityProfilePage() {
               setShowEditPostModal(false);
               setEditingPost(null);
             }}
-          />
-        )}
-        {showWidgetManager && (
-          <WidgetManager
-            isOpen={showWidgetManager}
-            onClose={() => setShowWidgetManager(false)}
-            currentConfig={widgetConfig}
-            onSave={handleSaveWidgetConfig}
           />
         )}
       </AnimatePresence>
