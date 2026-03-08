@@ -371,66 +371,6 @@ export default function CommunityProfilePage() {
     }
   };
 
-  const handleSaveWidgetConfig = async (newConfig) => {
-    try {
-      await base44.entities.Community.update(community.id, { widget_config: newConfig });
-      setWidgetConfig(newConfig);
-    } catch (error) {
-      console.error("Error saving widget configuration:", error);
-    }
-  };
-
-  const handleDragEnd = async (result) => {
-    const { source, destination, draggableId } = result;
-
-    if (!destination) return;
-    if (source.droppableId === destination.droppableId && source.index === destination.index) return;
-
-    const newConfig = { ...widgetConfig };
-    const sourceColumn = source.droppableId;
-    const destColumn = destination.droppableId;
-
-    if (sourceColumn === destColumn) {
-      const column = [...newConfig[sourceColumn]];
-      const [removed] = column.splice(source.index, 1);
-      column.splice(destination.index, 0, removed);
-      newConfig[sourceColumn] = column;
-    } else {
-      const sourceCol = [...newConfig[sourceColumn]];
-      const destCol = [...newConfig[destColumn]];
-      const [removed] = sourceCol.splice(source.index, 1);
-      destCol.splice(destination.index, 0, removed);
-      newConfig[sourceColumn] = sourceCol;
-      newConfig[destColumn] = destCol;
-    }
-
-    setWidgetConfig(newConfig);
-    
-    try {
-      await base44.entities.Community.update(community.id, { widget_config: newConfig });
-    } catch (error) {
-      console.error("Error saving widget order:", error);
-    }
-  };
-
-  const renderWidget = (widgetId) => {
-    switch (widgetId) {
-      case 'media':
-        return <CommunityMediaWidget key={widgetId} posts={communityPosts} />;
-      case 'imageGallery':
-        return <ImageGalleryWidget key={widgetId} posts={communityPosts} />;
-      case 'following':
-        return <CommunityFollowingWidget key={widgetId} members={memberProfiles} />;
-      case 'updates':
-        return <LatestUpdatesWidget key={widgetId} activities={latestActivities} />;
-      case 'activeMembers':
-        return <RecentlyActiveMembersWidget key={widgetId} members={memberProfiles} />;
-      case 'groups':
-        return <CommunityGroupsWidget key={widgetId} relatedCommunities={relatedCommunities} />;
-      default:
-        return null;
-    }
-  };
 
   if (isLoading) {
     return (
