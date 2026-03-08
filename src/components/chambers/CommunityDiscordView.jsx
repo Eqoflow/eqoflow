@@ -96,28 +96,36 @@ export default function CommunityDiscordView({
         </div>
 
         {/* Global Nav — right-aligned */}
-        <nav className="ml-auto flex items-center gap-0.5">
+        <nav className="ml-auto flex items-center gap-1">
           {NAV_ITEMS.map(({ label, icon: Icon, page, highlight }) => (
-            <Link
-              key={label}
-              to={createPageUrl(page)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
-              style={{
-                color:      highlight ? '#00e5a0' : '#4b5563',
-                background: highlight ? 'rgba(0,229,160,0.07)' : 'transparent',
-              }}
-              onMouseEnter={e => { if (!highlight) e.currentTarget.style.color = '#9ca3af'; }}
-              onMouseLeave={e => { if (!highlight) e.currentTarget.style.color = '#4b5563'; }}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">{label}</span>
-              {highlight && (
-                <span
-                  className="hidden md:inline-block w-1.5 h-1.5 rounded-full ml-0.5"
-                  style={{ background: '#00e5a0' }}
-                />
-              )}
-            </Link>
+            highlight ? (
+              <Link
+                key={label}
+                to={createPageUrl(page)}
+                className="flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold transition-all"
+                style={{
+                  color: '#00e5a0',
+                  background: 'rgba(0,229,160,0.1)',
+                  border: '1px solid rgba(0,229,160,0.32)',
+                  boxShadow: '0 0 14px rgba(0,229,160,0.14), inset 0 0 8px rgba(0,229,160,0.06)',
+                }}
+              >
+                <Icon className="w-4 h-4" />
+                <span className="hidden md:inline">{label}</span>
+              </Link>
+            ) : (
+              <Link
+                key={label}
+                to={createPageUrl(page)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                style={{ color: '#4b5563' }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#9ca3af'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = '#4b5563'; e.currentTarget.style.background = 'transparent'; }}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span className="hidden md:inline">{label}</span>
+              </Link>
+            )
           ))}
         </nav>
       </header>
@@ -157,24 +165,35 @@ export default function CommunityDiscordView({
 
             {/* Text Channels */}
             <div className="px-2 pt-3 pb-1">
-              <p className="px-2 mb-1.5 text-[9px] font-bold tracking-widest uppercase" style={{ color: '#2d3748' }}>
-                Channels
-              </p>
+              <div className="flex items-center gap-2 px-2 mb-2">
+                <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.05)' }} />
+                <p className="text-[9px] font-bold tracking-widest uppercase flex-shrink-0" style={{ color: '#2d3748' }}>Text</p>
+                <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.05)' }} />
+              </div>
               {textChannels.map(ch => (
                 <button
                   key={ch.id}
                   onClick={() => setActiveChannel(ch.id)}
-                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-all duration-100 text-left"
+                  className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs transition-all duration-150 text-left mb-0.5"
                   style={{
-                    background:  activeChannel === ch.id ? 'rgba(0,229,160,0.07)' : 'transparent',
-                    color:       activeChannel === ch.id ? '#f0f0f0' : '#4b5563',
-                    borderLeft:  activeChannel === ch.id ? '2px solid #00e5a0' : '2px solid transparent',
-                    fontWeight:  activeChannel === ch.id ? 500 : 400,
+                    background: activeChannel === ch.id ? 'rgba(0,229,160,0.09)' : 'transparent',
+                    color:      activeChannel === ch.id ? '#e5e7eb' : '#4b5563',
+                    fontWeight: activeChannel === ch.id ? 500 : 400,
+                    outline:    activeChannel === ch.id ? '1px solid rgba(0,229,160,0.2)' : '1px solid transparent',
                   }}
                 >
                   <Hash className="w-3.5 h-3.5 flex-shrink-0"
-                    style={{ color: activeChannel === ch.id ? '#00e5a0' : undefined }} />
-                  <span className="truncate">{ch.name}</span>
+                    style={{ color: activeChannel === ch.id ? '#00e5a0' : '#2d3748' }} />
+                  <span className="truncate flex-1">{ch.name}</span>
+                  <span
+                    className="flex-shrink-0 text-[9px] px-1.5 py-0.5 rounded-full leading-none"
+                    style={{
+                      background: activeChannel === ch.id ? 'rgba(0,229,160,0.15)' : 'rgba(255,255,255,0.04)',
+                      color: activeChannel === ch.id ? '#00e5a0' : '#374151',
+                    }}
+                  >
+                    {ch.type === 'announcement' ? 'Ann' : 'Text'}
+                  </span>
                 </button>
               ))}
             </div>
@@ -182,21 +201,34 @@ export default function CommunityDiscordView({
             {/* Voice Channels */}
             {voiceChannels.length > 0 && (
               <div className="px-2 pt-2 pb-1">
-                <p className="px-2 mb-1.5 text-[9px] font-bold tracking-widest uppercase" style={{ color: '#2d3748' }}>
-                  Voice
-                </p>
+                <div className="flex items-center gap-2 px-2 mb-2">
+                  <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.05)' }} />
+                  <p className="text-[9px] font-bold tracking-widest uppercase flex-shrink-0" style={{ color: '#2d3748' }}>Voice</p>
+                  <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.05)' }} />
+                </div>
                 {voiceChannels.map(ch => (
                   <div key={ch.id}>
                     <button
                       onClick={() => handleJoinVoice(ch)}
-                      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-all duration-100 text-left"
+                      className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs transition-all duration-150 text-left mb-0.5"
                       style={{
-                        background: activeVoice?.id === ch.id ? 'rgba(0,229,160,0.07)' : 'transparent',
-                        color:      activeVoice?.id === ch.id ? '#00e5a0' : '#4b5563',
+                        background: activeVoice?.id === ch.id ? 'rgba(0,229,160,0.09)' : 'transparent',
+                        color:      activeVoice?.id === ch.id ? '#e5e7eb' : '#4b5563',
+                        outline:    activeVoice?.id === ch.id ? '1px solid rgba(0,229,160,0.2)' : '1px solid transparent',
                       }}
                     >
-                      <Volume2 className="w-3.5 h-3.5 flex-shrink-0" />
-                      <span className="truncate">{ch.name}</span>
+                      <Volume2 className="w-3.5 h-3.5 flex-shrink-0"
+                        style={{ color: activeVoice?.id === ch.id ? '#00e5a0' : '#2d3748' }} />
+                      <span className="truncate flex-1">{ch.name}</span>
+                      <span
+                        className="flex-shrink-0 text-[9px] px-1.5 py-0.5 rounded-full leading-none"
+                        style={{
+                          background: activeVoice?.id === ch.id ? 'rgba(0,229,160,0.15)' : 'rgba(255,255,255,0.04)',
+                          color: activeVoice?.id === ch.id ? '#00e5a0' : '#374151',
+                        }}
+                      >
+                        Voice
+                      </span>
                     </button>
                     {activeVoice?.id === ch.id && user && (
                       <div className="ml-6 flex items-center gap-1.5 px-2 py-0.5">

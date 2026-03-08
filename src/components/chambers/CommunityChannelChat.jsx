@@ -81,6 +81,19 @@ export default function CommunityChannelChat({ community, user, channelId, chann
     return acc;
   }, []);
 
+  const getDateLabel = (date) => {
+    const d = new Date(date);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (d.toDateString() === today.toDateString()) return 'Today';
+    if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  };
+
+  const isAnnouncement = channelName === 'announcements';
+  const isOwnMessage = (msg) => msg.author_email === user?.email;
+
   return (
     <div className="flex flex-col h-full">
       {/* Messages */}
@@ -98,48 +111,83 @@ export default function CommunityChannelChat({ community, user, channelId, chann
             <p className="text-gray-500 text-sm">Be the first to say something in #{channelName}</p>
           </div>
         ) : (
-          groupedMessages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`flex items-end gap-3 ${msg.isGrouped ? 'mt-0.5' : 'mt-4'}`}
-            >
-              {/* Avatar or spacer */}
-              {!msg.isGrouped ? (
-                <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center" style={{ background: '#00e5a0' }}>
-                  {msg.author_avatar_url ? (
-                    <img src={msg.author_avatar_url} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-sm text-black font-bold">
-                      {msg.author_name?.[0]?.toUpperCase() || '?'}
+          <>
+            {groupedMessages.reduce((acc, msg, i) => {
+              const prev = groupedMessages[i - 1];
+              if (!prev || new Date(msg.created_date).toDateString() !== new Date(prev.created_date).toDateString()) {
+                acc.push(
+                  <div key={`divider-${i}`} className="flex items-center gap-3 my-5">
+                    <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.05)' }} />
+                    <span className="text-[10px] px-2.5 py-1 rounded-full flex-shrink-0 font-medium"
+                      style={{ background: '#13151c', color: '#4b5563', border: '1px solid rgba(255,255,255,0.06)' }}>
+                      {getDateLabel(msg.created_date)}
                     </span>
-                  )}
-                </div>
-              ) : (
-                <div className="w-9 flex-shrink-0" />
-              )}
-
-              <div className="flex-1 min-w-0 max-w-[75%]">
-                {!msg.isGrouped && (
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <span className="text-white text-xs font-semibold">{msg.author_name}</span>
-                    <span className="text-gray-600 text-[10px]">
-                      {formatDistanceToNow(new Date(msg.created_date), { addSuffix: true })}
-                    </span>
+                    <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.05)' }} />
                   </div>
-                )}
-                {msg.media_url && (
-                  <img src={msg.media_url} alt="attachment" className="rounded-xl mb-1.5 max-w-xs" />
-                )}
-                {/* Bubble */}
-                <div
-                  className="inline-block px-4 py-2 rounded-2xl rounded-bl-sm text-sm leading-relaxed break-words"
-                  style={{ background: '#1e2129', color: '#e2e8f0', border: '1px solid rgba(255,255,255,0.06)' }}
-                >
-                  {msg.content}
-                </div>
-              </div>
-            </div>
-          ))
+                );
+              }
+
+              const own = isOwnMessage(msg);
+
+              if (isAnnouncement) {
+                acc.push(
+                  <div key={msg.id}
+                    className={`rounded-xl px-4 py-3 ${msg.isGrouped ? 'mt-1' : 'mt-3'}`}
+                    style={{ background: '#12151f', border: '1px solid rgba(255,255,255,0.06)', borderLeft: '3px solid #00e5a0' }}>
+                    {!msg.isGrouped && (
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-5 h-5 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center" style={{ background: '#00e5a0' }}>
+                          {msg.author_avatar_url
+                            ? <img src={msg.author_avatar_url} alt="" className="w-full h-full object-cover" />
+                            : <span className="text-[8px] text-black font-bold">{msg.author_name?.[0]}</span>}
+                        </div>
+                        <span className="text-white text-xs font-semibold">{msg.author_name}</span>
+                        <span className="text-gray-600 text-[10px]">{formatDistanceToNow(new Date(msg.created_date), { addSuffix: true })}</span>
+                      </div>
+                    )}
+                    {msg.media_url && <img src={msg.media_url} alt="attachment" className="rounded-xl mb-2 max-w-xs" />}
+                    <p className="text-sm leading-relaxed" style={{ color: '#c9d1d9' }}>{msg.content}</p>
+                  </div>
+                );
+              } else {
+                acc.push(
+                  <div key={msg.id} className={`flex items-end gap-3 ${msg.isGrouped ? 'mt-0.5' : 'mt-4'}`}>
+                    {!msg.isGrouped ? (
+                      <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center" style={{ background: '#00e5a0' }}>
+                        {msg.author_avatar_url
+                          ? <img src={msg.author_avatar_url} alt="" className="w-full h-full object-cover" />
+                          : <span className="text-sm text-black font-bold">{msg.author_name?.[0]?.toUpperCase() || '?'}</span>}
+                      </div>
+                    ) : (
+                      <div className="w-9 flex-shrink-0" />
+                    )}
+                    <div className="flex-1 min-w-0 max-w-[75%]">
+                      {!msg.isGrouped && (
+                        <div className="flex items-baseline gap-2 mb-1">
+                          <span className="text-white text-xs font-semibold">{msg.author_name}</span>
+                          {own && <span className="text-[9px] px-1.5 py-0.5 rounded-full leading-none" style={{ background: 'rgba(0,229,160,0.1)', color: '#00e5a0' }}>you</span>}
+                          <span className="text-gray-600 text-[10px]">{formatDistanceToNow(new Date(msg.created_date), { addSuffix: true })}</span>
+                        </div>
+                      )}
+                      {msg.media_url && <img src={msg.media_url} alt="attachment" className="rounded-xl mb-1.5 max-w-xs" />}
+                      <div
+                        className="inline-block px-4 py-2 rounded-2xl rounded-bl-sm text-sm leading-relaxed break-words"
+                        style={{
+                          background: own ? '#141e2e' : '#1e2129',
+                          color: own ? '#c8ddf0' : '#e2e8f0',
+                          border: own ? '1px solid rgba(59,130,246,0.12)' : '1px solid rgba(255,255,255,0.06)',
+                        }}
+                      >
+                        {msg.content}
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+
+              return acc;
+            }, [])}
+          </>
         )}
         <div ref={bottomRef} />
       </div>
