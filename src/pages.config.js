@@ -58,6 +58,7 @@ import AuthCallback from './pages/AuthCallback';
 import BadgeManager from './pages/BadgeManager';
 import BlogManager from './pages/BlogManager';
 import Checkout from './pages/Checkout';
+import Communities from './pages/Communities';
 import CommunityProfile from './pages/CommunityProfile';
 import CourseViewer from './pages/CourseViewer';
 import CreatorAnalytics from './pages/CreatorAnalytics';
@@ -122,7 +123,6 @@ import UserPayroll from './pages/UserPayroll';
 import VirtualSpaces from './pages/VirtualSpaces';
 import Wallet from './pages/Wallet';
 import WelcomeBonusManager from './pages/WelcomeBonusManager';
-import Communities from './pages/Communities';
 import __Layout from './Layout.jsx';
 
 
@@ -138,6 +138,7 @@ export const PAGES = {
     "BadgeManager": BadgeManager,
     "BlogManager": BlogManager,
     "Checkout": Checkout,
+    "Communities": Communities,
     "CommunityProfile": CommunityProfile,
     "CourseViewer": CourseViewer,
     "CreatorAnalytics": CreatorAnalytics,
@@ -202,7 +203,6 @@ export const PAGES = {
     "VirtualSpaces": VirtualSpaces,
     "Wallet": Wallet,
     "WelcomeBonusManager": WelcomeBonusManager,
-    "Communities": Communities,
 }
 
 export const pagesConfig = {

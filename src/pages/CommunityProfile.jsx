@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
@@ -14,15 +13,8 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import EditCommunityModal from '../components/communities/EditCommunityModal';
 import CommunityPaymentModal from '../components/communities/CommunityPaymentModal';
 import KickBanModal from '../components/communities/KickBanModal';
-import CommunityFeed from '../components/communities/CommunityFeed';
 import EditPostModal from '../components/feed/EditPostModal';
-import CommunityMediaWidget from '../components/communities/CommunityBlogWidget'; // Changed import path as per outline
-import CommunityFollowingWidget from '../components/communities/CommunityFollowingWidget';
-import LatestUpdatesWidget from '../components/communities/LatestUpdatesWidget';
-import RecentlyActiveMembersWidget from '../components/communities/RecentlyActiveMembersWidget';
-import CommunityGroupsWidget from '../components/communities/CommunityGroupsWidget';
-import ImageGalleryWidget from '../components/communities/ImageGalleryWidget';
-import WidgetManager from '../components/communities/WidgetManager';
+import CommunityDiscordView from '../components/chambers/CommunityDiscordView';
 
 export default function CommunityProfilePage() {
   const [community, setCommunity] = useState(null);
