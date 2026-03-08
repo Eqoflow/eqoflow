@@ -197,14 +197,13 @@ export default function CommunityDiscordView({
           </div>
         </div>
 
-        {/* Feed */}
-        <div className="flex-1 overflow-y-auto">
-          <CommunityFeed
+        {/* Chat */}
+        <div className="flex-1 overflow-hidden flex flex-col">
+          <CommunityChannelChat
             community={community}
             user={user}
-            isMember={isMember}
-            isCreator={isCreator}
-            onEditPost={onEditPost}
+            channelId={activeChannel}
+            channelName={textChannels.find((c) => c.id === activeChannel)?.name || 'general'}
           />
         </div>
       </div>
