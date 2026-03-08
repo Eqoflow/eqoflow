@@ -208,29 +208,94 @@ export default function CommunityDiscordView({
         </div>
       </div>
 
-      {/* Members Sidebar */}
+      {/* Right Sidebar */}
       {showMembers && (
-        <div className="w-56 flex-shrink-0 bg-[#2b2d31] overflow-y-auto py-4">
-          <div className="px-3 mb-2">
-            <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
-              Members — {memberProfiles.length}
-            </span>
-          </div>
-          {memberProfiles.map((member) => (
-            <div key={member.email} className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/5 transition-colors rounded mx-1">
-              <div className="relative flex-shrink-0">
-                <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center overflow-hidden">
-                  {member.avatar_url ? (
-                    <img src={member.avatar_url} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-xs text-white font-bold">{member.full_name?.[0] || '?'}</span>
-                  )}
-                </div>
-                <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-[#2b2d31]" />
+        <div className="w-56 flex-shrink-0 bg-[#2b2d31] overflow-y-auto py-3 space-y-3">
+
+          {/* Media Gallery */}
+          {communityPosts?.some(p => p.media_urls?.length > 0) && (
+            <div className="px-3">
+              <p className="text-[11px] font-semibold text-[#00e5a0] uppercase tracking-wider mb-2">Media Gallery</p>
+              <div className="grid grid-cols-2 gap-1">
+                {communityPosts
+                  .filter(p => p.media_urls?.length > 0)
+                  .flatMap(p => p.media_urls)
+                  .slice(0, 4)
+                  .map((url, i) => (
+                    <div key={i} className="aspect-square rounded overflow-hidden bg-black/30">
+                      <img src={url} alt="" className="w-full h-full object-cover" />
+                    </div>
+                  ))}
               </div>
-              <span className="text-sm text-gray-300 truncate">{member.full_name || member.email}</span>
             </div>
-          ))}
+          )}
+
+          {/* Latest Updates */}
+          {latestActivities?.length > 0 && (
+            <div className="px-3">
+              <p className="text-[11px] font-semibold text-[#00e5a0] uppercase tracking-wider mb-2">Latest Updates</p>
+              <div className="space-y-2">
+                {latestActivities.slice(0, 2).map((a, i) => (
+                  <div key={i} className="bg-[#1e1f22] rounded-lg p-2 flex items-start gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-gray-300 text-[11px] leading-snug line-clamp-3">
+                        <span className="text-white font-medium">{a.name}:</span> {a.action}
+                      </p>
+                    </div>
+                    <div className="w-5 h-5 rounded-full bg-[#00e5a0]/20 flex items-center justify-center flex-shrink-0">
+                      <span className="text-[#00e5a0] text-[9px]">↓</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Pinned Echoes */}
+          {communityPosts?.some(p => p.is_pinned) && (
+            <div className="px-3">
+              <p className="text-[11px] font-semibold text-[#00e5a0] uppercase tracking-wider mb-2">Pinned Echoes</p>
+              <div className="space-y-2">
+                {communityPosts.filter(p => p.is_pinned).slice(0, 2).map((post) => (
+                  <div key={post.id} className="bg-[#1e1f22] rounded-lg p-2 flex items-start gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-gray-400 text-[11px] leading-snug line-clamp-2">
+                        <span className="text-white font-medium">{post.author_full_name}:</span>{' '}
+                        {post.content?.slice(0, 60)}{post.content?.length > 60 ? '…' : ''}
+                      </p>
+                    </div>
+                    <div className="w-5 h-5 rounded-full bg-purple-500/30 flex items-center justify-center flex-shrink-0">
+                      <span className="text-purple-300 text-[9px]">📌</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Recently Active Members */}
+          <div className="px-3">
+            <p className="text-[11px] font-semibold text-[#00e5a0] uppercase tracking-wider mb-2">Recently Active Members</p>
+            <div className="space-y-1">
+              {memberProfiles.slice(0, 5).map((member) => (
+                <div key={member.email} className="flex items-center gap-2 py-1 hover:bg-white/5 rounded px-1 transition-colors">
+                  <div className="relative flex-shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center overflow-hidden">
+                      {member.avatar_url ? (
+                        <img src={member.avatar_url} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-xs text-white font-bold">{member.full_name?.[0] || '?'}</span>
+                      )}
+                    </div>
+                    <div className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full border border-[#2b2d31]" />
+                  </div>
+                  <span className="text-sm text-gray-300 truncate flex-1">{member.full_name || member.email.split('@')[0]}</span>
+                  <span className="text-gray-500 text-xs">✏</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
       )}
     </div>
