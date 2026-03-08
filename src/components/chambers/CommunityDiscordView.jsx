@@ -270,15 +270,34 @@ export default function CommunityDiscordView({
             </div>
 
             {/* Voice Channels */}
-            {voiceChannels.length > 0 && (
-              <div className="px-2 pt-2 pb-1">
-                <div className="flex items-center gap-2 px-2 mb-2">
-                  <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.05)' }} />
-                  <p className="text-[9px] font-bold tracking-widest uppercase flex-shrink-0" style={{ color: '#2d3748' }}>Voice</p>
-                  <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.05)' }} />
-                </div>
-                {voiceChannels.map(ch => (
-                  <div key={ch.id}>
+            <div className="px-2 pt-2 pb-1">
+              <div className="flex items-center gap-2 px-2 mb-2">
+                <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.05)' }} />
+                <p className="text-[9px] font-bold tracking-widest uppercase flex-shrink-0" style={{ color: '#2d3748' }}>Voice</p>
+                <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.05)' }} />
+                {canManageChannels && (
+                  <button onClick={() => { setAddingType('voice'); setNewChannelName(''); }} className="flex-shrink-0" title="Add voice channel">
+                    <Plus className="w-3 h-3" style={{ color: '#00e5a0' }} />
+                  </button>
+                )}
+              </div>
+              {voiceChannels.map(ch => (
+                <div key={ch.id} className="group/ch">
+                  {editingChannelId === ch.id ? (
+                    <div className="flex items-center gap-1 px-2 py-1">
+                      <Volume2 className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#00e5a0' }} />
+                      <input
+                        autoFocus
+                        value={editingChannelName}
+                        onChange={e => setEditingChannelName(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') handleSaveEdit(); if (e.key === 'Escape') setEditingChannelId(null); }}
+                        className="flex-1 bg-transparent text-xs text-white outline-none border-b"
+                        style={{ borderColor: '#00e5a0' }}
+                      />
+                      <button onClick={handleSaveEdit}><Check className="w-3 h-3 text-green-400" /></button>
+                      <button onClick={() => setEditingChannelId(null)}><X className="w-3 h-3 text-red-400" /></button>
+                    </div>
+                  ) : (
                     <button
                       onClick={() => handleJoinVoice(ch)}
                       className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs transition-all duration-150 text-left mb-0.5"
@@ -291,34 +310,50 @@ export default function CommunityDiscordView({
                       <Volume2 className="w-3.5 h-3.5 flex-shrink-0"
                         style={{ color: activeVoice?.id === ch.id ? '#00e5a0' : '#2d3748' }} />
                       <span className="truncate flex-1">{ch.name}</span>
-                      <span
-                        className="flex-shrink-0 text-[9px] px-1.5 py-0.5 rounded-full leading-none"
-                        style={{
-                          background: activeVoice?.id === ch.id ? 'rgba(0,229,160,0.15)' : 'rgba(255,255,255,0.04)',
-                          color: activeVoice?.id === ch.id ? '#00e5a0' : '#374151',
-                        }}
-                      >
-                        Voice
-                      </span>
+                      {canManageChannels && (
+                        <button
+                          onClick={e => handleStartEdit(ch, e)}
+                          className="opacity-0 group-hover/ch:opacity-100 transition-opacity"
+                          title="Rename channel"
+                        >
+                          <Pencil className="w-2.5 h-2.5" style={{ color: '#6b7280' }} />
+                        </button>
+                      )}
                     </button>
-                    {activeVoice?.id === ch.id && user && (
-                      <div className="ml-6 flex items-center gap-1.5 px-2 py-0.5">
-                        <div className="w-4 h-4 rounded-full overflow-hidden flex-shrink-0"
-                          style={{ background: '#00e5a0' }}>
-                          {user.avatar_url
-                            ? <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
-                            : <span className="text-[8px] text-black font-bold flex items-center justify-center h-full">{user.full_name?.[0]}</span>}
-                        </div>
-                        <span className="text-[10px]" style={{ color: '#4b5563' }}>
-                          {user.full_name?.split(' ')[0]}
-                        </span>
-                        {isMuted && <MicOff className="w-2.5 h-2.5 text-red-400" />}
+                  )}
+                  {activeVoice?.id === ch.id && user && editingChannelId !== ch.id && (
+                    <div className="ml-6 flex items-center gap-1.5 px-2 py-0.5">
+                      <div className="w-4 h-4 rounded-full overflow-hidden flex-shrink-0"
+                        style={{ background: '#00e5a0' }}>
+                        {user.avatar_url
+                          ? <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
+                          : <span className="text-[8px] text-black font-bold flex items-center justify-center h-full">{user.full_name?.[0]}</span>}
                       </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+                      <span className="text-[10px]" style={{ color: '#4b5563' }}>
+                        {user.full_name?.split(' ')[0]}
+                      </span>
+                      {isMuted && <MicOff className="w-2.5 h-2.5 text-red-400" />}
+                    </div>
+                  )}
+                </div>
+              ))}
+              {addingType === 'voice' && (
+                <div className="flex items-center gap-1 px-2 py-1">
+                  <Volume2 className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#00e5a0' }} />
+                  <input
+                    autoFocus
+                    value={newChannelName}
+                    onChange={e => setNewChannelName(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') handleAddChannel(); if (e.key === 'Escape') setAddingType(null); }}
+                    placeholder="channel-name"
+                    className="flex-1 bg-transparent text-xs text-white outline-none border-b placeholder-gray-600"
+                    style={{ borderColor: '#00e5a0' }}
+                  />
+                  <button onClick={handleAddChannel}><Check className="w-3 h-3 text-green-400" /></button>
+                  <button onClick={() => setAddingType(null)}><X className="w-3 h-3 text-red-400" /></button>
+                </div>
+              )}
+            </div>
 
             {/* Spacer */}
             <div className="flex-1 min-h-[16px]" />
