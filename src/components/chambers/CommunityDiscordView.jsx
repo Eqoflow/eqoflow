@@ -1,308 +1,351 @@
 import React, { useState } from 'react';
-import { Hash, Volume2, ChevronDown, Mic, MicOff, PhoneOff, Plus, Users } from 'lucide-react';
+import {
+  Hash, Volume2, ChevronDown, ChevronRight,
+  Mic, MicOff, PhoneOff, PanelLeft,
+  Home, MessageSquare, Settings, Layers,
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import CommunityChannelChat from './CommunityChannelChat';
 
 const DEFAULT_TEXT_CHANNELS = [
   { id: 'general', name: 'general', type: 'text' },
   { id: 'announcements', name: 'announcements', type: 'text' },
 ];
-
 const DEFAULT_VOICE_CHANNELS = [
   { id: 'lounge', name: 'General Voice', type: 'voice' },
   { id: 'watch-party', name: 'Watch Party', type: 'voice' },
 ];
 
+const NAV_ITEMS = [
+  { label: 'Home',     icon: Home,           page: 'Feed' },
+  { label: 'Chambers', icon: Layers,          page: 'Communities', highlight: true },
+  { label: 'DMs',      icon: MessageSquare,   page: 'Messages' },
+  { label: 'Settings', icon: Settings,        page: 'Profile' },
+];
+
 function playJoinSound() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = ctx.createOscillator();
-    const gainNode = ctx.createGain();
-    oscillator.connect(gainNode);
-    gainNode.connect(ctx.destination);
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(880, ctx.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.15);
-    gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-    oscillator.start(ctx.currentTime);
-    oscillator.stop(ctx.currentTime + 0.3);
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.15);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.3);
   } catch (e) {}
 }
 
 export default function CommunityDiscordView({
-  community,
-  user,
-  isMember,
-  isCreator,
-  memberProfiles,
-  communityPosts,
-  latestActivities,
-  onEditPost,
+  community, user, isMember, isCreator,
+  memberProfiles, communityPosts, latestActivities,
 }) {
-  const [activeChannel, setActiveChannel] = useState('general');
-  const [activeVoiceChannel, setActiveVoiceChannel] = useState(null);
-  const [isMuted, setIsMuted] = useState(false);
-  const [showMembers, setShowMembers] = useState(true);
+  const [activeChannel, setActiveChannel]       = useState('general');
+  const [activeVoice, setActiveVoice]           = useState(null);
+  const [isMuted, setIsMuted]                   = useState(false);
+  const [panelOpen, setPanelOpen]               = useState(true);
+  const [updatesOpen, setUpdatesOpen]           = useState(false);
+  const [membersOpen, setMembersOpen]           = useState(false);
 
   const textChannels = community.channels
-    ? community.channels.filter((c) => c.type === 'text' || c.type === 'announcement')
+    ? community.channels.filter(c => c.type === 'text' || c.type === 'announcement')
     : DEFAULT_TEXT_CHANNELS;
 
   const voiceChannels = community.channels
-    ? community.channels.filter((c) => c.type === 'voice')
+    ? community.channels.filter(c => c.type === 'voice')
     : DEFAULT_VOICE_CHANNELS;
 
-  const handleJoinVoice = (channel) => {
-    if (activeVoiceChannel?.id === channel.id) return;
+  const activeChannelName = textChannels.find(c => c.id === activeChannel)?.name || 'general';
+
+  const handleJoinVoice = (ch) => {
+    if (activeVoice?.id === ch.id) return;
     playJoinSound();
-    setActiveVoiceChannel(channel);
+    setActiveVoice(ch);
   };
 
-  const handleLeaveVoice = () => setActiveVoiceChannel(null);
-
-  const activeChannelName = textChannels.find((c) => c.id === activeChannel)?.name || 'general';
-
   return (
-    <div className="flex h-[calc(100vh-120px)] rounded-xl overflow-hidden border border-white/10" style={{ background: '#0d1117' }}>
+    <div
+      className="flex flex-col rounded-xl overflow-hidden"
+      style={{ height: 'calc(100vh - 120px)', background: '#0a0c10', border: '1px solid rgba(255,255,255,0.05)' }}
+    >
 
-      {/* ── Left Sidebar ── */}
-      <div className="w-52 flex-shrink-0 flex flex-col border-r border-white/5" style={{ background: '#111318' }}>
-        {/* Community name */}
-        <div className="px-4 py-3 border-b border-white/5 flex items-center justify-between">
-          <h2 className="text-white font-bold text-sm truncate">{community.name}</h2>
-          <ChevronDown className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" />
+      {/* ── Global Top Navigation Bar ── */}
+      <header
+        className="flex items-center gap-3 px-4 flex-shrink-0"
+        style={{ height: '48px', background: '#09090d', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+      >
+        {/* Panel toggle */}
+        <button
+          onClick={() => setPanelOpen(v => !v)}
+          title="Toggle panel"
+          className="p-1.5 rounded-md transition-colors flex-shrink-0"
+          style={{ color: panelOpen ? '#00e5a0' : '#4b5563' }}
+        >
+          <PanelLeft className="w-4 h-4" />
+        </button>
+
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-1.5 text-sm">
+          <span className="font-semibold text-white">{community.name}</span>
+          <ChevronRight className="w-3.5 h-3.5" style={{ color: '#2d3748' }} />
+          <Hash className="w-3.5 h-3.5" style={{ color: '#00e5a0' }} />
+          <span style={{ color: '#6b7280' }}>{activeChannelName}</span>
         </div>
 
-        <div className="flex-1 overflow-y-auto py-3 space-y-4">
-          {/* Text Channels */}
-          <div>
-            <div className="flex items-center justify-between px-3 mb-1">
-              <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: '#00e5a0' }}>
-                Text Channels
-              </span>
-              <Plus className="w-3.5 h-3.5 text-gray-500 hover:text-white cursor-pointer" />
-            </div>
-            {textChannels.map((ch) => (
-              <button
-                key={ch.id}
-                onClick={() => setActiveChannel(ch.id)}
-                className={`w-full flex items-center gap-2 px-3 py-1.5 text-sm transition-all duration-150 ${
-                  activeChannel === ch.id
-                    ? 'text-white font-medium'
-                    : 'text-gray-500 hover:text-gray-300'
-                }`}
-              >
-                <Hash className="w-3.5 h-3.5 flex-shrink-0" style={{ color: activeChannel === ch.id ? '#00e5a0' : undefined }} />
-                <span className="truncate">{ch.name}</span>
-                {activeChannel !== ch.id && <Plus className="w-3 h-3 ml-auto opacity-0 group-hover:opacity-100 text-gray-500" />}
-              </button>
-            ))}
-          </div>
+        {/* Global Nav — right-aligned */}
+        <nav className="ml-auto flex items-center gap-0.5">
+          {NAV_ITEMS.map(({ label, icon: Icon, page, highlight }) => (
+            <Link
+              key={label}
+              to={createPageUrl(page)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+              style={{
+                color:      highlight ? '#00e5a0' : '#4b5563',
+                background: highlight ? 'rgba(0,229,160,0.07)' : 'transparent',
+              }}
+              onMouseEnter={e => { if (!highlight) e.currentTarget.style.color = '#9ca3af'; }}
+              onMouseLeave={e => { if (!highlight) e.currentTarget.style.color = '#4b5563'; }}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">{label}</span>
+              {highlight && (
+                <span
+                  className="hidden md:inline-block w-1.5 h-1.5 rounded-full ml-0.5"
+                  style={{ background: '#00e5a0' }}
+                />
+              )}
+            </Link>
+          ))}
+        </nav>
+      </header>
 
-          {/* Voice Channels */}
-          <div>
-            <div className="flex items-center justify-between px-3 mb-1">
-              <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: '#00e5a0' }}>
-                Voice Channels
-              </span>
-              <Plus className="w-3.5 h-3.5 text-gray-500 hover:text-white cursor-pointer" />
-            </div>
-            {voiceChannels.map((ch) => (
-              <div key={ch.id}>
-                <button
-                  onClick={() => handleJoinVoice(ch)}
-                  className={`w-full flex items-center gap-2 px-3 py-1.5 text-sm transition-all duration-150 rounded-md mx-1 ${
-                    activeVoiceChannel?.id === ch.id
-                      ? 'text-white font-medium'
-                      : 'text-gray-500 hover:text-gray-300'
-                  }`}
-                  style={activeVoiceChannel?.id === ch.id ? { background: 'rgba(0,229,160,0.12)' } : {}}
+      {/* ── Body ── */}
+      <div className="flex flex-1 overflow-hidden">
+
+        {/* ── Left Panel ── */}
+        {panelOpen && (
+          <aside
+            className="flex flex-col flex-shrink-0 overflow-y-auto"
+            style={{ width: '205px', background: '#0c0e14', borderRight: '1px solid rgba(255,255,255,0.05)' }}
+          >
+            {/* Chamber identity */}
+            <div className="px-3 pt-3 pb-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0"
+                  style={{ background: 'rgba(0,229,160,0.08)', border: '1px solid rgba(0,229,160,0.18)' }}
                 >
-                  <Volume2 className="w-3.5 h-3.5 flex-shrink-0" style={{ color: activeVoiceChannel?.id === ch.id ? '#00e5a0' : undefined }} />
+                  {community.logo_url ? (
+                    <img src={community.logo_url} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-sm font-bold" style={{ color: '#00e5a0' }}>
+                      {community.name?.[0]}
+                    </span>
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-white text-xs font-semibold truncate leading-tight">{community.name}</p>
+                  <p className="text-[10px]" style={{ color: '#374151' }}>
+                    {memberProfiles.length} members
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Text Channels */}
+            <div className="px-2 pt-3 pb-1">
+              <p className="px-2 mb-1.5 text-[9px] font-bold tracking-widest uppercase" style={{ color: '#2d3748' }}>
+                Channels
+              </p>
+              {textChannels.map(ch => (
+                <button
+                  key={ch.id}
+                  onClick={() => setActiveChannel(ch.id)}
+                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-all duration-100 text-left"
+                  style={{
+                    background:  activeChannel === ch.id ? 'rgba(0,229,160,0.07)' : 'transparent',
+                    color:       activeChannel === ch.id ? '#f0f0f0' : '#4b5563',
+                    borderLeft:  activeChannel === ch.id ? '2px solid #00e5a0' : '2px solid transparent',
+                    fontWeight:  activeChannel === ch.id ? 500 : 400,
+                  }}
+                >
+                  <Hash className="w-3.5 h-3.5 flex-shrink-0"
+                    style={{ color: activeChannel === ch.id ? '#00e5a0' : undefined }} />
                   <span className="truncate">{ch.name}</span>
-                  <Plus className="w-3 h-3 ml-auto text-gray-500" />
                 </button>
-                {activeVoiceChannel?.id === ch.id && user && (
-                  <div className="ml-8 flex items-center gap-2 px-2 py-1">
-                    <div className="w-4 h-4 rounded-full overflow-hidden flex-shrink-0" style={{ background: '#00e5a0' }}>
-                      {user.avatar_url ? (
-                        <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="text-[8px] text-black font-bold flex items-center justify-center h-full">
-                          {user.full_name?.[0] || '?'}
+              ))}
+            </div>
+
+            {/* Voice Channels */}
+            {voiceChannels.length > 0 && (
+              <div className="px-2 pt-2 pb-1">
+                <p className="px-2 mb-1.5 text-[9px] font-bold tracking-widest uppercase" style={{ color: '#2d3748' }}>
+                  Voice
+                </p>
+                {voiceChannels.map(ch => (
+                  <div key={ch.id}>
+                    <button
+                      onClick={() => handleJoinVoice(ch)}
+                      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-all duration-100 text-left"
+                      style={{
+                        background: activeVoice?.id === ch.id ? 'rgba(0,229,160,0.07)' : 'transparent',
+                        color:      activeVoice?.id === ch.id ? '#00e5a0' : '#4b5563',
+                      }}
+                    >
+                      <Volume2 className="w-3.5 h-3.5 flex-shrink-0" />
+                      <span className="truncate">{ch.name}</span>
+                    </button>
+                    {activeVoice?.id === ch.id && user && (
+                      <div className="ml-6 flex items-center gap-1.5 px-2 py-0.5">
+                        <div className="w-4 h-4 rounded-full overflow-hidden flex-shrink-0"
+                          style={{ background: '#00e5a0' }}>
+                          {user.avatar_url
+                            ? <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
+                            : <span className="text-[8px] text-black font-bold flex items-center justify-center h-full">{user.full_name?.[0]}</span>}
+                        </div>
+                        <span className="text-[10px]" style={{ color: '#4b5563' }}>
+                          {user.full_name?.split(' ')[0]}
                         </span>
-                      )}
-                    </div>
-                    <span className="text-xs text-gray-400 truncate">AFK {user.full_name?.split(' ')[0] || 'You'}</span>
+                        {isMuted && <MicOff className="w-2.5 h-2.5 text-red-400" />}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Spacer */}
+            <div className="flex-1 min-h-[16px]" />
+
+            {/* Collapsible: Latest Updates */}
+            {latestActivities?.length > 0 && (
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+                <button
+                  onClick={() => setUpdatesOpen(v => !v)}
+                  className="w-full flex items-center justify-between px-4 py-2 text-[9px] font-bold tracking-widest uppercase transition-colors"
+                  style={{ color: updatesOpen ? '#00e5a0' : '#2d3748' }}
+                >
+                  <span>Latest Updates</span>
+                  {updatesOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+                </button>
+                {updatesOpen && (
+                  <div className="px-2 pb-2 space-y-1">
+                    {latestActivities.slice(0, 3).map((a, i) => (
+                      <div key={i} className="px-2 py-1.5 rounded-md text-[11px]"
+                        style={{ background: '#111318' }}>
+                        <span className="font-semibold text-white">{a.name}: </span>
+                        <span style={{ color: '#6b7280' }}>{a.action}</span>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
-            ))}
-          </div>
-        </div>
+            )}
 
-        {/* Voice controls */}
-        {activeVoiceChannel && (
-          <div className="px-3 py-2 border-t border-white/5 flex items-center gap-2">
-            <div className="flex-1">
-              <p className="text-xs font-medium" style={{ color: '#00e5a0' }}>Connected</p>
-              <p className="text-gray-500 text-[10px] truncate">{activeVoiceChannel.name}</p>
-            </div>
-            <button onClick={() => setIsMuted(!isMuted)} className={`p-1 rounded ${isMuted ? 'text-red-400' : 'text-gray-400 hover:text-white'}`}>
-              {isMuted ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
-            </button>
-            <button onClick={handleLeaveVoice} className="p-1 rounded text-red-400 hover:text-red-300">
-              <PhoneOff className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        )}
-
-        {/* User bar */}
-        {user && (
-          <div className="px-3 py-2 border-t border-white/5 flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0" style={{ background: '#00e5a0' }}>
-              {user.avatar_url ? (
-                <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-xs text-black font-bold flex items-center justify-center h-full">
-                  {user.full_name?.[0] || '?'}
-                </span>
-              )}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-white text-xs font-medium truncate">{user.full_name || 'You'}</p>
-              <p className="text-gray-500 text-[10px]">{isCreator ? 'Creator' : isMember ? 'Member' : ''}</p>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* ── Center ── */}
-      <div className="flex-1 flex flex-col overflow-hidden" style={{ background: '#13161c' }}>
-        {/* Welcome banner */}
-        <div className="flex-shrink-0 flex flex-col items-center justify-center py-4 px-4 border-b border-white/5">
-          <div className="border rounded-full px-6 py-2 text-center" style={{ borderColor: '#00e5a0', background: 'rgba(0,229,160,0.04)' }}>
-            <h1 className="text-white font-bold text-lg leading-tight">Welcome to {community.name}</h1>
-            <p className="text-gray-400 text-xs mt-0.5">Connect, share, and build communities around your passions.</p>
-          </div>
-        </div>
-
-        {/* Channel label + toggle */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-white/5 flex-shrink-0">
-          <div className="flex items-center gap-1.5">
-            <Hash className="w-4 h-4" style={{ color: '#00e5a0' }} />
-            <span className="text-white text-sm font-semibold">{activeChannelName}</span>
-          </div>
-          <button
-            onClick={() => setShowMembers(!showMembers)}
-            className={`p-1.5 rounded transition-colors ${showMembers ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
-            style={showMembers ? { color: '#00e5a0' } : {}}
-          >
-            <Users className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Chat */}
-        <div className="flex-1 overflow-hidden flex flex-col">
-          <CommunityChannelChat
-            community={community}
-            user={user}
-            channelId={activeChannel}
-            channelName={activeChannelName}
-          />
-        </div>
-      </div>
-
-      {/* ── Right Sidebar ── */}
-      {showMembers && (
-        <div className="w-56 flex-shrink-0 overflow-y-auto py-3 space-y-4 border-l border-white/5" style={{ background: '#111318' }}>
-
-          {/* Media Gallery */}
-          {communityPosts?.some(p => p.media_urls?.length > 0) && (
-            <div className="px-3">
-              <p className="text-[10px] font-bold tracking-widest uppercase mb-2" style={{ color: '#00e5a0' }}>Media Gallery</p>
-              <div className="grid grid-cols-2 gap-1">
-                {communityPosts
-                  .filter(p => p.media_urls?.length > 0)
-                  .flatMap(p => p.media_urls)
-                  .slice(0, 4)
-                  .map((url, i) => (
-                    <div key={i} className="aspect-square rounded-lg overflow-hidden bg-black/30">
-                      <img src={url} alt="" className="w-full h-full object-cover" />
+            {/* Collapsible: Active Members */}
+            <div style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+              <button
+                onClick={() => setMembersOpen(v => !v)}
+                className="w-full flex items-center justify-between px-4 py-2 text-[9px] font-bold tracking-widest uppercase transition-colors"
+                style={{ color: membersOpen ? '#00e5a0' : '#2d3748' }}
+              >
+                <span>Active Members</span>
+                {membersOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+              </button>
+              {membersOpen && (
+                <div className="px-2 pb-2 space-y-0.5">
+                  {memberProfiles.slice(0, 6).map(m => (
+                    <div key={m.email}
+                      className="flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors hover:bg-white/5">
+                      <div className="relative w-6 h-6 rounded-full overflow-hidden flex-shrink-0"
+                        style={{ background: '#00e5a0' }}>
+                        {m.avatar_url
+                          ? <img src={m.avatar_url} alt="" className="w-full h-full object-cover" />
+                          : <span className="text-[9px] text-black font-bold flex items-center justify-center h-full">{m.full_name?.[0]}</span>}
+                        <div className="absolute bottom-0 right-0 w-1.5 h-1.5 bg-green-400 rounded-full"
+                          style={{ border: '1.5px solid #0c0e14' }} />
+                      </div>
+                      <span className="text-xs truncate" style={{ color: '#9ca3af' }}>
+                        {m.full_name || m.email.split('@')[0]}
+                      </span>
                     </div>
                   ))}
-              </div>
-            </div>
-          )}
-
-          {/* Latest Updates */}
-          {latestActivities?.length > 0 && (
-            <div className="px-3">
-              <p className="text-[10px] font-bold tracking-widest uppercase mb-2" style={{ color: '#00e5a0' }}>Latest Updates</p>
-              <div className="space-y-2">
-                {latestActivities.slice(0, 2).map((a, i) => (
-                  <div key={i} className="rounded-lg p-2 flex items-start gap-2" style={{ background: '#1a1d24' }}>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-gray-300 text-[11px] leading-snug line-clamp-3">
-                        <span className="text-white font-semibold">{a.name}:</span> {a.action}
-                      </p>
-                    </div>
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: 'rgba(0,229,160,0.15)' }}>
-                      <ChevronDown className="w-3 h-3" style={{ color: '#00e5a0' }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Pinned Echoes */}
-          {communityPosts?.some(p => p.is_pinned) && (
-            <div className="px-3">
-              <p className="text-[10px] font-bold tracking-widest uppercase mb-2" style={{ color: '#00e5a0' }}>Pinned Echoes</p>
-              <div className="space-y-2">
-                {communityPosts.filter(p => p.is_pinned).slice(0, 2).map((post) => (
-                  <div key={post.id} className="rounded-lg p-2 flex items-start gap-2" style={{ background: '#1a1d24' }}>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-gray-400 text-[11px] leading-snug line-clamp-2">
-                        <span className="text-white font-semibold">{post.author_full_name}:</span>{' '}
-                        {post.content?.slice(0, 60)}{post.content?.length > 60 ? '…' : ''}
-                      </p>
-                    </div>
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: 'rgba(139,92,246,0.2)' }}>
-                      <span className="text-purple-300 text-[9px]">📌</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Recently Active Members */}
-          <div className="px-3">
-            <p className="text-[10px] font-bold tracking-widest uppercase mb-2" style={{ color: '#00e5a0' }}>Recently Active Members</p>
-            <div className="space-y-1">
-              {memberProfiles.slice(0, 5).map((member) => (
-                <div key={member.email} className="flex items-center gap-2 py-1.5 px-1 rounded-lg hover:bg-white/5 transition-colors">
-                  <div className="relative flex-shrink-0">
-                    <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center" style={{ background: '#00e5a0' }}>
-                      {member.avatar_url ? (
-                        <img src={member.avatar_url} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="text-xs text-black font-bold">{member.full_name?.[0] || '?'}</span>
-                      )}
-                    </div>
-                    <div className="absolute bottom-0 right-0 w-2 h-2 bg-green-400 rounded-full border border-[#111318]" />
-                  </div>
-                  <span className="text-sm text-gray-300 truncate flex-1">{member.full_name || member.email.split('@')[0]}</span>
-                  <span className="text-gray-600 text-xs">✏</span>
                 </div>
-              ))}
+              )}
             </div>
+
+            {/* Voice controls strip */}
+            {activeVoice && (
+              <div
+                className="px-3 py-2 flex items-center gap-2"
+                style={{ borderTop: '1px solid rgba(255,255,255,0.04)', background: '#080a0e' }}
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] font-medium" style={{ color: '#00e5a0' }}>In Voice</p>
+                  <p className="text-[10px] truncate" style={{ color: '#374151' }}>{activeVoice.name}</p>
+                </div>
+                <button onClick={() => setIsMuted(v => !v)} className="p-1 rounded"
+                  style={{ color: isMuted ? '#ef4444' : '#4b5563' }}>
+                  {isMuted ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                </button>
+                <button onClick={() => setActiveVoice(null)} className="p-1 rounded"
+                  style={{ color: '#ef4444' }}>
+                  <PhoneOff className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+
+            {/* User identity */}
+            {user && (
+              <div
+                className="px-3 py-2 flex items-center gap-2"
+                style={{ borderTop: '1px solid rgba(255,255,255,0.04)', background: '#080a0e' }}
+              >
+                <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0"
+                  style={{ background: '#00e5a0' }}>
+                  {user.avatar_url
+                    ? <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
+                    : <span className="text-xs text-black font-bold flex items-center justify-center h-full">{user.full_name?.[0]}</span>}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-white truncate leading-tight">{user.full_name || 'You'}</p>
+                  <p className="text-[10px]" style={{ color: '#374151' }}>
+                    {isCreator ? 'Creator' : isMember ? 'Member' : ''}
+                  </p>
+                </div>
+              </div>
+            )}
+          </aside>
+        )}
+
+        {/* ── Main Canvas ── */}
+        <main className="flex-1 flex flex-col overflow-hidden" style={{ background: '#11141b' }}>
+          {/* Channel context strip */}
+          <div
+            className="flex items-center px-5 py-2.5 flex-shrink-0"
+            style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}
+          >
+            <Hash className="w-4 h-4 mr-1.5 flex-shrink-0" style={{ color: '#00e5a0' }} />
+            <span className="text-sm font-semibold text-white">{activeChannelName}</span>
+            <span className="mx-2 text-xs" style={{ color: '#1f2937' }}>|</span>
+            <span className="text-xs truncate" style={{ color: '#374151' }}>
+              {community.description?.slice(0, 80) || `Welcome to ${community.name}`}
+            </span>
           </div>
 
-        </div>
-      )}
+          <div className="flex-1 overflow-hidden flex flex-col">
+            <CommunityChannelChat
+              community={community}
+              user={user}
+              channelId={activeChannel}
+              channelName={activeChannelName}
+            />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
