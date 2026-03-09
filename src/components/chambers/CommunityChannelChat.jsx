@@ -8,6 +8,7 @@ export default function CommunityChannelChat({ community, user, channelId, chann
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
+  const [authorNames, setAuthorNames] = useState({});
   const bottomRef = useRef(null);
 
   const loadMessages = async () => {
@@ -18,11 +19,34 @@ export default function CommunityChannelChat({ community, user, channelId, chann
         50
       );
       setMessages(msgs);
+
+      // Fetch full names from PublicUserDirectory for all unique authors
+      const uniqueEmails = [...new Set(msgs.map(m => m.author_email).filter(Boolean))];
+      if (uniqueEmails.length > 0) {
+        try {
+          const profiles = await base44.entities.PublicUserDirectory.filter({
+            user_email: { $in: uniqueEmails }
+          });
+          const nameMap = {};
+          profiles.forEach(p => {
+            if (p.user_email && p.full_name) {
+              nameMap[p.user_email] = p.full_name;
+            }
+          });
+          setAuthorNames(nameMap);
+        } catch (e) {
+          console.warn('Could not load author profiles:', e);
+        }
+      }
     } catch (e) {
       console.error('Error loading messages:', e);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getDisplayName = (msg) => {
+    return authorNames[msg.author_email] || msg.author_name || 'Anonymous';
   };
 
   useEffect(() => {
