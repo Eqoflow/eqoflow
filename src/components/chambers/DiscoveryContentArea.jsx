@@ -28,7 +28,8 @@ export default function DiscoveryContentArea({ communities, isLoading }) {
 
   return (
     <div className="flex-1 overflow-y-auto min-w-0">
-      <div className="p-6 space-y-6 max-w-2xl">
+      <div className="p-6 flex gap-6">
+      <div className="flex-1 space-y-6 min-w-0">
 
         {/* Trending Topic — circles section */}
         <div>

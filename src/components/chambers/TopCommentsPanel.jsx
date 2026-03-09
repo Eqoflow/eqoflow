@@ -77,7 +77,6 @@ export default function TopCommentsPanel({ comments }) {
         )}
       </div>
 
-      <NewsAndUpdatesWidget />
     </div>
   );
 }
