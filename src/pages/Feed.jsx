@@ -1248,7 +1248,7 @@ export default function Feed() {
           author_follower_count: latestUser.followers?.length || 0,
           author_cross_platform_identity: latestUser.cross_platform_identity,
           author_professional_credentials: latestUser.professional_credentials,
-          moderation_status: 'approved',
+          moderation_status: 'approved', ep_rewards_earned: 20,
           youtube_video_id: postData.youtube_video_id,
           youtube_thumbnail_url: postData.youtube_thumbnail_url,
           youtube_video_title: postData.youtube_video_title
