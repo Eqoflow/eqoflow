@@ -180,7 +180,7 @@ export default function CommunityChannelChat({ community, user, channelId, chann
                       <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center" style={{ background: '#00e5a0' }}>
                         {msg.author_avatar_url
                           ? <img src={msg.author_avatar_url} alt="" className="w-full h-full object-cover" />
-                          : <span className="text-sm text-black font-bold">{msg.author_name?.[0]?.toUpperCase() || '?'}</span>}
+                          : <span className="text-sm text-black font-bold">{getDisplayName(msg)?.[0]?.toUpperCase() || '?'}</span>}
                       </div>
                     ) : (
                       <div className="w-9 flex-shrink-0" />
