@@ -68,7 +68,7 @@ export default function TopCommentsPanel({ comments }) {
         <h2 className="text-white font-semibold text-base">Top Comments</h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3 space-y-3">
+      <div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-0">
         {comments.length === 0 ? (
           <p className="text-gray-600 text-sm text-center py-8">No comments yet</p>
         ) : (
@@ -77,6 +77,8 @@ export default function TopCommentsPanel({ comments }) {
           ))
         )}
       </div>
+
+      <NewsAndUpdatesWidget />
     </div>
   );
 }
