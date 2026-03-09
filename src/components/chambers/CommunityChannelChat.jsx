@@ -188,7 +188,7 @@ export default function CommunityChannelChat({ community, user, channelId, chann
                     <div className="flex-1 min-w-0 max-w-[75%]">
                       {!msg.isGrouped && (
                         <div className="flex items-baseline gap-2 mb-1">
-                          <span className="text-white text-xs font-semibold">{msg.author_name}</span>
+                          <span className="text-white text-xs font-semibold">{getDisplayName(msg)}</span>
                           {own && <span className="text-[9px] px-1.5 py-0.5 rounded-full leading-none" style={{ background: 'rgba(0,229,160,0.1)', color: '#00e5a0' }}>you</span>}
                           <span className="text-gray-600 text-[10px]">{formatDistanceToNow(new Date(msg.created_date), { addSuffix: true })}</span>
                         </div>
