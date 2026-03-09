@@ -52,7 +52,7 @@ export default function CommunityChannelChat({ community, user, channelId, chann
         channel_id: channelId,
         content: trimmed,
         author_email: user.email,
-        author_name: user.full_name || user.email.split('@')[0],
+        author_name: user.username || user.full_name || 'Anonymous',
         author_avatar_url: user.avatar_url || null,
       });
     } catch (e) {
