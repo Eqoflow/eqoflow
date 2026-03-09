@@ -132,7 +132,6 @@ export default function DiscoveryContentArea({ communities, isLoading }) {
           )}
         </div>
       </div>
-      </div>
 
       {/* Right column: News & Updates fills the empty black space */}
       <div className="w-[220px] flex-shrink-0 hidden lg:block">
