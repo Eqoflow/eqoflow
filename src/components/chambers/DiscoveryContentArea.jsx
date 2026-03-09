@@ -4,6 +4,7 @@ import { createPageUrl } from '@/utils';
 import { MoreHorizontal, Users, Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import TrendingCirclesSection from './TrendingCirclesSection';
+import NewsAndUpdatesWidget from './NewsAndUpdatesWidget';
 
 export default function DiscoveryContentArea({ communities, isLoading }) {
   const trendingCommunities = [...communities]

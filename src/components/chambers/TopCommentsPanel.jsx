@@ -1,7 +1,6 @@
 import React from 'react';
 import { MoreHorizontal, Heart } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import NewsAndUpdatesWidget from './NewsAndUpdatesWidget';
 
 function CommentCard({ comment }) {
   const timeAgo = comment.created_date
