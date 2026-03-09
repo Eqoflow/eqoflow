@@ -87,7 +87,7 @@ export default function NewsAndUpdatesWidget() {
   };
 
   return (
-    <div className="flex-shrink-0 border-t border-white/5 flex flex-col" style={{ maxHeight: '45%' }}>
+    <div className="flex flex-col">
       <div className="px-4 py-3 flex-shrink-0 border-b border-white/5 flex items-center justify-between">
         <h2 className="text-white font-semibold text-sm">News & Updates</h2>
         <TrendingUp className="w-3.5 h-3.5 text-purple-400" />
