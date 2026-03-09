@@ -165,7 +165,7 @@ export default function CommunityChannelChat({ community, user, channelId, chann
                             ? <img src={msg.author_avatar_url} alt="" className="w-full h-full object-cover" />
                             : <span className="text-[8px] text-black font-bold">{msg.author_name?.[0]}</span>}
                         </div>
-                        <span className="text-white text-xs font-semibold">{msg.author_name}</span>
+                        <span className="text-white text-xs font-semibold">{getDisplayName(msg)}</span>
                         <span className="text-gray-600 text-[10px]">{formatDistanceToNow(new Date(msg.created_date), { addSuffix: true })}</span>
                       </div>
                     )}
