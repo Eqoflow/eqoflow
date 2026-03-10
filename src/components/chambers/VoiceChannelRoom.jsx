@@ -258,9 +258,12 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
         session.audioVideo.startLocalVideoTile();
         const observer = {
           videoTileDidUpdate: (tileState) => {
-            if (tileState.localTile && localVideoRef.current) {
-              session.audioVideo.bindVideoElement(tileState.tileId, localVideoRef.current);
-              session.audioVideo.removeObserver(observer);
+            if (tileState.localTile) {
+              const target = localVideoShareRef.current || localVideoRef.current;
+              if (target) {
+                session.audioVideo.bindVideoElement(tileState.tileId, target);
+                session.audioVideo.removeObserver(observer);
+              }
             }
           },
         };
