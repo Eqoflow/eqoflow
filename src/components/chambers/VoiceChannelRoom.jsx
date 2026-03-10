@@ -281,6 +281,18 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
     updateParticipantStatus({ isMuted: next });
   };
 
+  const updateParticipantStatus = (updates) => {
+    if (!onUpdateParticipants) return;
+    const currentParticipant = participants.find(p => p.email === user.email) || {
+      email: user.email,
+      name: user.full_name || 'Anonymous',
+      avatar_url: user.avatar_url,
+    };
+    const updated = { ...currentParticipant, ...updates };
+    const newParticipants = participants.filter(p => p.email !== user.email);
+    onUpdateParticipants([...newParticipants, updated]);
+  };
+
   const handleToggleVideo = async () => {
     const session = sessionRef.current;
     if (!session) return;
@@ -289,6 +301,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
       await session.audioVideo.stopVideoInput();
       setIsVideoOn(false);
       onVideoChange?.(false);
+      updateParticipantStatus({ isVideoOn: false });
     } else {
       const videoInputs = await session.audioVideo.listVideoInputDevices();
       if (videoInputs.length > 0) {
@@ -308,6 +321,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
         session.audioVideo.addObserver(observer);
         setIsVideoOn(true);
         onVideoChange?.(true);
+        updateParticipantStatus({ isVideoOn: true });
         // If already sharing, bind immediately to the share-section ref
         if (localVideoShareRef.current) {
           const tiles = session.audioVideo.getAllVideoTiles?.() || [];
