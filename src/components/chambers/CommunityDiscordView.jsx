@@ -105,7 +105,7 @@ export default function CommunityDiscordView({
     const allChs = community.channels && community.channels.length > 0
       ? community.channels
       : [...DEFAULT_TEXT_CHANNELS, ...DEFAULT_VOICE_CHANNELS];
-    const participant = { email: user.email, name: user.full_name || user.email, avatar_url: user.avatar_url || null };
+    const participant = { email: user.email, name: user.full_name || 'Anonymous', avatar_url: user.avatar_url || null };
     const updated = allChs.map(c => {
       if (c.id !== ch.id) return c;
       const existing = c.voice_participants || [];
@@ -618,6 +618,7 @@ export default function CommunityDiscordView({
               onMuteChange={setIsMuted}
               onVideoChange={setIsVideoOn}
               onShareChange={setIsSharing}
+              participants={voiceParticipants[activeVoice?.id] || []}
             />
           ) : (
             <>
