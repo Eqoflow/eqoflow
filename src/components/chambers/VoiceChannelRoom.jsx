@@ -161,13 +161,15 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
     }
   };
 
-  const handleLeave = async () => {
+  const handleLeaveInner = async () => {
     const session = sessionRef.current;
-    if (session) {
-      session.audioVideo.stop();
-    }
+    if (session) session.audioVideo.stop();
+    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    if (audioCtxRef.current) audioCtxRef.current.close();
     onLeave();
   };
+
+  const handleLeave = () => handleLeaveInner();
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-6" style={{ background: '#11141b' }}>
