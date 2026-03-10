@@ -216,7 +216,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           (activeSpeakers) => setSpeakingIds(new Set(activeSpeakers))
         );
 
-        // Observe remote video/content share tiles
+        // Observe remote screen share tiles
         const tileObserver = {
           videoTileDidUpdate: (tileState) => {
             if (!tileState.tileId) return;
@@ -232,27 +232,9 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
               };
               tryBind();
             }
-            // Remote participant video (not local, not content)
-            else if (!tileState.isContent && !tileState.localTile) {
-              const attendeeId = tileState.attendeeId;
-              setRemoteVideoTiles(prev => ({ ...prev, [attendeeId]: tileState.tileId }));
-              // Bind to the participant's video ref if it exists
-              const ref = remoteVideoRefs.current[attendeeId];
-              if (ref?.current) {
-                session.audioVideo.bindVideoElement(tileState.tileId, ref.current);
-              }
-            }
           },
           videoTileWasRemoved: (tileId) => {
             setRemoteShareActive(false);
-            // Clean up the tile from our tracking
-            setRemoteVideoTiles(prev => {
-              const next = { ...prev };
-              Object.keys(next).forEach(attendeeId => {
-                if (next[attendeeId] === tileId) delete next[attendeeId];
-              });
-              return next;
-            });
           },
         };
         session.audioVideo.addObserver(tileObserver);
