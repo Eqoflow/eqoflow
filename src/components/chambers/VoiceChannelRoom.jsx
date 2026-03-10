@@ -113,25 +113,17 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
     };
   }, [channel.id, community.id]);
 
-  // Expose controls to parent via controlRef
-  useEffect(() => {
-    if (controlRef) {
-      controlRef.current = { handleToggleMute: () => handleToggleMuteInner(), handleLeave: () => handleLeaveInner() };
-    }
-  });
-
-  const handleToggleMute = () => handleToggleMuteInner();
-
-  const handleToggleMuteInner = () => {
+  const handleToggleMute = () => {
     const session = sessionRef.current;
     if (!session || status !== 'connected') return;
-    if (isMuted) {
-      session.audioVideo.realtimeUnmuteLocalAudio();
-    } else {
-      session.audioVideo.realtimeMuteLocalAudio();
-    }
-    setIsMuted(v => !v);
+    const next = !isMuted;
+    if (next) session.audioVideo.realtimeMuteLocalAudio();
+    else session.audioVideo.realtimeUnmuteLocalAudio();
+    setIsMuted(next);
+    onMuteChange?.(next);
   };
+
+  const handleToggleMuteInner = handleToggleMute;
 
   const handleToggleVideo = async () => {
     const session = sessionRef.current;
@@ -139,12 +131,14 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
     if (isVideoOn) {
       session.audioVideo.stopLocalVideoTile();
       setIsVideoOn(false);
+      onVideoChange?.(false);
     } else {
       const videoInputs = await session.audioVideo.listVideoInputDevices();
       if (videoInputs.length > 0) {
         await session.audioVideo.startVideoInput(videoInputs[0].deviceId);
         session.audioVideo.startLocalVideoTile();
         setIsVideoOn(true);
+        onVideoChange?.(true);
       }
     }
   };
@@ -155,11 +149,25 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
     if (isSharing) {
       await session.audioVideo.stopContentShare();
       setIsSharing(false);
+      onShareChange?.(false);
     } else {
       await session.audioVideo.startContentShareFromScreenCapture();
       setIsSharing(true);
+      onShareChange?.(true);
     }
   };
+
+  // Expose all controls to parent sidebar
+  useEffect(() => {
+    if (controlRef) {
+      controlRef.current = {
+        handleToggleMute,
+        handleToggleVideo,
+        handleToggleScreenShare,
+        handleLeave,
+      };
+    }
+  });
 
   const handleLeaveInner = async () => {
     const session = sessionRef.current;
