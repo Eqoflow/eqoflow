@@ -266,5 +266,7 @@ export function useChamberWebRTC(chamberId, user) {
     toggleMute,
     bindVideoElement,
     sessionRef,
+    waveBars,
+    speakingIds,
   };
 }
