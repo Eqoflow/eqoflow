@@ -568,6 +568,33 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           </div>
         )}
 
+        {/* Remote participant videos grid */}
+        {Object.entries(remoteAttendees).length > 0 && !isSharing && (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: Object.entries(remoteAttendees).length === 1 ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: 12,
+            padding: '16px',
+            flex: 1,
+            overflow: 'auto',
+          }}>
+            {Object.entries(remoteAttendees).map(([attendeeId, info]) => {
+              const profile = memberProfiles.find(p => p.email === info.email);
+              const displayName = profile?.full_name || info.name || 'Guest';
+              if (!remoteVideoRefs.current[attendeeId]) {
+                remoteVideoRefs.current[attendeeId] = React.createRef();
+              }
+              return (
+                <RemoteParticipantVideo
+                  key={attendeeId}
+                  ref={remoteVideoRefs.current[attendeeId]}
+                  participantName={displayName}
+                />
+              );
+            })}
+          </div>
+        )}
+
         {/* Chat overlay when video is on but not screen sharing */}
         {isVideoOn && !isSharing && (
           <div style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
