@@ -191,6 +191,12 @@ export function useChamberWebRTC(chamberId, user) {
       if (sessionRef.current) {
         sessionRef.current.audioVideo.stop();
       }
+      if (animFrameRef.current) {
+        cancelAnimationFrame(animFrameRef.current);
+      }
+      if (audioCtxRef.current) {
+        audioCtxRef.current.close();
+      }
     };
   }, [chamberId]);
 
