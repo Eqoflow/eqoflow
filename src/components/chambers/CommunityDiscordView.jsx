@@ -637,6 +637,9 @@ export default function CommunityDiscordView({
               onShareChange={setIsSharing}
               participants={voiceParticipants[activeVoice?.id] || []}
               memberProfiles={memberProfiles}
+              onUpdateParticipants={(updated) => {
+                setVoiceParticipants(prev => ({ ...prev, [activeVoice.id]: updated }));
+              }}
             />
           ) : (
             <>
