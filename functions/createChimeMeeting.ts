@@ -21,9 +21,9 @@ Deno.serve(async (req) => {
 
     // Check cache for existing meeting
     let meetingId = null;
-    const cached = await base44.asServiceRole.entities.FunctionCache.filter({ cache_key: cacheKey });
+    const cached = await base44.asServiceRole.entities.FunctionCache.filter({ function_name: cacheKey });
     if (cached.length > 0) {
-      meetingId = cached[0].cache_value;
+      meetingId = cached[0].cached_response?.meetingId;
       // Verify meeting still exists
       try {
         await chime.send(new GetMeetingCommand({ MeetingId: meetingId }));
@@ -41,9 +41,11 @@ Deno.serve(async (req) => {
         ExternalMeetingId: `${communityId}-${channelId}`,
       }));
       meetingId = res.Meeting.MeetingId;
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
       await base44.asServiceRole.entities.FunctionCache.create({
-        cache_key: cacheKey,
-        cache_value: meetingId,
+        function_name: cacheKey,
+        cached_response: { meetingId },
+        expires_at: expiresAt,
       });
     }
 

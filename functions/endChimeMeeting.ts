@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
 
     // Clear cache
     const cacheKey = `chime-meeting-${communityId}-${channelId}`;
-    const cached = await base44.asServiceRole.entities.FunctionCache.filter({ cache_key: cacheKey });
+    const cached = await base44.asServiceRole.entities.FunctionCache.filter({ function_name: cacheKey });
     if (cached.length > 0) {
       await base44.asServiceRole.entities.FunctionCache.delete(cached[0].id);
     }
