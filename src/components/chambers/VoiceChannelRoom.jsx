@@ -218,10 +218,12 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           (activeSpeakers) => setSpeakingIds(new Set(activeSpeakers))
         );
 
-        // Observe remote screen share tiles
+        // Observe remote video and screen share tiles
         const tileObserver = {
           videoTileDidUpdate: (tileState) => {
             if (!tileState.tileId) return;
+            const attendeeId = tileState.attendeeId;
+            
             // Remote content share (screen share from another participant)
             if (tileState.isContent && !tileState.localTile) {
               setRemoteShareActive(true);
@@ -234,9 +236,40 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
               };
               tryBind();
             }
+            // Remote participant video (not local, not content)
+            else if (!tileState.isContent && !tileState.localTile && attendeeId) {
+              setRemoteVideoTiles(prev => ({ ...prev, [attendeeId]: tileState.tileId }));
+              // Try to bind to the participant's video ref if it exists
+              const ref = remoteVideoRefs.current[attendeeId];
+              if (ref?.current) {
+                session.audioVideo.bindVideoElement(tileState.tileId, ref.current);
+              } else {
+                // Create a ref if it doesn't exist and retry binding
+                if (!remoteVideoRefs.current[attendeeId]) {
+                  remoteVideoRefs.current[attendeeId] = { current: null };
+                }
+                setTimeout(() => {
+                  const createdRef = remoteVideoRefs.current[attendeeId];
+                  if (createdRef?.current) {
+                    session.audioVideo.bindVideoElement(tileState.tileId, createdRef.current);
+                  }
+                }, 100);
+              }
+            }
           },
           videoTileWasRemoved: (tileId) => {
-            setRemoteShareActive(false);
+            // Remove from tiles tracking
+            setRemoteVideoTiles(prev => {
+              const next = { ...prev };
+              Object.keys(next).forEach(id => {
+                if (next[id] === tileId) delete next[id];
+              });
+              return next;
+            });
+            // Check if it was a screen share
+            if (remoteScreenShareRef.current) {
+              setRemoteShareActive(false);
+            }
           },
         };
         session.audioVideo.addObserver(tileObserver);
