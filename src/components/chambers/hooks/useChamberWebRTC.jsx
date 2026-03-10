@@ -122,6 +122,7 @@ export function useChamberWebRTC(chamberId, user) {
         session.audioVideo.subscribeToActiveSpeakerDetector(
           new DefaultActiveSpeakerPolicy(),
           (activeSpeakers) => {
+            setSpeakingIds(new Set(activeSpeakers));
             setParticipants(prev =>
               prev.map(p => ({
                 ...p,
