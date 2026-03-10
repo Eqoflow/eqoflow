@@ -317,21 +317,40 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
         }
       `}</style>
 
-      {/* Screen share fills the main area when active — always rendered so ref is available */}
-      <div style={{ flex: isSharing ? '1' : '0 0 0', display: isSharing ? 'flex' : 'none', alignItems: 'center', justifyContent: 'center', padding: 16, overflow: 'hidden' }}>
-        <video
-          ref={screenShareRef}
-          autoPlay
-          muted
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
-            background: '#000',
-            borderRadius: '12px',
-            border: '1px solid rgba(0,229,160,0.3)',
-          }}
-        />
+      {/* Screen share + local cam stacked when active */}
+      <div style={{ display: isSharing ? 'flex' : 'none', flexDirection: 'column', flex: isSharing ? '1' : '0 0 0', overflow: 'hidden' }}>
+        {/* Screen share */}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, overflow: 'hidden' }}>
+          <video
+            ref={screenShareRef}
+            autoPlay
+            muted
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              background: '#000',
+              borderRadius: '12px',
+              border: '1px solid rgba(0,229,160,0.3)',
+            }}
+          />
+        </div>
+        {/* Local cam preview below screen share */}
+        {isVideoOn && (
+          <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: 12 }}>
+            <video
+              ref={localVideoRef}
+              autoPlay
+              muted
+              style={{
+                width: 200,
+                borderRadius: 10,
+                background: '#000',
+                border: '1px solid rgba(0,229,160,0.3)',
+              }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Orbital ring section */}
