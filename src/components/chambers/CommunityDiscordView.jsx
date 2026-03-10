@@ -577,6 +577,6 @@ export default function CommunityDiscordView({
         </main>
       </div>
     </div>
-    </>
+  </>
   );
 }
