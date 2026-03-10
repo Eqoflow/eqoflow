@@ -209,59 +209,11 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
   const handleLeave = () => handleLeaveInner();
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-6" style={{ background: '#11141b' }}>
+    <div className="flex-1 flex flex-col items-center p-6 overflow-y-auto" style={{ background: '#11141b' }}>
       {/* Hidden audio element for remote audio output */}
       <audio ref={audioRef} style={{ display: 'none' }} />
 
-      {/* Channel name */}
-      <div className="mb-6 text-center">
-        <p className="text-xs font-bold tracking-widest uppercase mb-1" style={{ color: '#00e5a0' }}>
-          Voice Channel
-        </p>
-        <h2 className="text-white text-lg font-semibold">{channel.name}</h2>
-      </div>
-
-      {/* Status */}
-      {status === 'connecting' && (
-        <div className="flex items-center gap-2 mb-6" style={{ color: '#6b7280' }}>
-          <Loader className="w-4 h-4 animate-spin" />
-          <span className="text-sm">Connecting...</span>
-        </div>
-      )}
-
-      {status === 'error' && (
-        <div className="mb-6 px-4 py-2 rounded-lg text-sm text-red-400" style={{ background: 'rgba(239,68,68,0.1)' }}>
-          {error || 'Failed to connect'}
-        </div>
-      )}
-
-      {status === 'connected' && (
-        <div className="mb-6 flex items-center gap-2 text-sm" style={{ color: '#00e5a0' }}>
-          <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          Connected
-        </div>
-      )}
-
-      {/* User avatar */}
-      <div className="mb-8">
-        <div
-          className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden"
-          style={{
-            background: isMuted ? 'rgba(239,68,68,0.2)' : 'rgba(0,229,160,0.15)',
-            border: `2px solid ${isMuted ? '#ef4444' : '#00e5a0'}`
-          }}
-        >
-          {user.avatar_url
-            ? <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
-            : <span className="text-2xl font-bold text-white">{user.full_name?.[0]}</span>}
-        </div>
-        <p className="text-center text-xs mt-2" style={{ color: '#6b7280' }}>
-          {user.full_name?.split(' ')[0]}
-          {isMuted && <span className="ml-1 text-red-400">(muted)</span>}
-        </p>
-      </div>
-
-      {/* Screen share preview — shown prominently when sharing */}
+      {/* Screen share preview — shown prominently at the top when sharing */}
       <video
         ref={screenShareRef}
         autoPlay
