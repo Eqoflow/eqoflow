@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import CommunityChannelChat from './CommunityChannelChat';
 import VoiceChannelRoom from './VoiceChannelRoom';
+import VoiceChannelSettingsModal from './VoiceChannelSettingsModal';
 
 const DEFAULT_TEXT_CHANNELS = [
   { id: 'general', name: 'general', type: 'text' },
