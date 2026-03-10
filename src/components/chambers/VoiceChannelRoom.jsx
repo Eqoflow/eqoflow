@@ -485,6 +485,13 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           </div>
         )}
 
+        {/* Chat overlay when video is on but not screen sharing */}
+        {isVideoOn && !isSharing && (
+          <div style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
+            <VoiceChannelChat user={user} allParticipants={allParticipants} memberProfiles={memberProfiles} />
+          </div>
+        )}
+
         {/* Local video preview when no screen share active */}
         {isVideoOn && !isSharing && (
           <video
