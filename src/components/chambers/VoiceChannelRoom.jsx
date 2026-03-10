@@ -128,21 +128,142 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
     }
   };
 
+  // Build orbital participant list: local user first, then remote
+  const localProfile = webrtc.participants.find(p => p.email === user.email) || {
+    name: user.full_name || 'You',
+    avatarUrl: user.avatar_url,
+    isMuted: webrtc.isMuted,
+  };
+
+  const orbitalParticipants = [
+    {
+      id: 'local',
+      name: localProfile.name,
+      avatarUrl: localProfile.avatarUrl,
+      isMuted: webrtc.isMuted,
+      isSpeaking: !webrtc.isMuted && webrtc.waveBars.some(h => h > 5),
+    },
+    ...webrtc.participants
+      .filter(p => p.email !== user.email)
+      .map(p => ({
+        id: p.attendeeId,
+        name: p.name,
+        avatarUrl: p.avatarUrl,
+        isMuted: p.isMuted,
+        isSpeaking: webrtc.speakingIds.has(p.attendeeId),
+      })),
+  ];
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden" style={{ background: '#11141b' }}>
+      <style>{`
+        @keyframes speakPulse {
+          from { transform: scaleY(0.4); opacity: 0.6; }
+          to { transform: scaleY(1); opacity: 1; }
+        }
+        @keyframes ringPulse {
+          0%, 100% { opacity: 0.5; }
+          50% { opacity: 1; }
+        }
+      `}</style>
 
       {!isSharing && !remoteShareActive ? (
-        <ChamberVideoGrid
-          participants={webrtc.participants}
-          isVideoOn={webrtc.isVideoOn}
-          isMuted={webrtc.isMuted}
-          connectionStatus={webrtc.connectionStatus}
-          error={webrtc.error}
-          onToggleVideo={webrtc.toggleVideo}
-          onToggleMute={webrtc.toggleMute}
-          bindVideoElement={webrtc.bindVideoElement}
-          localUser={user}
-        />
+        <div
+          style={{
+            flex: '1',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '24px',
+          }}
+        >
+          {webrtc.error && (
+            <div style={{ marginBottom: 16, padding: '8px 16px', borderRadius: 8, fontSize: 13, color: '#f87171', background: 'rgba(239,68,68,0.1)' }}>
+              {webrtc.error}
+            </div>
+          )}
+
+          {webrtc.connectionStatus === 'connecting' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#6b7280', marginBottom: 16 }}>
+              <Loader className="w-4 h-4 animate-spin" />
+              <span style={{ fontSize: 13 }}>Connecting...</span>
+            </div>
+          )}
+
+          <div style={{ position: 'relative', width: CONTAINER_SIZE, height: CONTAINER_SIZE, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{
+              position: 'absolute',
+              width: RING_RADIUS * 2 + 60,
+              height: RING_RADIUS * 2 + 60,
+              borderRadius: '50%',
+              border: '1px solid rgba(0,229,160,0.06)',
+            }} />
+            <div style={{
+              position: 'absolute',
+              width: RING_RADIUS * 2 + 30,
+              height: RING_RADIUS * 2 + 30,
+              borderRadius: '50%',
+              border: '1px solid rgba(0,229,160,0.1)',
+            }} />
+            <div style={{
+              position: 'absolute',
+              width: RING_RADIUS * 2,
+              height: RING_RADIUS * 2,
+              borderRadius: '50%',
+              border: '2px solid rgba(0,229,160,0.55)',
+              boxShadow: '0 0 30px rgba(0,229,160,0.25), 0 0 60px rgba(0,229,160,0.1), inset 0 0 30px rgba(0,229,160,0.04)',
+              animation: webrtc.connectionStatus === 'connecting' ? 'ringPulse 1.5s ease-in-out infinite' : 'none',
+            }} />
+            <div style={{
+              position: 'absolute',
+              width: RING_RADIUS * 2 - 24,
+              height: RING_RADIUS * 2 - 24,
+              borderRadius: '50%',
+              border: '1px solid rgba(0,229,160,0.08)',
+            }} />
+
+            <div style={{ textAlign: 'center', zIndex: 10, pointerEvents: 'none' }}>
+              <p style={{ color: '#00e5a0', fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 4 }}>
+                Voice Channel
+              </p>
+              <p style={{ color: '#fff', fontWeight: 600, fontSize: 15 }}>{channel.name}</p>
+              {webrtc.connectionStatus === 'connected' && (
+                <p style={{ color: '#374151', fontSize: 10, marginTop: 4 }}>
+                  {orbitalParticipants.length} {orbitalParticipants.length === 1 ? 'participant' : 'participants'}
+                </p>
+              )}
+            </div>
+
+            {orbitalParticipants.map((p, i) => {
+              const angle = (i / Math.max(orbitalParticipants.length, 1)) * 2 * Math.PI - Math.PI / 2;
+              const x = CENTER + RING_RADIUS * Math.cos(angle) - (AVATAR_SIZE + 24) / 2;
+              const y = CENTER + RING_RADIUS * Math.sin(angle) - (AVATAR_SIZE + 24) / 2 - 8;
+              return (
+                <div key={p.id} style={{ position: 'absolute', left: x, top: y }}>
+                  <ParticipantNode participant={p} />
+                </div>
+              );
+            })}
+          </div>
+
+          {webrtc.connectionStatus === 'connected' && (
+            <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, height: 32 }}>
+              {webrtc.waveBars.map((h, i) => (
+                <div
+                  key={i}
+                  style={{
+                    width: 3,
+                    height: `${webrtc.isMuted ? 2 : h}px`,
+                    background: webrtc.isMuted ? 'rgba(107,114,128,0.3)' : `rgba(0,229,160,${0.4 + (h / 40) * 0.6})`,
+                    borderRadius: 2,
+                    transition: 'height 0.05s ease',
+                  }}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       ) : (
         <>
           {remoteShareActive && (
