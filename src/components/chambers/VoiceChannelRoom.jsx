@@ -121,13 +121,17 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
       isMuted,
       isSpeaking: isLocalSpeaking,
     },
-    ...Object.entries(remoteAttendees).map(([id, info]) => ({
-      id,
-      name: info.name || 'Guest',
-      avatarUrl: null,
-      isMuted: false,
-      isSpeaking: speakingIds.has(id),
-    })),
+    ...Object.entries(remoteAttendees).map(([id, info]) => {
+      // Look up full name from memberProfiles
+      const profile = memberProfiles.find(p => p.email === info.email);
+      return {
+        id,
+        name: profile?.full_name || info.name || 'Guest',
+        avatarUrl: profile?.avatar_url || null,
+        isMuted: false,
+        isSpeaking: speakingIds.has(id),
+      };
+    }),
   ];
 
   useEffect(() => {

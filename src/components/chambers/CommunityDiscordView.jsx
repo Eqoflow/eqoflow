@@ -597,7 +597,7 @@ export default function CommunityDiscordView({
                   style={{ background: '#00e5a0' }}>
                   {user.avatar_url
                     ? <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
-                    : <span className="text-xs text-black font-bold flex items-center justify-center h-full">{user.full_name?.[0]}</span>}
+                    : <span className="text-xs text-black font-bold flex items-center justify-center h-full">{(user.full_name || 'You')[0]}</span>}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold text-white truncate leading-tight">{user.full_name || 'You'}</p>
