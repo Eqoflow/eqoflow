@@ -261,6 +261,22 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
         </p>
       </div>
 
+      {/* Screen share preview — shown prominently when sharing */}
+      <video
+        ref={screenShareRef}
+        autoPlay
+        muted
+        className="rounded-xl"
+        style={{
+          display: isSharing ? 'block' : 'none',
+          width: '100%',
+          maxHeight: '320px',
+          background: '#000',
+          border: '1px solid rgba(0,229,160,0.3)',
+          marginBottom: '16px',
+        }}
+      />
+
       {/* Local video preview */}
       {isVideoOn && (
         <video
@@ -268,7 +284,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           autoPlay
           muted
           className="rounded-xl mb-6"
-          style={{ width: '320px', background: '#000', border: '1px solid rgba(0,229,160,0.2)' }}
+          style={{ width: '220px', background: '#000', border: '1px solid rgba(0,229,160,0.2)' }}
         />
       )}
 
