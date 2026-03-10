@@ -71,6 +71,71 @@ export default function CommunityDiscordView({
 
   const canManageChannels = isCreator || user?.role === 'admin';
 
+  // Load initial voice participants from community channels and subscribe to changes
+  useEffect(() => {
+    // Build initial state from community.channels[].voice_participants
+    if (community.channels) {
+      const initial = {};
+      community.channels.forEach(ch => {
+        if (ch.type === 'voice' && ch.voice_participants) {
+          initial[ch.id] = ch.voice_participants;
+        }
+      });
+      setVoiceParticipants(initial);
+    }
+
+    // Subscribe to real-time updates on this community record
+    const unsubscribe = base44.entities.Community.subscribe((event) => {
+      if (event.id !== community.id) return;
+      if (event.data?.channels) {
+        const updated = {};
+        event.data.channels.forEach(ch => {
+          if (ch.type === 'voice' && ch.voice_participants) {
+            updated[ch.id] = ch.voice_participants;
+          }
+        });
+        setVoiceParticipants(updated);
+      }
+    });
+    return unsubscribe;
+  }, [community.id]);
+
+  const joinVoiceChannel = useCallback(async (ch) => {
+    if (!user || !onUpdateChannels) return;
+    const allChs = community.channels && community.channels.length > 0
+      ? community.channels
+      : [...DEFAULT_TEXT_CHANNELS, ...DEFAULT_VOICE_CHANNELS];
+    const participant = { email: user.email, name: user.full_name || user.email, avatar_url: user.avatar_url || null };
+    const updated = allChs.map(c => {
+      if (c.id !== ch.id) return c;
+      const existing = c.voice_participants || [];
+      if (existing.find(p => p.email === user.email)) return c;
+      return { ...c, voice_participants: [...existing, participant] };
+    });
+    await onUpdateChannels(updated);
+  }, [user, community.channels, onUpdateChannels]);
+
+  const leaveVoiceChannel = useCallback(async (channelId) => {
+    if (!user || !onUpdateChannels) return;
+    const allChs = community.channels && community.channels.length > 0
+      ? community.channels
+      : [...DEFAULT_TEXT_CHANNELS, ...DEFAULT_VOICE_CHANNELS];
+    const updated = allChs.map(c => {
+      if (c.id !== channelId) return c;
+      return { ...c, voice_participants: (c.voice_participants || []).filter(p => p.email !== user.email) };
+    });
+    await onUpdateChannels(updated);
+  }, [user, community.channels, onUpdateChannels]);
+
+  // Cleanup: remove user from voice channel if they navigate away
+  useEffect(() => {
+    return () => {
+      if (activeVoice) {
+        leaveVoiceChannel(activeVoice.id);
+      }
+    };
+  }, [activeVoice?.id]);
+
   const allChannels = community.channels && community.channels.length > 0
     ? community.channels
     : [...DEFAULT_TEXT_CHANNELS, ...DEFAULT_VOICE_CHANNELS];
