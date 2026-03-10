@@ -1,20 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-
-// Polyfill required by amazon-chime-sdk-js in browser environments
-if (typeof window !== 'undefined') {
-  if (typeof window.global === 'undefined') window.global = window;
-  if (typeof window.process === 'undefined') window.process = { env: {}, browser: true };
-}
-import {
-  ConsoleLogger,
-  DefaultActiveSpeakerPolicy,
-  DefaultDeviceController,
-  DefaultMeetingSession,
-  LogLevel,
-  MeetingSessionConfiguration,
-} from 'amazon-chime-sdk-js';
-import { createChimeMeeting } from '@/functions/createChimeMeeting';
 import { Loader } from 'lucide-react';
+import { useChamberWebRTC } from './hooks/useChamberWebRTC';
+import ChamberVideoGrid from './ChamberVideoGrid';
 import VoiceChannelChat from './VoiceChannelChat';
 
 const RING_RADIUS = 110;
