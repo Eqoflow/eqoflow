@@ -50,12 +50,18 @@ Deno.serve(async (req) => {
         ExternalMeetingId: `${communityId}-${channelId}`,
       }));
       meetingId = res.Meeting.MeetingId;
-      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-      await base44.asServiceRole.entities.FunctionCache.create({
-        function_name: cacheKey,
-        cached_response: { meetingId },
-        expires_at: expiresAt,
-      });
+      
+      // Try to cache, but don't fail if cache unavailable
+      try {
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+        await base44.asServiceRole.entities.FunctionCache.create({
+          function_name: cacheKey,
+          cached_response: { meetingId },
+          expires_at: expiresAt,
+        });
+      } catch (cacheErr) {
+        // Cache creation failed, but meeting was created successfully
+      }
     }
 
     // Get full meeting info
