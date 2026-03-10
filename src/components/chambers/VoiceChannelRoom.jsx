@@ -101,6 +101,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
 
   const sessionRef = useRef(null);
   const localVideoRef = useRef(null);
+  const localVideoShareRef = useRef(null);
   const screenShareRef = useRef(null);
   const audioRef = useRef(null);
   const animFrameRef = useRef(null);
