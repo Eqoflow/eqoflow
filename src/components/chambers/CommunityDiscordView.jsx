@@ -107,7 +107,23 @@ export default function CommunityDiscordView({
     setNewChannelName('');
   };
 
+  const handleSaveChannelSettings = async (newSettings) => {
+    const updated = allChannels.map(c =>
+      c.id === settingsChannel.id ? { ...c, settings: newSettings } : c
+    );
+    setSettingsChannel(null);
+    await onUpdateChannels(updated);
+  };
+
   return (
+    <>
+    {settingsChannel && (
+      <VoiceChannelSettingsModal
+        channel={settingsChannel}
+        onClose={() => setSettingsChannel(null)}
+        onSave={handleSaveChannelSettings}
+      />
+    )}
     <div
       className="flex flex-col rounded-xl overflow-hidden"
       style={{ height: 'calc(100vh - 120px)', background: '#0a0c10', border: '1px solid rgba(255,255,255,0.05)' }}
