@@ -226,10 +226,9 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
             if (!tileState.tileId) return;
             const attendeeId = tileState.attendeeId;
             
-            // Local video tile — add to grid for all to see, bind to personal preview
+            // Local video tile — bind to personal preview only
             if (tileState.localTile && !tileState.isContent) {
               setLocalVideoTileId(tileState.tileId);
-              setRemoteVideoTiles(prev => ({ ...prev, 'local': tileState.tileId }));
               const target = localVideoShareRef.current || localVideoRef.current;
               if (target) {
                 session.audioVideo.bindVideoElement(tileState.tileId, target);
