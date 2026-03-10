@@ -278,6 +278,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
     const next = !isMuted;
     setIsMuted(next);
     onMuteChange?.(next);
+    updateParticipantStatus({ isMuted: next });
   };
 
   const handleToggleVideo = async () => {
