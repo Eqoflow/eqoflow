@@ -317,24 +317,22 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
         }
       `}</style>
 
-      {/* Screen share fills the main area when active */}
-      {isSharing && (
-        <div className="flex-1 flex items-center justify-center p-4 overflow-hidden">
-          <video
-            ref={screenShareRef}
-            autoPlay
-            muted
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'contain',
-              background: '#000',
-              borderRadius: '12px',
-              border: '1px solid rgba(0,229,160,0.3)',
-            }}
-          />
-        </div>
-      )}
+      {/* Screen share fills the main area when active — always rendered so ref is available */}
+      <div style={{ flex: isSharing ? '1' : '0 0 0', display: isSharing ? 'flex' : 'none', alignItems: 'center', justifyContent: 'center', padding: 16, overflow: 'hidden' }}>
+        <video
+          ref={screenShareRef}
+          autoPlay
+          muted
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+            background: '#000',
+            borderRadius: '12px',
+            border: '1px solid rgba(0,229,160,0.3)',
+          }}
+        />
+      </div>
 
       {/* Orbital ring section */}
       <div
