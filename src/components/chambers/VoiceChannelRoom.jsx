@@ -329,10 +329,9 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
         }
       `}</style>
 
-      {/* Screen share + local cam stacked when active */}
-      <div style={{ display: isSharing ? 'flex' : 'none', flexDirection: 'column', flex: isSharing ? '1' : '0 0 0', overflow: 'hidden' }}>
-        {/* Screen share */}
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, overflow: 'hidden' }}>
+      {/* Screen share full area with PiP cam overlay */}
+      {isSharing && (
+        <div style={{ flex: 1, position: 'relative', padding: 12, overflow: 'hidden' }}>
           <video
             ref={screenShareRef}
             autoPlay
@@ -344,26 +343,29 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
               background: '#000',
               borderRadius: '12px',
               border: '1px solid rgba(0,229,160,0.3)',
+              display: 'block',
             }}
           />
-        </div>
-        {/* Local cam preview below screen share */}
-        {isVideoOn && (
-          <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: 12 }}>
+          {/* PiP cam in bottom-left */}
+          {isVideoOn && (
             <video
               ref={localVideoShareRef}
               autoPlay
               muted
               style={{
-                width: 200,
-                borderRadius: 10,
+                position: 'absolute',
+                bottom: 24,
+                left: 24,
+                width: 160,
+                borderRadius: 8,
                 background: '#000',
-                border: '1px solid rgba(0,229,160,0.3)',
+                border: '2px solid rgba(0,229,160,0.5)',
+                zIndex: 10,
               }}
             />
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
 
       {/* Orbital ring section */}
       <div
