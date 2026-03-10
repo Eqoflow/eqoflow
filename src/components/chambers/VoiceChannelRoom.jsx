@@ -224,6 +224,22 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave }) 
         />
       )}
 
+      {/* Audio waveform visualizer */}
+      <div className="mt-6 flex items-center justify-center gap-0.5" style={{ height: '48px' }}>
+        {waveBars.map((h, i) => (
+          <div
+            key={i}
+            style={{
+              width: '3px',
+              height: `${isMuted ? 2 : h}px`,
+              background: isMuted ? 'rgba(107,114,128,0.3)' : `rgba(0,229,160,${0.4 + (h / 40) * 0.6})`,
+              borderRadius: '2px',
+              transition: 'height 0.05s ease, background 0.1s ease',
+            }}
+          />
+        ))}
+      </div>
+
       {/* Controls */}
       <div className="flex items-center gap-3">
         <button
