@@ -134,248 +134,72 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
   return (
     <div className="flex-1 flex flex-col overflow-hidden" style={{ background: '#11141b' }}>
 
-      {/* Speaking wave keyframe animation injected via style tag */}
-      <style>{`
-        @keyframes speakPulse {
-          from { transform: scaleY(0.4); opacity: 0.6; }
-          to { transform: scaleY(1); opacity: 1; }
-        }
-        @keyframes ringPulse {
-          0%, 100% { opacity: 0.5; }
-          50% { opacity: 1; }
-        }
-      `}</style>
-
-      {/* Remote screen share — shown when someone else is sharing */}
-      {remoteShareActive && !isSharing && (
-        <div style={{ flex: 1, position: 'relative', padding: 12, overflow: 'hidden' }}>
-          <VoiceChannelChat user={user} allParticipants={allParticipants} memberProfiles={memberProfiles} />
-          <video
-            ref={remoteScreenShareRef}
-            autoPlay
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'contain',
-              background: '#000',
-              borderRadius: '12px',
-              border: '1px solid rgba(0,229,160,0.3)',
-              display: 'block',
-            }}
-          />
-        </div>
-      )}
-
-      {/* Screen share full area with PiP cam overlay */}
-      {isSharing && (
-        <div style={{ flex: 1, position: 'relative', padding: 12, overflow: 'hidden' }}>
-          <VoiceChannelChat user={user} allParticipants={allParticipants} memberProfiles={memberProfiles} />
-          <video
-            ref={screenShareRef}
-            autoPlay
-            muted
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'contain',
-              background: '#000',
-              borderRadius: '12px',
-              border: '1px solid rgba(0,229,160,0.3)',
-              display: 'block',
-            }}
-          />
-          {/* PiP cam in bottom-left */}
-          {isVideoOn && (
-            <video
-              ref={localVideoShareRef}
-              autoPlay
-              muted
-              style={{
-                position: 'absolute',
-                bottom: 24,
-                left: 24,
-                width: 160,
-                borderRadius: 8,
-                background: '#000',
-                border: '2px solid rgba(0,229,160,0.5)',
-                zIndex: 10,
-              }}
-            />
-          )}
-        </div>
-      )}
-
-      {/* Orbital ring section — hidden when screen sharing (local or remote) */}
-      <div
-        style={{
-          flex: '1',
-          display: (isSharing || remoteShareActive) ? 'none' : 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '24px',
-        }}
-      >
-        {/* Status messages */}
-        {status === 'connecting' && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#6b7280', marginBottom: 16 }}>
-            <Loader className="w-4 h-4 animate-spin" />
-            <span style={{ fontSize: 13 }}>Connecting...</span>
-          </div>
-        )}
-        {status === 'error' && (
-          <div style={{ marginBottom: 16, padding: '8px 16px', borderRadius: 8, fontSize: 13, color: '#f87171', background: 'rgba(239,68,68,0.1)' }}>
-            {error || 'Failed to connect'}
-          </div>
-        )}
-
-        {/* The orbital ring */}
-        <div style={{ position: 'relative', width: CONTAINER_SIZE, height: CONTAINER_SIZE, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-
-          {/* Outer subtle glow rings */}
-          <div style={{
-            position: 'absolute',
-            width: RING_RADIUS * 2 + 60,
-            height: RING_RADIUS * 2 + 60,
-            borderRadius: '50%',
-            border: '1px solid rgba(0,229,160,0.06)',
-          }} />
-          <div style={{
-            position: 'absolute',
-            width: RING_RADIUS * 2 + 30,
-            height: RING_RADIUS * 2 + 30,
-            borderRadius: '50%',
-            border: '1px solid rgba(0,229,160,0.1)',
-          }} />
-
-          {/* Main glowing ring */}
-          <div style={{
-            position: 'absolute',
-            width: RING_RADIUS * 2,
-            height: RING_RADIUS * 2,
-            borderRadius: '50%',
-            border: '2px solid rgba(0,229,160,0.55)',
-            boxShadow: '0 0 30px rgba(0,229,160,0.25), 0 0 60px rgba(0,229,160,0.1), inset 0 0 30px rgba(0,229,160,0.04)',
-            animation: status === 'connecting' ? 'ringPulse 1.5s ease-in-out infinite' : 'none',
-          }} />
-
-          {/* Inner ring */}
-          <div style={{
-            position: 'absolute',
-            width: RING_RADIUS * 2 - 24,
-            height: RING_RADIUS * 2 - 24,
-            borderRadius: '50%',
-            border: '1px solid rgba(0,229,160,0.08)',
-          }} />
-
-          {/* Center label */}
-          <div style={{ textAlign: 'center', zIndex: 10, pointerEvents: 'none' }}>
-            <p style={{ color: '#00e5a0', fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 4 }}>
-              Voice Channel
-            </p>
-            <p style={{ color: '#fff', fontWeight: 600, fontSize: 15 }}>{channel.name}</p>
-            {status === 'connected' && (
-              <p style={{ color: '#374151', fontSize: 10, marginTop: 4 }}>
-                {allParticipants.length} {allParticipants.length === 1 ? 'participant' : 'participants'}
-              </p>
-            )}
-          </div>
-
-          {/* Participant avatars around the ring */}
-          {allParticipants.map((p, i) => {
-            const angle = (i / Math.max(allParticipants.length, 1)) * 2 * Math.PI - Math.PI / 2;
-            const x = CENTER + RING_RADIUS * Math.cos(angle) - (AVATAR_SIZE + 24) / 2;
-            const y = CENTER + RING_RADIUS * Math.sin(angle) - (AVATAR_SIZE + 24) / 2 - 8; // -8 to offset for name label
-            return (
-              <div key={p.id} style={{ position: 'absolute', left: x, top: y }}>
-                <ParticipantNode participant={p} />
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Local waveform bar */}
-        {status === 'connected' && (
-          <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, height: 32 }}>
-            {waveBars.map((h, i) => (
-              <div
-                key={i}
+      {!isSharing && !remoteShareActive ? (
+        <ChamberVideoGrid
+          participants={webrtc.participants}
+          isVideoOn={webrtc.isVideoOn}
+          isMuted={webrtc.isMuted}
+          connectionStatus={webrtc.connectionStatus}
+          error={webrtc.error}
+          onToggleVideo={webrtc.toggleVideo}
+          onToggleMute={webrtc.toggleMute}
+          bindVideoElement={webrtc.bindVideoElement}
+          localUser={user}
+        />
+      ) : (
+        <>
+          {remoteShareActive && (
+            <div style={{ flex: 1, position: 'relative', padding: 12, overflow: 'hidden' }}>
+              <video
+                ref={remoteScreenShareRef}
+                autoPlay
                 style={{
-                  width: 3,
-                  height: `${isMuted ? 2 : h}px`,
-                  background: isMuted ? 'rgba(107,114,128,0.3)' : `rgba(0,229,160,${0.4 + (h / 40) * 0.6})`,
-                  borderRadius: 2,
-                  transition: 'height 0.05s ease',
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain',
+                  background: '#000',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(0,229,160,0.3)',
                 }}
               />
-            ))}
-          </div>
-        )}
-
-        {/* Remote participant videos grid */}
-        {Object.keys(remoteVideoTiles).length > 0 && !isSharing && !remoteShareActive && (
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: Object.keys(remoteVideoTiles).length === 1 ? '1fr' : 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: 12,
-            padding: '16px',
-            flex: 1,
-            overflow: 'auto',
-            width: '100%',
-          }}>
-            {Object.entries(remoteVideoTiles).map(([attendeeId]) => {
-              if (!remoteVideoRefs.current[attendeeId]) {
-                remoteVideoRefs.current[attendeeId] = { current: null };
-              }
-              return (
+            </div>
+          )}
+          {isSharing && (
+            <div style={{ flex: 1, position: 'relative', padding: 12, overflow: 'hidden' }}>
+              <video
+                ref={screenShareRef}
+                autoPlay
+                muted
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain',
+                  background: '#000',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(0,229,160,0.3)',
+                }}
+              />
+              {webrtc.isVideoOn && (
                 <video
-                  key={attendeeId}
-                  ref={el => {
-                    if (remoteVideoRefs.current[attendeeId]) {
-                      remoteVideoRefs.current[attendeeId].current = el;
-                      if (el && remoteVideoTiles[attendeeId]) {
-                        sessionRef.current?.audioVideo.bindVideoElement(remoteVideoTiles[attendeeId], el);
-                      }
-                    }
-                  }}
+                  ref={localVideoShareRef}
                   autoPlay
+                  muted
                   style={{
-                    width: '100%',
-                    height: '200px',
-                    borderRadius: '8px',
+                    position: 'absolute',
+                    bottom: 24,
+                    left: 24,
+                    width: 160,
+                    borderRadius: 8,
                     background: '#000',
-                    border: '1px solid rgba(0,229,160,0.2)',
-                    objectFit: 'cover',
+                    border: '2px solid rgba(0,229,160,0.5)',
+                    zIndex: 10,
                   }}
                 />
-              );
-            })}
-          </div>
-        )}
-
-        {/* Chat overlay when video is on but not screen sharing */}
-        {isVideoOn && !isSharing && (
-          <div style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <VoiceChannelChat user={user} allParticipants={allParticipants} memberProfiles={memberProfiles} />
-          </div>
-        )}
-
-        {/* Local video preview when no screen share active */}
-        {isVideoOn && !isSharing && (
-          <video
-            ref={localVideoRef}
-            autoPlay
-            muted
-            style={{
-              width: 200,
-              borderRadius: 10,
-              marginTop: 16,
-              background: '#000',
-              border: '1px solid rgba(0,229,160,0.2)',
-            }}
-          />
-        )}
-      </div>
+              )}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
