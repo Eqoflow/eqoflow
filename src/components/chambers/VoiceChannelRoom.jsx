@@ -133,7 +133,6 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden" style={{ background: '#11141b' }}>
-      <audio ref={audioRef} style={{ display: 'none' }} />
 
       {/* Speaking wave keyframe animation injected via style tag */}
       <style>{`
