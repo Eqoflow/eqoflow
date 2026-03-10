@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { X, Settings } from 'lucide-react';
 
 export default function VoiceChannelSettingsModal({ channel, onClose, onSave }) {
