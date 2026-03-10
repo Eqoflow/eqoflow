@@ -113,6 +113,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
   const audioCtxRef = useRef(null);
   const localAttendeeIdRef = useRef(null);
   const remoteVideoRefs = useRef({}); // { attendeeId: ref }
+  const localVideoGridRef = useRef(null);
 
   // Derive local speaking from waveform amplitude
   const avgAmplitude = waveBars.reduce((s, v) => s + v, 0) / waveBars.length;
