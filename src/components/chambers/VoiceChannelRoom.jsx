@@ -138,6 +138,8 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
         const { data } = await createChimeMeeting({ communityId: community.id, channelId: channel.id });
         if (data.error) throw new Error(data.error);
 
+        localAttendeeIdRef.current = data.attendee.AttendeeId;
+
         const logger = new ConsoleLogger('ChimeMeeting', LogLevel.WARN);
         const deviceController = new DefaultDeviceController(logger);
         const config = new MeetingSessionConfiguration(data.meeting, data.attendee);
