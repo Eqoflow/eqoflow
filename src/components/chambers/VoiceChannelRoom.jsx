@@ -425,11 +425,11 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
         </div>
       )}
 
-      {/* Orbital ring section — hidden when screen sharing */}
+      {/* Orbital ring section — hidden when screen sharing (local or remote) */}
       <div
         style={{
           flex: '1',
-          display: isSharing ? 'none' : 'flex',
+          display: (isSharing || remoteShareActive) ? 'none' : 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
