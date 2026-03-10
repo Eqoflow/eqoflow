@@ -50,6 +50,8 @@ export default function CommunityDiscordView({
 }) {
   const [activeChannel, setActiveChannel]       = useState('general');
   const [activeVoice, setActiveVoice]           = useState(null);
+  // voiceParticipants: { [channelId]: [{ email, name, avatar_url }] }
+  const [voiceParticipants, setVoiceParticipants] = useState({});
   const [isMuted, setIsMuted]                   = useState(false);
   const [isVideoOn, setIsVideoOn]               = useState(false);
   const [isSharing, setIsSharing]               = useState(false);
