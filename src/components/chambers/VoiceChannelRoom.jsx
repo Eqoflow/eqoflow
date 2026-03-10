@@ -61,7 +61,36 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave }) 
         // Start audio input
         const audioInputs = await session.audioVideo.listAudioInputDevices();
         if (audioInputs.length > 0) {
-          await session.audioVideo.startAudioInput(audioInputs[0].deviceId);
+          const deviceId = audioInputs[0].deviceId;
+          await session.audioVideo.startAudioInput(deviceId);
+
+          // Set up Web Audio API analyser for waveform visualization
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: { deviceId } });
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            audioCtxRef.current = audioCtx;
+            const source = audioCtx.createMediaStreamSource(stream);
+            const analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 64;
+            source.connect(analyser);
+            analyserRef.current = analyser;
+
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            const animate = () => {
+              animFrameRef.current = requestAnimationFrame(animate);
+              analyser.getByteFrequencyData(dataArray);
+              const bars = Array.from({ length: 20 }, (_, i) => {
+                const idx = Math.floor(i * bufferLength / 20);
+                return Math.max(2, (dataArray[idx] / 255) * 40);
+              });
+              setWaveBars(bars);
+            };
+            animate();
+          } catch (e) {
+            // visualizer optional, don't block on failure
+          }
         }
 
         session.audioVideo.start();
