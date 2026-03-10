@@ -21,12 +21,16 @@ export function useChamberWebRTC(chamberId, user) {
   const [isMuted, setIsMuted] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState('idle'); // idle, connecting, connected, error
   const [error, setError] = useState(null);
+  const [waveBars, setWaveBars] = useState(Array(20).fill(2));
+  const [speakingIds, setSpeakingIds] = useState(new Set());
 
   const sessionRef = useRef(null);
   const localAttendeeIdRef = useRef(null);
   const videoTilesRef = useRef({}); // { attendeeId: { tileId, mediaStream } }
   const localVideoTrackRef = useRef(null);
   const audioInputRef = useRef(null);
+  const animFrameRef = useRef(null);
+  const audioCtxRef = useRef(null);
 
   // Initialize Chime session
   useEffect(() => {
