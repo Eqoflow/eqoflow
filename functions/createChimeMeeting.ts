@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
-import { ChimeSDKMeetingsClient, CreateMeetingCommand, CreateAttendeeCommand, GetMeetingCommand } from 'npm:@aws-sdk/client-chime-sdk-meetings@3';
+import { ChimeSDKMeetingsClient, CreateMeetingCommand, CreateAttendeeCommand } from 'npm:@aws-sdk/client-chime-sdk-meetings@3';
 
 Deno.serve(async (req) => {
   try {
@@ -8,68 +8,36 @@ Deno.serve(async (req) => {
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { channelId, communityId } = await req.json();
-    const cacheKey = `chime-meeting-${communityId}-${channelId}`;
+    if (!channelId || !communityId) {
+      return Response.json({ error: 'Missing channelId or communityId' }, { status: 400 });
+    }
 
     const region = Deno.env.get('AWS_CHIME_REGION') || 'us-east-1';
+    const accessKeyId = Deno.env.get('AWS_ACCESS_KEY_ID');
+    const secretAccessKey = Deno.env.get('AWS_SECRET_ACCESS_KEY');
+
+    if (!accessKeyId || !secretAccessKey) {
+      return Response.json({ error: 'AWS credentials not configured' }, { status: 500 });
+    }
+
     const chime = new ChimeSDKMeetingsClient({
       region,
       credentials: {
-        accessKeyId: Deno.env.get('AWS_ACCESS_KEY_ID'),
-        secretAccessKey: Deno.env.get('AWS_SECRET_ACCESS_KEY'),
+        accessKeyId,
+        secretAccessKey,
       }
     });
 
-    // Check cache for existing meeting
-    let meetingId = null;
-    try {
-      const cached = await base44.asServiceRole.entities.FunctionCache.filter({ function_name: cacheKey });
-      if (cached.length > 0) {
-        meetingId = cached[0].cached_response?.meetingId;
-        // Verify meeting still exists
-        try {
-          await chime.send(new GetMeetingCommand({ MeetingId: meetingId }));
-        } catch (e) {
-          meetingId = null;
-          try {
-            await base44.asServiceRole.entities.FunctionCache.delete(cached[0].id);
-          } catch (deleteErr) {
-            // Cache deletion failed, continue anyway
-          }
-        }
-      }
-    } catch (cacheErr) {
-      // FunctionCache might not exist or be accessible, skip cache
-      meetingId = null;
-    }
+    // Create meeting
+    const meetingRes = await chime.send(new CreateMeetingCommand({
+      ClientRequestToken: `${communityId}-${channelId}-${Date.now()}`,
+      MediaRegion: region,
+      ExternalMeetingId: `${communityId}-${channelId}`,
+    }));
 
-    // Create new meeting if needed
-    if (!meetingId) {
-      const res = await chime.send(new CreateMeetingCommand({
-        ClientRequestToken: `${communityId}-${channelId}-${Date.now()}`,
-        MediaRegion: region,
-        ExternalMeetingId: `${communityId}-${channelId}`,
-      }));
-      meetingId = res.Meeting.MeetingId;
-      
-      // Try to cache, but don't fail if cache unavailable
-      try {
-        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-        await base44.asServiceRole.entities.FunctionCache.create({
-          function_name: cacheKey,
-          cached_response: { meetingId },
-          expires_at: expiresAt,
-        });
-      } catch (cacheErr) {
-        // Cache creation failed, but meeting was created successfully
-      }
-    }
-
-    // Get full meeting info
-    const meetingRes = await chime.send(new GetMeetingCommand({ MeetingId: meetingId }));
-
-    // Create attendee for this user
+    // Create attendee
     const attendeeRes = await chime.send(new CreateAttendeeCommand({
-      MeetingId: meetingId,
+      MeetingId: meetingRes.Meeting.MeetingId,
       ExternalUserId: user.email,
     }));
 
@@ -78,6 +46,7 @@ Deno.serve(async (req) => {
       attendee: attendeeRes.Attendee,
     });
   } catch (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+    console.error('Chime error:', error);
+    return Response.json({ error: error.message || 'Failed to create meeting' }, { status: 500 });
   }
 });
