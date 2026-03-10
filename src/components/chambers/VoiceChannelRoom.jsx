@@ -75,7 +75,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave }) 
 
   const handleToggleMute = () => {
     const session = sessionRef.current;
-    if (!session) return;
+    if (!session || status !== 'connected') return;
     if (isMuted) {
       session.audioVideo.realtimeUnmuteLocalAudio();
     } else {
