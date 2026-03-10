@@ -49,7 +49,10 @@ export default function CommunityDiscordView({
   const [activeChannel, setActiveChannel]       = useState('general');
   const [activeVoice, setActiveVoice]           = useState(null);
   const [isMuted, setIsMuted]                   = useState(false);
+  const [isVideoOn, setIsVideoOn]               = useState(false);
+  const [isSharing, setIsSharing]               = useState(false);
   const [panelOpen, setPanelOpen]               = useState(true);
+  const voiceControlRef = useRef(null);
   const [updatesOpen, setUpdatesOpen]           = useState(false);
   const [membersOpen, setMembersOpen]           = useState(false);
 
