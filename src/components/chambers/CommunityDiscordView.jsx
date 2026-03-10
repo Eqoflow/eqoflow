@@ -145,10 +145,12 @@ export default function CommunityDiscordView({
 
   const activeChannelName = textChannels.find(c => c.id === activeChannel)?.name || 'general';
 
-  const handleJoinVoice = (ch) => {
+  const handleJoinVoice = async (ch) => {
     if (activeVoice?.id === ch.id) return;
+    if (activeVoice) await leaveVoiceChannel(activeVoice.id);
     playJoinSound();
     setActiveVoice(ch);
+    await joinVoiceChannel(ch);
   };
 
   const handleStartEdit = (ch, e) => {
