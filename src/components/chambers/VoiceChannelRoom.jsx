@@ -23,10 +23,14 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave }) 
   const [isSharing, setIsSharing] = useState(false);
   const [error, setError] = useState(null);
   const [meetingId, setMeetingId] = useState(null);
+  const [waveBars, setWaveBars] = useState(Array(20).fill(2));
 
   const sessionRef = useRef(null);
   const localVideoRef = useRef(null);
   const audioRef = useRef(null);
+  const analyserRef = useRef(null);
+  const animFrameRef = useRef(null);
+  const audioCtxRef = useRef(null);
 
   useEffect(() => {
     let session = null;
