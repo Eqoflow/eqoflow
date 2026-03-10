@@ -341,6 +341,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
       await session.audioVideo.stopContentShare();
       setIsSharing(false);
       onShareChange?.(false);
+      updateParticipantStatus({ isSharing: false });
     } else {
       await session.audioVideo.startContentShareFromScreenCapture();
       const observer = {
@@ -354,6 +355,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
       session.audioVideo.addObserver(observer);
       setIsSharing(true);
       onShareChange?.(true);
+      updateParticipantStatus({ isSharing: true });
     }
   };
 
