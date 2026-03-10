@@ -135,7 +135,9 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
     } else {
       session.audioVideo.realtimeMuteLocalAudio();
     }
-    setIsMuted(v => !v);
+    const next = !isMuted;
+    setIsMuted(next);
+    onMuteChange?.(next);
   };
 
   const handleToggleVideo = async () => {
