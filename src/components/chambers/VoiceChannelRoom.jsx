@@ -567,7 +567,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           </div>
         )}
 
-        {/* All participant videos grid (local + remote) */}
+        {/* Remote participant videos grid */}
         {Object.keys(remoteVideoTiles).length > 0 && !isSharing && !remoteShareActive && (
           <div style={{
             display: 'grid',
@@ -579,28 +579,6 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
             width: '100%',
           }}>
             {Object.entries(remoteVideoTiles).map(([attendeeId]) => {
-              const isLocal = attendeeId === 'local';
-              
-              if (isLocal) {
-                return (
-                  <video
-                    key="local"
-                    ref={localVideoGridRef}
-                    autoPlay
-                    muted
-                    playsInline
-                    style={{
-                      width: '100%',
-                      height: '200px',
-                      borderRadius: '8px',
-                      background: '#000',
-                      border: '1px solid rgba(0,229,160,0.2)',
-                      objectFit: 'cover',
-                    }}
-                  />
-                );
-              }
-              
               if (!remoteVideoRefs.current[attendeeId]) {
                 remoteVideoRefs.current[attendeeId] = { current: null };
               }
