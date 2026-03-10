@@ -346,7 +346,6 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
               const target = localVideoShareRef.current || localVideoRef.current;
               if (target) {
                 session.audioVideo.bindVideoElement(tileState.tileId, target);
-                session.audioVideo.removeObserver(observer);
               }
             }
           },
