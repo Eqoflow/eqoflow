@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import {
   Hash, Volume2, ChevronDown, ChevronRight,
-  Mic, MicOff, PhoneOff, PanelLeft,
+  Mic, MicOff, Video, VideoOff, Monitor, PhoneOff, PanelLeft,
   Home, MessageSquare, Settings, Layers,
   Plus, Pencil, Check, X,
 } from 'lucide-react';
