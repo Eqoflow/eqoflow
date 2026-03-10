@@ -113,25 +113,17 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
     };
   }, [channel.id, community.id]);
 
-  // Expose controls to parent via controlRef
-  useEffect(() => {
-    if (controlRef) {
-      controlRef.current = { handleToggleMute: () => handleToggleMuteInner(), handleLeave: () => handleLeaveInner() };
-    }
-  });
-
-  const handleToggleMute = () => handleToggleMuteInner();
-
-  const handleToggleMuteInner = () => {
+  const handleToggleMute = () => {
     const session = sessionRef.current;
     if (!session || status !== 'connected') return;
-    if (isMuted) {
-      session.audioVideo.realtimeUnmuteLocalAudio();
-    } else {
-      session.audioVideo.realtimeMuteLocalAudio();
-    }
-    setIsMuted(v => !v);
+    const next = !isMuted;
+    if (next) session.audioVideo.realtimeMuteLocalAudio();
+    else session.audioVideo.realtimeUnmuteLocalAudio();
+    setIsMuted(next);
+    onMuteChange?.(next);
   };
+
+  const handleToggleMuteInner = handleToggleMute;
 
   const handleToggleVideo = async () => {
     const session = sessionRef.current;
