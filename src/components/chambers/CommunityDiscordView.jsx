@@ -426,16 +426,19 @@ export default function CommunityDiscordView({
                   )}
                   {(voiceParticipants[ch.id]?.length > 0) && editingChannelId !== ch.id && (
                     <div className="ml-6 flex flex-col gap-0.5 pb-1">
-                      {(voiceParticipants[ch.id] || []).map(p => (
+                      {(voiceParticipants[ch.id] || []).map(p => {
+                        const profile = memberProfiles.find(m => m.email === p.email);
+                        const displayName = profile?.full_name || (p.email === user?.email ? user?.full_name : null) || 'Anonymous';
+                        return (
                         <div key={p.email} className="flex items-center gap-1.5 px-2 py-0.5">
                           <div className="w-4 h-4 rounded-full overflow-hidden flex-shrink-0"
                             style={{ background: '#00e5a0' }}>
                             {p.avatar_url
                               ? <img src={p.avatar_url} alt="" className="w-full h-full object-cover" />
-                              : <span className="text-[8px] text-black font-bold flex items-center justify-center h-full">{p.name?.[0]}</span>}
+                              : <span className="text-[8px] text-black font-bold flex items-center justify-center h-full">{displayName?.[0]}</span>}
                           </div>
                           <span className="text-[10px]" style={{ color: '#4b5563' }}>
-                            {p.name?.split(' ')[0]}
+                            {displayName}
                           </span>
                           {p.email === user?.email && isMuted && <MicOff className="w-2.5 h-2.5 text-red-400" />}
                           {p.email === user?.email && isSharing && (
@@ -447,7 +450,8 @@ export default function CommunityDiscordView({
                             </span>
                           )}
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </div>
