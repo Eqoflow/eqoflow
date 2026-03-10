@@ -366,6 +366,26 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
         }
       `}</style>
 
+      {/* Remote screen share — shown when someone else is sharing */}
+      {remoteShareActive && !isSharing && (
+        <div style={{ flex: 1, position: 'relative', padding: 12, overflow: 'hidden' }}>
+          <VoiceChannelChat user={user} allParticipants={allParticipants} memberProfiles={memberProfiles} />
+          <video
+            ref={remoteScreenShareRef}
+            autoPlay
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              background: '#000',
+              borderRadius: '12px',
+              border: '1px solid rgba(0,229,160,0.3)',
+              display: 'block',
+            }}
+          />
+        </div>
+      )}
+
       {/* Screen share full area with PiP cam overlay */}
       {isSharing && (
         <div style={{ flex: 1, position: 'relative', padding: 12, overflow: 'hidden' }}>
