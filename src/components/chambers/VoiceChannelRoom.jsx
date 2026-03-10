@@ -342,6 +342,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
       {/* Screen share full area with PiP cam overlay */}
       {isSharing && (
         <div style={{ flex: 1, position: 'relative', padding: 12, overflow: 'hidden' }}>
+          <VoiceChannelChat user={user} allParticipants={allParticipants} memberProfiles={memberProfiles} />
           <video
             ref={screenShareRef}
             autoPlay
