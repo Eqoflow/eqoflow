@@ -623,6 +623,7 @@ export default function CommunityDiscordView({
               onVideoChange={setIsVideoOn}
               onShareChange={setIsSharing}
               participants={voiceParticipants[activeVoice?.id] || []}
+              memberProfiles={memberProfiles}
             />
           ) : (
             <>
