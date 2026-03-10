@@ -337,6 +337,19 @@ export default function CommunityDiscordView({
                         {user.full_name?.split(' ')[0]}
                       </span>
                       {isMuted && <MicOff className="w-2.5 h-2.5 text-red-400" />}
+                      {isSharing && (
+                        <span
+                          className="text-[8px] font-bold px-1 py-0.5 rounded"
+                          style={{
+                            color: '#fff',
+                            background: '#ef4444',
+                            boxShadow: '0 0 6px rgba(239,68,68,0.8)',
+                            animation: 'pulse 1.5s ease-in-out infinite',
+                          }}
+                        >
+                          LIVE
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>
