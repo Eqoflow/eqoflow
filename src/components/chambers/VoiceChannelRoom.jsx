@@ -16,7 +16,7 @@ import { createChimeMeeting } from '@/functions/createChimeMeeting';
 import { endChimeMeeting } from '@/functions/endChimeMeeting';
 import { Mic, MicOff, Video, VideoOff, Monitor, PhoneOff, Loader } from 'lucide-react';
 
-export default function VoiceChannelRoom({ community, user, channel, onLeave }) {
+export default function VoiceChannelRoom({ community, user, channel, onLeave, controlRef, onStateChange }) {
   const [status, setStatus] = useState('connecting'); // connecting | connected | error
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(false);
