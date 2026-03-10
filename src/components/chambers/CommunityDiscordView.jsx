@@ -647,8 +647,16 @@ export default function CommunityDiscordView({
               onShareChange={setIsSharing}
               participants={voiceParticipants[activeVoice?.id] || []}
               memberProfiles={memberProfiles}
-              onUpdateParticipants={(updated) => {
+              onUpdateParticipants={async (updated) => {
                 setVoiceParticipants(prev => ({ ...prev, [activeVoice.id]: updated }));
+                // Also persist to channels so all users see status
+                const allChs = community.channels && community.channels.length > 0
+                  ? community.channels
+                  : [...DEFAULT_TEXT_CHANNELS, ...DEFAULT_VOICE_CHANNELS];
+                const channelsUpdated = allChs.map(c =>
+                  c.id === activeVoice.id ? { ...c, voice_participants: updated } : c
+                );
+                await onUpdateChannels(channelsUpdated);
               }}
             />
           ) : (
