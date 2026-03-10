@@ -1,3 +1,4 @@
+import './chimePolyfill.js';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ConsoleLogger,
