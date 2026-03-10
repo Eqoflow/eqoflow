@@ -216,6 +216,31 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           (activeSpeakers) => setSpeakingIds(new Set(activeSpeakers))
         );
 
+        // Observe remote video/content share tiles
+        const tileObserver = {
+          videoTileDidUpdate: (tileState) => {
+            if (!tileState.tileId) return;
+            // Remote content share (screen share from another participant)
+            if (tileState.isContent && !tileState.localTile) {
+              setRemoteShareActive(true);
+              // Bind once the ref is available
+              const tryBind = () => {
+                if (remoteScreenShareRef.current) {
+                  session.audioVideo.bindVideoElement(tileState.tileId, remoteScreenShareRef.current);
+                } else {
+                  setTimeout(tryBind, 100);
+                }
+              };
+              tryBind();
+            }
+          },
+          videoTileWasRemoved: (tileId) => {
+            // Check if the removed tile was the remote content share
+            setRemoteShareActive(false);
+          },
+        };
+        session.audioVideo.addObserver(tileObserver);
+
         setStatus('connected');
       } catch (err) {
         console.error('Chime join error:', err);
