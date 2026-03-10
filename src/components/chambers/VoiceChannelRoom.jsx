@@ -113,7 +113,16 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
     };
   }, [channel.id, community.id]);
 
-  const handleToggleMute = () => {
+  // Expose controls to parent via controlRef
+  useEffect(() => {
+    if (controlRef) {
+      controlRef.current = { handleToggleMute: () => handleToggleMuteInner(), handleLeave: () => handleLeaveInner() };
+    }
+  });
+
+  const handleToggleMute = () => handleToggleMuteInner();
+
+  const handleToggleMuteInner = () => {
     const session = sessionRef.current;
     if (!session || status !== 'connected') return;
     if (isMuted) {
