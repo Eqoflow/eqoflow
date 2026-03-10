@@ -634,12 +634,14 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
             ref={localVideoRef}
             autoPlay
             muted
+            playsInline
             style={{
               width: 200,
               borderRadius: 10,
               marginTop: 16,
               background: '#000',
               border: '1px solid rgba(0,229,160,0.2)',
+              display: 'block',
             }}
           />
         )}
