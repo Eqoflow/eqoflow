@@ -209,51 +209,106 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
   const handleLeave = () => handleLeaveInner();
 
   return (
-    <div className="flex-1 flex flex-col items-center p-6 overflow-y-auto" style={{ background: '#11141b' }}>
+    <div className="flex-1 flex flex-col overflow-hidden" style={{ background: '#11141b' }}>
       {/* Hidden audio element for remote audio output */}
       <audio ref={audioRef} style={{ display: 'none' }} />
 
-      {/* Screen share preview — shown prominently at the top when sharing */}
-      <video
-        ref={screenShareRef}
-        autoPlay
-        muted
-        className="rounded-xl"
-        style={{
-          display: isSharing ? 'block' : 'none',
-          width: '100%',
-          maxHeight: '320px',
-          background: '#000',
-          border: '1px solid rgba(0,229,160,0.3)',
-          marginBottom: '16px',
-        }}
-      />
-
-      {/* Local video preview */}
-      {isVideoOn && (
-        <video
-          ref={localVideoRef}
-          autoPlay
-          muted
-          className="rounded-xl mb-6"
-          style={{ width: '220px', background: '#000', border: '1px solid rgba(0,229,160,0.2)' }}
-        />
-      )}
-
-      {/* Audio waveform visualizer */}
-      <div className="mt-6 flex items-center justify-center gap-0.5" style={{ height: '48px' }}>
-        {waveBars.map((h, i) => (
-          <div
-            key={i}
+      {/* Screen share — fills the main area when active */}
+      {isSharing && (
+        <div className="flex-1 flex items-center justify-center p-4 overflow-hidden">
+          <video
+            ref={screenShareRef}
+            autoPlay
+            muted
             style={{
-              width: '3px',
-              height: `${isMuted ? 2 : h}px`,
-              background: isMuted ? 'rgba(107,114,128,0.3)' : `rgba(0,229,160,${0.4 + (h / 40) * 0.6})`,
-              borderRadius: '2px',
-              transition: 'height 0.05s ease, background 0.1s ease',
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              background: '#000',
+              borderRadius: '12px',
+              border: '1px solid rgba(0,229,160,0.3)',
             }}
           />
-        ))}
+        </div>
+      )}
+
+      {/* Main info area — centered when no screen share, compact strip when sharing */}
+      <div
+        className="flex flex-col items-center justify-center p-6"
+        style={{ flex: isSharing ? '0 0 auto' : '1' }}
+      >
+        {/* Channel name */}
+        <div className="mb-4 text-center">
+          <p className="text-xs font-bold tracking-widest uppercase mb-1" style={{ color: '#00e5a0' }}>
+            Voice Channel
+          </p>
+          <h2 className="text-white text-lg font-semibold">{channel.name}</h2>
+        </div>
+
+        {/* Status */}
+        {status === 'connecting' && (
+          <div className="flex items-center gap-2 mb-4" style={{ color: '#6b7280' }}>
+            <Loader className="w-4 h-4 animate-spin" />
+            <span className="text-sm">Connecting...</span>
+          </div>
+        )}
+        {status === 'error' && (
+          <div className="mb-4 px-4 py-2 rounded-lg text-sm text-red-400" style={{ background: 'rgba(239,68,68,0.1)' }}>
+            {error || 'Failed to connect'}
+          </div>
+        )}
+        {status === 'connected' && (
+          <div className="mb-4 flex items-center gap-2 text-sm" style={{ color: '#00e5a0' }}>
+            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+            Connected
+          </div>
+        )}
+
+        {/* User avatar */}
+        <div className="mb-4">
+          <div
+            className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden"
+            style={{
+              background: isMuted ? 'rgba(239,68,68,0.2)' : 'rgba(0,229,160,0.15)',
+              border: `2px solid ${isMuted ? '#ef4444' : '#00e5a0'}`
+            }}
+          >
+            {user.avatar_url
+              ? <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
+              : <span className="text-2xl font-bold text-white">{user.full_name?.[0]}</span>}
+          </div>
+          <p className="text-center text-xs mt-2" style={{ color: '#6b7280' }}>
+            {user.full_name?.split(' ')[0]}
+            {isMuted && <span className="ml-1 text-red-400">(muted)</span>}
+          </p>
+        </div>
+
+        {/* Local video preview */}
+        {isVideoOn && (
+          <video
+            ref={localVideoRef}
+            autoPlay
+            muted
+            className="rounded-xl mb-4"
+            style={{ width: '220px', background: '#000', border: '1px solid rgba(0,229,160,0.2)' }}
+          />
+        )}
+
+        {/* Audio waveform visualizer */}
+        <div className="flex items-center justify-center gap-0.5" style={{ height: '48px' }}>
+          {waveBars.map((h, i) => (
+            <div
+              key={i}
+              style={{
+                width: '3px',
+                height: `${isMuted ? 2 : h}px`,
+                background: isMuted ? 'rgba(107,114,128,0.3)' : `rgba(0,229,160,${0.4 + (h / 40) * 0.6})`,
+                borderRadius: '2px',
+                transition: 'height 0.05s ease, background 0.1s ease',
+              }}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
