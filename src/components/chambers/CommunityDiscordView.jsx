@@ -424,31 +424,30 @@ export default function CommunityDiscordView({
                       )}
                     </button>
                   )}
-                  {activeVoice?.id === ch.id && user && editingChannelId !== ch.id && (
-                    <div className="ml-6 flex items-center gap-1.5 px-2 py-0.5">
-                      <div className="w-4 h-4 rounded-full overflow-hidden flex-shrink-0"
-                        style={{ background: '#00e5a0' }}>
-                        {user.avatar_url
-                          ? <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
-                          : <span className="text-[8px] text-black font-bold flex items-center justify-center h-full">{user.full_name?.[0]}</span>}
-                      </div>
-                      <span className="text-[10px]" style={{ color: '#4b5563' }}>
-                        {user.full_name?.split(' ')[0]}
-                      </span>
-                      {isMuted && <MicOff className="w-2.5 h-2.5 text-red-400" />}
-                      {isSharing && (
-                        <span
-                          className="text-[8px] font-bold px-1 py-0.5 rounded"
-                          style={{
-                            color: '#fff',
-                            background: '#ef4444',
-                            boxShadow: '0 0 6px rgba(239,68,68,0.8)',
-                            animation: 'pulse 1.5s ease-in-out infinite',
-                          }}
-                        >
-                          LIVE
-                        </span>
-                      )}
+                  {(voiceParticipants[ch.id]?.length > 0) && editingChannelId !== ch.id && (
+                    <div className="ml-6 flex flex-col gap-0.5 pb-1">
+                      {(voiceParticipants[ch.id] || []).map(p => (
+                        <div key={p.email} className="flex items-center gap-1.5 px-2 py-0.5">
+                          <div className="w-4 h-4 rounded-full overflow-hidden flex-shrink-0"
+                            style={{ background: '#00e5a0' }}>
+                            {p.avatar_url
+                              ? <img src={p.avatar_url} alt="" className="w-full h-full object-cover" />
+                              : <span className="text-[8px] text-black font-bold flex items-center justify-center h-full">{p.name?.[0]}</span>}
+                          </div>
+                          <span className="text-[10px]" style={{ color: '#4b5563' }}>
+                            {p.name?.split(' ')[0]}
+                          </span>
+                          {p.email === user?.email && isMuted && <MicOff className="w-2.5 h-2.5 text-red-400" />}
+                          {p.email === user?.email && isSharing && (
+                            <span
+                              className="text-[8px] font-bold px-1 py-0.5 rounded"
+                              style={{ color: '#fff', background: '#ef4444', boxShadow: '0 0 6px rgba(239,68,68,0.8)' }}
+                            >
+                              LIVE
+                            </span>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
