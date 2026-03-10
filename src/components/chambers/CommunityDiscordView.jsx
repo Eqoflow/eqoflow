@@ -102,8 +102,10 @@ export default function CommunityDiscordView({
 
   const joinVoiceChannel = useCallback(async (ch) => {
     if (!user || !onUpdateChannels) return;
-    const allChs = community.channels && community.channels.length > 0
-      ? community.channels
+    // Fetch the latest community state from the DB to avoid stale data
+    const freshCommunity = await base44.entities.Community.get(community.id);
+    const allChs = freshCommunity.channels && freshCommunity.channels.length > 0
+      ? freshCommunity.channels
       : [...DEFAULT_TEXT_CHANNELS, ...DEFAULT_VOICE_CHANNELS];
     const participant = { 
       email: user.email, 
@@ -120,7 +122,7 @@ export default function CommunityDiscordView({
       return { ...c, voice_participants: [...existing, participant] };
     });
     await onUpdateChannels(updated);
-  }, [user, community.channels, onUpdateChannels]);
+  }, [user, community.id, onUpdateChannels]);
 
   const leaveVoiceChannel = useCallback(async (channelId) => {
     if (!user || !onUpdateChannels) return;
