@@ -126,8 +126,10 @@ export default function CommunityDiscordView({
 
   const leaveVoiceChannel = useCallback(async (channelId) => {
     if (!user || !onUpdateChannels) return;
-    const allChs = community.channels && community.channels.length > 0
-      ? community.channels
+    // Fetch the latest community state from the DB to avoid stale data
+    const freshCommunity = await base44.entities.Community.get(community.id);
+    const allChs = freshCommunity.channels && freshCommunity.channels.length > 0
+      ? freshCommunity.channels
       : [...DEFAULT_TEXT_CHANNELS, ...DEFAULT_VOICE_CHANNELS];
     const updated = allChs.map(c => {
       if (c.id !== channelId) return c;
@@ -137,7 +139,7 @@ export default function CommunityDiscordView({
       };
     });
     await onUpdateChannels(updated);
-  }, [user, community.channels, onUpdateChannels]);
+  }, [user, community.id, onUpdateChannels]);
 
   // Cleanup: remove user from voice channel if they navigate away
   useEffect(() => {
