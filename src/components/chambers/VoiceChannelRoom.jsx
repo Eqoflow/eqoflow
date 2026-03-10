@@ -110,36 +110,25 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
   const remoteScreenShareRef = useRef(null);
 
   const handleToggleScreenShare = async () => {
-    const session = sessionRef.current;
+    const session = webrtc.sessionRef?.current;
     if (!session) return;
     if (isSharing) {
       await session.audioVideo.stopContentShare();
       setIsSharing(false);
       onShareChange?.(false);
-      updateParticipantStatus({ isSharing: false });
     } else {
       await session.audioVideo.startContentShareFromScreenCapture();
       const observer = {
         videoTileDidUpdate: (tileState) => {
           if (tileState.isContent && screenShareRef.current) {
             session.audioVideo.bindVideoElement(tileState.tileId, screenShareRef.current);
-            session.audioVideo.removeObserver(observer);
           }
         },
       };
       session.audioVideo.addObserver(observer);
       setIsSharing(true);
       onShareChange?.(true);
-      updateParticipantStatus({ isSharing: true });
     }
-  };
-
-  const handleLeaveInner = async () => {
-    const session = sessionRef.current;
-    if (session) session.audioVideo.stop();
-    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-    if (audioCtxRef.current) audioCtxRef.current.close();
-    onLeave();
   };
 
   return (
