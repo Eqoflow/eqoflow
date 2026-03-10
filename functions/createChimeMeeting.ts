@@ -21,16 +21,25 @@ Deno.serve(async (req) => {
 
     // Check cache for existing meeting
     let meetingId = null;
-    const cached = await base44.asServiceRole.entities.FunctionCache.filter({ function_name: cacheKey });
-    if (cached.length > 0) {
-      meetingId = cached[0].cached_response?.meetingId;
-      // Verify meeting still exists
-      try {
-        await chime.send(new GetMeetingCommand({ MeetingId: meetingId }));
-      } catch (e) {
-        meetingId = null;
-        await base44.asServiceRole.entities.FunctionCache.delete(cached[0].id);
+    try {
+      const cached = await base44.asServiceRole.entities.FunctionCache.filter({ function_name: cacheKey });
+      if (cached.length > 0) {
+        meetingId = cached[0].cached_response?.meetingId;
+        // Verify meeting still exists
+        try {
+          await chime.send(new GetMeetingCommand({ MeetingId: meetingId }));
+        } catch (e) {
+          meetingId = null;
+          try {
+            await base44.asServiceRole.entities.FunctionCache.delete(cached[0].id);
+          } catch (deleteErr) {
+            // Cache deletion failed, continue anyway
+          }
+        }
       }
+    } catch (cacheErr) {
+      // FunctionCache might not exist or be accessible, skip cache
+      meetingId = null;
     }
 
     // Create new meeting if needed
