@@ -225,8 +225,10 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
             if (!tileState.tileId) return;
             const attendeeId = tileState.attendeeId;
             
-            // Local video tile
+            // Local video tile — add to grid for all to see, bind to personal preview
             if (tileState.localTile && !tileState.isContent) {
+              setLocalVideoTileId(tileState.tileId);
+              setRemoteVideoTiles(prev => ({ ...prev, 'local': tileState.tileId }));
               const target = localVideoShareRef.current || localVideoRef.current;
               if (target) {
                 session.audioVideo.bindVideoElement(tileState.tileId, target);
@@ -259,6 +261,9 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           },
           videoTileWasRemoved: (tileId) => {
             // Remove from tiles tracking
+            if (localVideoTileId === tileId) {
+              setLocalVideoTileId(null);
+            }
             setRemoteVideoTiles(prev => {
               const next = { ...prev };
               Object.keys(next).forEach(id => {
