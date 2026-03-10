@@ -81,7 +81,8 @@
     "@solana/wallet-adapter-react": "^0.15.35",
     "@solana/wallet-adapter-wallets": "^0.19.32",
     "@solana/wallet-adapter-base": "^0.9.23",
-    "buffer": "^6.0.3"
+    "buffer": "^6.0.3",
+    "amazon-chime-sdk-js": "^3.22.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
