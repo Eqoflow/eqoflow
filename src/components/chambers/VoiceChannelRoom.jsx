@@ -145,6 +145,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
     if (!session) return;
     if (isVideoOn) {
       session.audioVideo.stopLocalVideoTile();
+      await session.audioVideo.stopVideoInput();
       setIsVideoOn(false);
       onVideoChange?.(false);
     } else {
@@ -152,6 +153,18 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
       if (videoInputs.length > 0) {
         await session.audioVideo.startVideoInput(videoInputs[0].deviceId);
         session.audioVideo.startLocalVideoTile();
+
+        // Wait for the tile to be created then bind it to the video element
+        const observer = {
+          videoTileDidUpdate: (tileState) => {
+            if (tileState.localTile && localVideoRef.current) {
+              session.audioVideo.bindVideoElement(tileState.tileId, localVideoRef.current);
+              session.audioVideo.removeObserver(observer);
+            }
+          },
+        };
+        session.audioVideo.addObserver(observer);
+
         setIsVideoOn(true);
         onVideoChange?.(true);
       }
