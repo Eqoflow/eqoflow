@@ -1,3 +1,8 @@
+// Polyfill required by amazon-chime-sdk-js in browser environments
+if (typeof global === 'undefined') {
+  window.global = window;
+}
+
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ConsoleLogger,
