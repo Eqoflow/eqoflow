@@ -570,9 +570,9 @@ export default function CommunityDiscordView({
                     <Monitor className="w-3.5 h-3.5" />
                   </button>
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       if (voiceControlRef.current?.handleLeave) voiceControlRef.current.handleLeave();
-                      else setActiveVoice(null);
+                      else { await leaveVoiceChannel(activeVoice.id); setActiveVoice(null); }
                     }}
                     className="p-1.5 rounded-md transition-colors ml-auto"
                     style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444' }}
