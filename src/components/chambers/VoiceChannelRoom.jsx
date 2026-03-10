@@ -146,12 +146,14 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
     if (isVideoOn) {
       session.audioVideo.stopLocalVideoTile();
       setIsVideoOn(false);
+      onVideoChange?.(false);
     } else {
       const videoInputs = await session.audioVideo.listVideoInputDevices();
       if (videoInputs.length > 0) {
         await session.audioVideo.startVideoInput(videoInputs[0].deviceId);
         session.audioVideo.startLocalVideoTile();
         setIsVideoOn(true);
+        onVideoChange?.(true);
       }
     }
   };
