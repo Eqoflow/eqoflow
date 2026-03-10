@@ -108,6 +108,8 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave }) 
       if (session) {
         session.audioVideo.stop();
       }
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      if (audioCtxRef.current) audioCtxRef.current.close();
     };
   }, [channel.id, community.id]);
 
