@@ -116,7 +116,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
   const allParticipants = [
     {
       id: 'local',
-      name: user.full_name?.split(' ')[0] || 'You',
+      name: user.full_name || 'You',
       avatarUrl: user.avatar_url,
       isMuted,
       isSpeaking: isLocalSpeaking,
