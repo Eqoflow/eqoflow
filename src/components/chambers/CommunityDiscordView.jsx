@@ -429,6 +429,7 @@ export default function CommunityDiscordView({
                       {(voiceParticipants[ch.id] || []).map(p => {
                         const profile = memberProfiles.find(m => m.email === p.email);
                         const displayName = profile?.full_name || (p.email === user?.email ? user?.full_name : null) || 'Anonymous';
+                        const isCurrentUser = p.email === user?.email;
                         return (
                         <div key={p.email} className="flex items-center gap-1.5 px-2 py-0.5">
                           <div className="w-4 h-4 rounded-full overflow-hidden flex-shrink-0"
@@ -440,13 +441,21 @@ export default function CommunityDiscordView({
                           <span className="text-[10px]" style={{ color: '#4b5563' }}>
                             {displayName}
                           </span>
-                          {p.email === user?.email && isMuted && <MicOff className="w-2.5 h-2.5 text-red-400" />}
-                          {p.email === user?.email && isSharing && (
+                          {(p.isMuted || (isCurrentUser && isMuted)) && <MicOff className="w-2.5 h-2.5 text-red-400" />}
+                          {(p.isSharing || (isCurrentUser && isSharing)) && (
                             <span
                               className="text-[8px] font-bold px-1 py-0.5 rounded"
                               style={{ color: '#fff', background: '#ef4444', boxShadow: '0 0 6px rgba(239,68,68,0.8)' }}
                             >
                               LIVE
+                            </span>
+                          )}
+                          {(p.isVideoOn || (isCurrentUser && isVideoOn)) && (
+                            <span
+                              className="text-[8px] font-bold px-1 py-0.5 rounded"
+                              style={{ color: '#fff', background: '#3b82f6', boxShadow: '0 0 6px rgba(59,130,246,0.8)' }}
+                            >
+                              CAM
                             </span>
                           )}
                         </div>
