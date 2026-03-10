@@ -367,11 +367,11 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
         </div>
       )}
 
-      {/* Orbital ring section */}
+      {/* Orbital ring section — hidden when screen sharing */}
       <div
         style={{
-          flex: isSharing ? '0 0 auto' : '1',
-          display: 'flex',
+          flex: '1',
+          display: isSharing ? 'none' : 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
