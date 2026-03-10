@@ -78,16 +78,32 @@ function ParticipantNode({ participant }) {
 }
 
 export default function VoiceChannelRoom({ community, user, channel, onLeave, controlRef, onMuteChange, onVideoChange, onShareChange, channelSettings = {}, isCreator = false, participants = [], memberProfiles = [], onUpdateParticipants = null }) {
-  const [status, setStatus] = useState('connecting');
-  const [isMuted, setIsMuted] = useState(false);
-  const [isVideoOn, setIsVideoOn] = useState(false);
+  const webrtc = useChamberWebRTC(community.id, user);
   const [isSharing, setIsSharing] = useState(false);
   const [remoteShareActive, setRemoteShareActive] = useState(false);
   const [error, setError] = useState(null);
   const [waveBars, setWaveBars] = useState(Array(20).fill(2));
-  const [remoteAttendees, setRemoteAttendees] = useState({});
-  const [speakingIds, setSpeakingIds] = useState(new Set());
-  const [remoteVideoTiles, setRemoteVideoTiles] = useState({}); // { attendeeId: tileId }
+
+  // Sync with parent control ref
+  useEffect(() => {
+    if (controlRef) {
+      controlRef.current = {
+        handleToggleMute: webrtc.toggleMute,
+        handleToggleVideo: webrtc.toggleVideo,
+        handleToggleScreenShare: () => handleToggleScreenShare(),
+        handleLeave: onLeave,
+      };
+    }
+  }, [webrtc, controlRef, onLeave]);
+
+  // Sync video state with parent callbacks
+  useEffect(() => {
+    onVideoChange?.(webrtc.isVideoOn);
+  }, [webrtc.isVideoOn, onVideoChange]);
+
+  useEffect(() => {
+    onMuteChange?.(webrtc.isMuted);
+  }, [webrtc.isMuted, onMuteChange]);
 
   const sessionRef = useRef(null);
   const localVideoRef = useRef(null);
