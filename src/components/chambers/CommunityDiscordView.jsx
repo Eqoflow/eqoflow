@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Hash, Volume2, ChevronDown, ChevronRight,
   Mic, MicOff, PhoneOff, PanelLeft,
