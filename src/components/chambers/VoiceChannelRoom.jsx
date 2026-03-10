@@ -218,14 +218,21 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           (activeSpeakers) => setSpeakingIds(new Set(activeSpeakers))
         );
 
-        // Observe remote video and screen share tiles
+        // Observe all video and screen share tiles (local and remote)
         const tileObserver = {
           videoTileDidUpdate: (tileState) => {
             if (!tileState.tileId) return;
             const attendeeId = tileState.attendeeId;
             
+            // Local video tile
+            if (tileState.localTile && !tileState.isContent) {
+              const target = localVideoShareRef.current || localVideoRef.current;
+              if (target) {
+                session.audioVideo.bindVideoElement(tileState.tileId, target);
+              }
+            }
             // Remote content share (screen share from another participant)
-            if (tileState.isContent && !tileState.localTile) {
+            else if (tileState.isContent && !tileState.localTile) {
               setRemoteShareActive(true);
               const tryBind = () => {
                 if (remoteScreenShareRef.current) {
@@ -239,21 +246,13 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
             // Remote participant video (not local, not content)
             else if (!tileState.isContent && !tileState.localTile && attendeeId) {
               setRemoteVideoTiles(prev => ({ ...prev, [attendeeId]: tileState.tileId }));
-              // Try to bind to the participant's video ref if it exists
-              const ref = remoteVideoRefs.current[attendeeId];
-              if (ref?.current) {
-                session.audioVideo.bindVideoElement(tileState.tileId, ref.current);
-              } else {
-                // Create a ref if it doesn't exist and retry binding
-                if (!remoteVideoRefs.current[attendeeId]) {
-                  remoteVideoRefs.current[attendeeId] = { current: null };
-                }
-                setTimeout(() => {
-                  const createdRef = remoteVideoRefs.current[attendeeId];
-                  if (createdRef?.current) {
-                    session.audioVideo.bindVideoElement(tileState.tileId, createdRef.current);
-                  }
-                }, 100);
+              // Create ref if needed for future binding
+              if (!remoteVideoRefs.current[attendeeId]) {
+                remoteVideoRefs.current[attendeeId] = { current: null };
+              }
+              // Try immediate binding if ref is ready
+              if (remoteVideoRefs.current[attendeeId]?.current) {
+                session.audioVideo.bindVideoElement(tileState.tileId, remoteVideoRefs.current[attendeeId].current);
               }
             }
           },
