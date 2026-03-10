@@ -129,7 +129,10 @@ export default function CommunityDiscordView({
       : [...DEFAULT_TEXT_CHANNELS, ...DEFAULT_VOICE_CHANNELS];
     const updated = allChs.map(c => {
       if (c.id !== channelId) return c;
-      return { ...c, voice_participants: (c.voice_participants || []).filter(p => p.email !== user.email) };
+      return { 
+        ...c, 
+        voice_participants: (c.voice_participants || []).filter(p => p.email !== user.email) 
+      };
     });
     await onUpdateChannels(updated);
   }, [user, community.channels, onUpdateChannels]);
