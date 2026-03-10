@@ -105,6 +105,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
   const audioRef = useRef(null);
   const animFrameRef = useRef(null);
   const audioCtxRef = useRef(null);
+  const localAttendeeIdRef = useRef(null);
 
   // Derive local speaking from waveform amplitude
   const avgAmplitude = waveBars.reduce((s, v) => s + v, 0) / waveBars.length;
