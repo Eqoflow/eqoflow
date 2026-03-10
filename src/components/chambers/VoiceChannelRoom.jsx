@@ -15,6 +15,7 @@ import {
 } from 'amazon-chime-sdk-js';
 import { createChimeMeeting } from '@/functions/createChimeMeeting';
 import { Loader } from 'lucide-react';
+import VoiceChannelChat from './VoiceChannelChat';
 
 const RING_RADIUS = 110;
 const CONTAINER_SIZE = 310;
