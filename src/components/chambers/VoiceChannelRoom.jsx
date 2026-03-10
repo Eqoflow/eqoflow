@@ -182,7 +182,9 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
 
         // Track remote attendees via presence subscription
         session.audioVideo.realtimeSubscribeToAttendeeIdPresence((attendeeId, present, externalUserId) => {
-          if (attendeeId === data.attendee.AttendeeId) return; // skip self
+          if (attendeeId === localAttendeeIdRef.current) return; // skip self
+          // Also skip content share attendees (they have a suffix #content)
+          if (attendeeId.endsWith('#content')) return;
           if (present) {
             const name = externalUserId?.split('@')[0] || 'Guest';
             setRemoteAttendees(prev => ({ ...prev, [attendeeId]: { email: externalUserId, name } }));
