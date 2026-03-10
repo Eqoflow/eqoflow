@@ -250,56 +250,6 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           />
         ))}
       </div>
-
-      {/* Controls */}
-      <div className="flex items-center gap-3">
-        <button
-          onClick={handleToggleMute}
-          className="w-12 h-12 rounded-full flex items-center justify-center transition-all"
-          style={{
-            background: isMuted ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.07)',
-            border: `1px solid ${isMuted ? '#ef4444' : 'rgba(255,255,255,0.1)'}`
-          }}
-          title={isMuted ? 'Unmute' : 'Mute'}
-        >
-          {isMuted ? <MicOff className="w-5 h-5 text-red-400" /> : <Mic className="w-5 h-5 text-white" />}
-        </button>
-
-        <button
-          onClick={handleToggleVideo}
-          className="w-12 h-12 rounded-full flex items-center justify-center transition-all"
-          style={{
-            background: isVideoOn ? 'rgba(0,229,160,0.15)' : 'rgba(255,255,255,0.07)',
-            border: `1px solid ${isVideoOn ? '#00e5a0' : 'rgba(255,255,255,0.1)'}`
-          }}
-          title={isVideoOn ? 'Stop Video' : 'Start Video'}
-        >
-          {isVideoOn
-            ? <Video className="w-5 h-5" style={{ color: '#00e5a0' }} />
-            : <VideoOff className="w-5 h-5 text-white" />}
-        </button>
-
-        <button
-          onClick={handleToggleScreenShare}
-          className="w-12 h-12 rounded-full flex items-center justify-center transition-all"
-          style={{
-            background: isSharing ? 'rgba(0,229,160,0.15)' : 'rgba(255,255,255,0.07)',
-            border: `1px solid ${isSharing ? '#00e5a0' : 'rgba(255,255,255,0.1)'}`
-          }}
-          title={isSharing ? 'Stop Sharing' : 'Share Screen'}
-        >
-          <Monitor className="w-5 h-5" style={{ color: isSharing ? '#00e5a0' : 'white' }} />
-        </button>
-
-        <button
-          onClick={handleLeave}
-          className="w-12 h-12 rounded-full flex items-center justify-center transition-all"
-          style={{ background: 'rgba(239,68,68,0.2)', border: '1px solid #ef4444' }}
-          title="Leave Voice"
-        >
-          <PhoneOff className="w-5 h-5 text-red-400" />
-        </button>
-      </div>
     </div>
   );
 }
