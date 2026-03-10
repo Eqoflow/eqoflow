@@ -581,6 +581,47 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           </div>
         )}
 
+        {/* Remote participant videos grid */}
+        {Object.keys(remoteVideoTiles).length > 0 && !isSharing && !remoteShareActive && (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: Object.keys(remoteVideoTiles).length === 1 ? '1fr' : 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: 12,
+            padding: '16px',
+            flex: 1,
+            overflow: 'auto',
+            width: '100%',
+          }}>
+            {Object.entries(remoteVideoTiles).map(([attendeeId]) => {
+              if (!remoteVideoRefs.current[attendeeId]) {
+                remoteVideoRefs.current[attendeeId] = { current: null };
+              }
+              return (
+                <video
+                  key={attendeeId}
+                  ref={el => {
+                    if (remoteVideoRefs.current[attendeeId]) {
+                      remoteVideoRefs.current[attendeeId].current = el;
+                      if (el && remoteVideoTiles[attendeeId]) {
+                        sessionRef.current?.audioVideo.bindVideoElement(remoteVideoTiles[attendeeId], el);
+                      }
+                    }
+                  }}
+                  autoPlay
+                  style={{
+                    width: '100%',
+                    height: '200px',
+                    borderRadius: '8px',
+                    background: '#000',
+                    border: '1px solid rgba(0,229,160,0.2)',
+                    objectFit: 'cover',
+                  }}
+                />
+              );
+            })}
+          </div>
+        )}
+
         {/* Chat overlay when video is on but not screen sharing */}
         {isVideoOn && !isSharing && (
           <div style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
