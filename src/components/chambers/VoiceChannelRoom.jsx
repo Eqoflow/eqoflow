@@ -351,7 +351,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
         {isVideoOn && (
           <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: 12 }}>
             <video
-              ref={localVideoRef}
+              ref={localVideoShareRef}
               autoPlay
               muted
               style={{
