@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { base44 } from '@/api/base44Client';
 import CommunityChannelChat from './CommunityChannelChat';
 import VoiceChannelRoom from './VoiceChannelRoom';
 import VoiceChannelSettingsModal from './VoiceChannelSettingsModal';
