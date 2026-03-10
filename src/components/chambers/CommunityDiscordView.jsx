@@ -105,7 +105,14 @@ export default function CommunityDiscordView({
     const allChs = community.channels && community.channels.length > 0
       ? community.channels
       : [...DEFAULT_TEXT_CHANNELS, ...DEFAULT_VOICE_CHANNELS];
-    const participant = { email: user.email, name: user.full_name || 'Anonymous', avatar_url: user.avatar_url || null };
+    const participant = { 
+      email: user.email, 
+      name: user.full_name || 'Anonymous', 
+      avatar_url: user.avatar_url || null,
+      isVideoOn: false,
+      isSharing: false,
+      isMuted: false,
+    };
     const updated = allChs.map(c => {
       if (c.id !== ch.id) return c;
       const existing = c.voice_participants || [];
