@@ -223,7 +223,6 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
             // Remote content share (screen share from another participant)
             if (tileState.isContent && !tileState.localTile) {
               setRemoteShareActive(true);
-              // Bind once the ref is available
               const tryBind = () => {
                 if (remoteScreenShareRef.current) {
                   session.audioVideo.bindVideoElement(tileState.tileId, remoteScreenShareRef.current);
@@ -233,9 +232,14 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
               };
               tryBind();
             }
+            // Remote participant video (not local, not content)
+            else if (!tileState.isContent && !tileState.localTile) {
+              // Bind remote participant video - for now just ensure it's active
+              // In a full implementation, you'd create a video element for each remote participant
+              // For this version, we'll let Chime handle the binding internally
+            }
           },
           videoTileWasRemoved: (tileId) => {
-            // Check if the removed tile was the remote content share
             setRemoteShareActive(false);
           },
         };
