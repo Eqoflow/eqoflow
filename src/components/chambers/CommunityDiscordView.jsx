@@ -462,27 +462,37 @@ export default function CommunityDiscordView({
 
         {/* ── Main Canvas ── */}
         <main className="flex-1 flex flex-col overflow-hidden" style={{ background: '#11141b' }}>
-          {/* Channel context strip */}
-          <div
-            className="flex items-center px-5 py-2.5 flex-shrink-0"
-            style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}
-          >
-            <Hash className="w-4 h-4 mr-1.5 flex-shrink-0" style={{ color: '#00e5a0' }} />
-            <span className="text-sm font-semibold text-white">{activeChannelName}</span>
-            <span className="mx-2 text-xs" style={{ color: '#1f2937' }}>|</span>
-            <span className="text-xs truncate" style={{ color: '#374151' }}>
-              {community.description?.slice(0, 80) || `Welcome to ${community.name}`}
-            </span>
-          </div>
-
-          <div className="flex-1 overflow-hidden flex flex-col">
-            <CommunityChannelChat
+          {activeVoice ? (
+            <VoiceChannelRoom
               community={community}
               user={user}
-              channelId={activeChannel}
-              channelName={activeChannelName}
+              channel={activeVoice}
+              onLeave={() => setActiveVoice(null)}
             />
-          </div>
+          ) : (
+            <>
+              {/* Channel context strip */}
+              <div
+                className="flex items-center px-5 py-2.5 flex-shrink-0"
+                style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}
+              >
+                <Hash className="w-4 h-4 mr-1.5 flex-shrink-0" style={{ color: '#00e5a0' }} />
+                <span className="text-sm font-semibold text-white">{activeChannelName}</span>
+                <span className="mx-2 text-xs" style={{ color: '#1f2937' }}>|</span>
+                <span className="text-xs truncate" style={{ color: '#374151' }}>
+                  {community.description?.slice(0, 80) || `Welcome to ${community.name}`}
+                </span>
+              </div>
+              <div className="flex-1 overflow-hidden flex flex-col">
+                <CommunityChannelChat
+                  community={community}
+                  user={user}
+                  channelId={activeChannel}
+                  channelName={activeChannelName}
+                />
+              </div>
+            </>
+          )}
         </main>
       </div>
     </div>

@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
     if (!meetingId) {
       const res = await chime.send(new CreateMeetingCommand({
         ClientRequestToken: `${communityId}-${channelId}-${Date.now()}`,
-        MediaRegion: 'auto',
+        MediaRegion: region,
         ExternalMeetingId: `${communityId}-${channelId}`,
       }));
       meetingId = res.Meeting.MeetingId;
