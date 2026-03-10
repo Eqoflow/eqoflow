@@ -89,7 +89,7 @@ function ParticipantNode({ participant }) {
   );
 }
 
-export default function VoiceChannelRoom({ community, user, channel, onLeave, controlRef, onMuteChange, onVideoChange, onShareChange, channelSettings = {}, isCreator = false }) {
+export default function VoiceChannelRoom({ community, user, channel, onLeave, controlRef, onMuteChange, onVideoChange, onShareChange, channelSettings = {}, isCreator = false, participants = [] }) {
   const [status, setStatus] = useState('connecting');
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(false);
