@@ -614,7 +614,7 @@ export default function CommunityDiscordView({
               community={community}
               user={user}
               channel={activeVoice}
-              onLeave={() => { setActiveVoice(null); setIsMuted(false); setIsVideoOn(false); setIsSharing(false); }}
+              onLeave={async () => { await leaveVoiceChannel(activeVoice.id); setActiveVoice(null); setIsMuted(false); setIsVideoOn(false); setIsSharing(false); }}
               controlRef={voiceControlRef}
               onMuteChange={setIsMuted}
               onVideoChange={setIsVideoOn}
