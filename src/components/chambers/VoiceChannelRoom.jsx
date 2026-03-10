@@ -443,15 +443,20 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           </div>
         )}
 
-        {/* Local video preview when cam is on */}
-        {isVideoOn && !isSharing && (
-          <video
-            ref={localVideoRef}
-            autoPlay
-            muted
-            style={{ width: 200, borderRadius: 10, marginTop: 16, background: '#000', border: '1px solid rgba(0,229,160,0.2)' }}
-          />
-        )}
+        {/* Local video preview — always rendered so ref is available, hidden when not in use */}
+        <video
+          ref={localVideoRef}
+          autoPlay
+          muted
+          style={{
+            display: isVideoOn && !isSharing ? 'block' : 'none',
+            width: 200,
+            borderRadius: 10,
+            marginTop: 16,
+            background: '#000',
+            border: '1px solid rgba(0,229,160,0.2)',
+          }}
+        />
       </div>
     </div>
   );
