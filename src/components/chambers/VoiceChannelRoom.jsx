@@ -95,6 +95,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [remoteShareActive, setRemoteShareActive] = useState(false);
   const [error, setError] = useState(null);
   const [waveBars, setWaveBars] = useState(Array(20).fill(2));
   const [remoteAttendees, setRemoteAttendees] = useState({});
@@ -104,6 +105,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
   const localVideoRef = useRef(null);
   const localVideoShareRef = useRef(null);
   const screenShareRef = useRef(null);
+  const remoteScreenShareRef = useRef(null);
   const audioRef = useRef(null);
   const animFrameRef = useRef(null);
   const audioCtxRef = useRef(null);
