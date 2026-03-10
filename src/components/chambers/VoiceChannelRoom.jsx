@@ -113,10 +113,12 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
   const isLocalSpeaking = !isMuted && avgAmplitude > 5;
 
   // Build ordered participant list: local user first, then remote
+  const localProfile = memberProfiles.find(p => p.email === user.email);
+  const localDisplayName = localProfile?.full_name || user.full_name || 'You';
   const allParticipants = [
     {
       id: 'local',
-      name: user.full_name || 'You',
+      name: localDisplayName,
       avatarUrl: user.avatar_url,
       isMuted,
       isSpeaking: isLocalSpeaking,
