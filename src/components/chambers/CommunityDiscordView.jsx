@@ -57,6 +57,9 @@ export default function CommunityDiscordView({
   const [updatesOpen, setUpdatesOpen]           = useState(false);
   const [membersOpen, setMembersOpen]           = useState(false);
 
+  // Voice channel settings modal state
+  const [settingsChannel, setSettingsChannel] = useState(null);
+
   // Channel management state
   const [editingChannelId, setEditingChannelId] = useState(null);
   const [editingChannelName, setEditingChannelName] = useState('');
