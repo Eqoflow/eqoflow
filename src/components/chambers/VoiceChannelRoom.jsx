@@ -181,6 +181,18 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
       onShareChange?.(false);
     } else {
       await session.audioVideo.startContentShareFromScreenCapture();
+
+      // Bind the content share tile to the screen share video element
+      const observer = {
+        videoTileDidUpdate: (tileState) => {
+          if (tileState.isContent && screenShareRef.current) {
+            session.audioVideo.bindVideoElement(tileState.tileId, screenShareRef.current);
+            session.audioVideo.removeObserver(observer);
+          }
+        },
+      };
+      session.audioVideo.addObserver(observer);
+
       setIsSharing(true);
       onShareChange?.(true);
     }
