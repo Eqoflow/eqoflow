@@ -346,28 +346,9 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
       if (videoInputs.length > 0) {
         await session.audioVideo.startVideoInput(videoInputs[0].deviceId);
         session.audioVideo.startLocalVideoTile();
-        const observer = {
-          videoTileDidUpdate: (tileState) => {
-            if (tileState.localTile) {
-              const target = localVideoShareRef.current || localVideoRef.current;
-              if (target) {
-                session.audioVideo.bindVideoElement(tileState.tileId, target);
-              }
-            }
-          },
-        };
-        session.audioVideo.addObserver(observer);
         setIsVideoOn(true);
         onVideoChange?.(true);
         updateParticipantStatus({ isVideoOn: true });
-        // If already sharing, bind immediately to the share-section ref
-        if (localVideoShareRef.current) {
-          const tiles = session.audioVideo.getAllVideoTiles?.() || [];
-          const localTile = tiles.find(t => t.state().localTile);
-          if (localTile) {
-            session.audioVideo.bindVideoElement(localTile.id(), localVideoShareRef.current);
-          }
-        }
       }
     }
   };
