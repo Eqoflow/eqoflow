@@ -267,6 +267,14 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
         session.audioVideo.addObserver(observer);
         setIsVideoOn(true);
         onVideoChange?.(true);
+        // If already sharing, bind immediately to the share-section ref
+        if (localVideoShareRef.current) {
+          const tiles = session.audioVideo.getAllVideoTiles?.() || [];
+          const localTile = tiles.find(t => t.state().localTile);
+          if (localTile) {
+            session.audioVideo.bindVideoElement(localTile.id(), localVideoShareRef.current);
+          }
+        }
       }
     }
   };
