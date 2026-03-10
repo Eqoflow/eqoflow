@@ -164,9 +164,11 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
     if (isSharing) {
       await session.audioVideo.stopContentShare();
       setIsSharing(false);
+      onShareChange?.(false);
     } else {
       await session.audioVideo.startContentShareFromScreenCapture();
       setIsSharing(true);
+      onShareChange?.(true);
     }
   };
 
