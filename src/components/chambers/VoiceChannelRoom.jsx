@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import RemoteParticipantVideo from './RemoteParticipantVideo';
 
 // Polyfill required by amazon-chime-sdk-js in browser environments
 if (typeof window !== 'undefined') {
