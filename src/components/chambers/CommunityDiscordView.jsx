@@ -422,21 +422,53 @@ export default function CommunityDiscordView({
             {/* Voice controls strip */}
             {activeVoice && (
               <div
-                className="px-3 py-2 flex items-center gap-2"
+                className="px-3 py-2"
                 style={{ borderTop: '1px solid rgba(255,255,255,0.04)', background: '#080a0e' }}
               >
-                <div className="flex-1 min-w-0">
+                <div className="mb-1.5">
                   <p className="text-[10px] font-medium" style={{ color: '#00e5a0' }}>In Voice</p>
                   <p className="text-[10px] truncate" style={{ color: '#374151' }}>{activeVoice.name}</p>
                 </div>
-                <button onClick={() => setIsMuted(v => !v)} className="p-1 rounded"
-                  style={{ color: isMuted ? '#ef4444' : '#4b5563' }}>
-                  {isMuted ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
-                </button>
-                <button onClick={() => setActiveVoice(null)} className="p-1 rounded"
-                  style={{ color: '#ef4444' }}>
-                  <PhoneOff className="w-3.5 h-3.5" />
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => {
+                      if (voiceControlRef.current?.handleToggleMute) voiceControlRef.current.handleToggleMute();
+                      else setIsMuted(v => !v);
+                    }}
+                    className="p-1.5 rounded-md transition-colors"
+                    style={{ background: isMuted ? 'rgba(239,68,68,0.15)' : 'rgba(255,255,255,0.05)', color: isMuted ? '#ef4444' : '#9ca3af' }}
+                    title={isMuted ? 'Unmute' : 'Mute'}
+                  >
+                    {isMuted ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                  </button>
+                  <button
+                    onClick={() => { if (voiceControlRef.current?.handleToggleVideo) voiceControlRef.current.handleToggleVideo(); }}
+                    className="p-1.5 rounded-md transition-colors"
+                    style={{ background: isVideoOn ? 'rgba(0,229,160,0.1)' : 'rgba(255,255,255,0.05)', color: isVideoOn ? '#00e5a0' : '#9ca3af' }}
+                    title={isVideoOn ? 'Stop Video' : 'Start Video'}
+                  >
+                    {isVideoOn ? <Video className="w-3.5 h-3.5" /> : <VideoOff className="w-3.5 h-3.5" />}
+                  </button>
+                  <button
+                    onClick={() => { if (voiceControlRef.current?.handleToggleScreenShare) voiceControlRef.current.handleToggleScreenShare(); }}
+                    className="p-1.5 rounded-md transition-colors"
+                    style={{ background: isSharing ? 'rgba(0,229,160,0.1)' : 'rgba(255,255,255,0.05)', color: isSharing ? '#00e5a0' : '#9ca3af' }}
+                    title={isSharing ? 'Stop Sharing' : 'Share Screen'}
+                  >
+                    <Monitor className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (voiceControlRef.current?.handleLeave) voiceControlRef.current.handleLeave();
+                      else setActiveVoice(null);
+                    }}
+                    className="p-1.5 rounded-md transition-colors ml-auto"
+                    style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444' }}
+                    title="Leave Voice"
+                  >
+                    <PhoneOff className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             )}
 
