@@ -319,13 +319,22 @@ export default function CommunityDiscordView({
                         style={{ color: activeVoice?.id === ch.id ? '#00e5a0' : '#2d3748' }} />
                       <span className="truncate flex-1">{ch.name}</span>
                       {canManageChannels && (
-                        <button
-                          onClick={e => handleStartEdit(ch, e)}
-                          className="opacity-0 group-hover/ch:opacity-100 transition-opacity"
-                          title="Rename channel"
-                        >
-                          <Pencil className="w-2.5 h-2.5" style={{ color: '#6b7280' }} />
-                        </button>
+                        <>
+                          <button
+                            onClick={e => { e.stopPropagation(); setSettingsChannel(ch); }}
+                            className="opacity-0 group-hover/ch:opacity-100 transition-opacity"
+                            title="Channel settings"
+                          >
+                            <Settings className="w-2.5 h-2.5" style={{ color: '#00e5a0' }} />
+                          </button>
+                          <button
+                            onClick={e => handleStartEdit(ch, e)}
+                            className="opacity-0 group-hover/ch:opacity-100 transition-opacity"
+                            title="Rename channel"
+                          >
+                            <Pencil className="w-2.5 h-2.5" style={{ color: '#6b7280' }} />
+                          </button>
+                        </>
                       )}
                     </button>
                   )}

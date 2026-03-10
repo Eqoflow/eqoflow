@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X, Settings } from 'lucide-react';
 
 export default function VoiceChannelSettingsModal({ channel, onClose, onSave }) {
-  const [settings, setSettings] = React.useState({
+  const [settings, setSettings] = useState({
     mute_on_join: channel?.settings?.mute_on_join || false,
     require_permission_to_speak: channel?.settings?.require_permission_to_speak || false,
   });
