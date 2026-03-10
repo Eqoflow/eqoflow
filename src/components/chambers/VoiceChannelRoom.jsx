@@ -187,9 +187,10 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           // Also skip content share attendees (they have a suffix #content)
           if (attendeeId.endsWith('#content')) return;
           if (present) {
-            // Look up full name from participants list by email, fallback to 'Guest'
-            const matched = participants.find(p => p.email === externalUserId);
-            const name = matched?.name || 'Guest';
+            // Look up full name from memberProfiles first, then participants, fallback to 'Guest'
+            const profileMatch = memberProfiles.find(p => p.email === externalUserId);
+            const participantMatch = participants.find(p => p.email === externalUserId);
+            const name = profileMatch?.full_name || participantMatch?.name || 'Guest';
             setRemoteAttendees(prev => ({ ...prev, [attendeeId]: { email: externalUserId, name } }));
           } else {
             setRemoteAttendees(prev => {
