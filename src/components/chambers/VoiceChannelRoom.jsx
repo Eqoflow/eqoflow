@@ -236,13 +236,25 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
             }
             // Remote participant video (not local, not content)
             else if (!tileState.isContent && !tileState.localTile) {
-              // Bind remote participant video - for now just ensure it's active
-              // In a full implementation, you'd create a video element for each remote participant
-              // For this version, we'll let Chime handle the binding internally
+              const attendeeId = tileState.attendeeId;
+              setRemoteVideoTiles(prev => ({ ...prev, [attendeeId]: tileState.tileId }));
+              // Bind to the participant's video ref if it exists
+              const ref = remoteVideoRefs.current[attendeeId];
+              if (ref?.current) {
+                session.audioVideo.bindVideoElement(tileState.tileId, ref.current);
+              }
             }
           },
           videoTileWasRemoved: (tileId) => {
             setRemoteShareActive(false);
+            // Clean up the tile from our tracking
+            setRemoteVideoTiles(prev => {
+              const next = { ...prev };
+              Object.keys(next).forEach(attendeeId => {
+                if (next[attendeeId] === tileId) delete next[attendeeId];
+              });
+              return next;
+            });
           },
         };
         session.audioVideo.addObserver(tileObserver);
