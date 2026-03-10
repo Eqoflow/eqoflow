@@ -588,7 +588,10 @@ export default function CommunityDiscordView({
             )}
 
             {/* User identity */}
-            {user && (
+            {user && (() => {
+              const localProfile = memberProfiles.find(p => p.email === user.email);
+              const localDisplayName = localProfile?.full_name || user.full_name || 'You';
+              return (
               <div
                 className="px-3 py-2 flex items-center gap-2"
                 style={{ borderTop: '1px solid rgba(255,255,255,0.04)', background: '#080a0e' }}
@@ -597,16 +600,17 @@ export default function CommunityDiscordView({
                   style={{ background: '#00e5a0' }}>
                   {user.avatar_url
                     ? <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
-                    : <span className="text-xs text-black font-bold flex items-center justify-center h-full">{(user.full_name || 'You')[0]}</span>}
+                    : <span className="text-xs text-black font-bold flex items-center justify-center h-full">{localDisplayName[0]}</span>}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-white truncate leading-tight">{user.full_name || 'You'}</p>
+                  <p className="text-xs font-semibold text-white truncate leading-tight">{localDisplayName}</p>
                   <p className="text-[10px]" style={{ color: '#374151' }}>
                     {isCreator ? 'Creator' : isMember ? 'Member' : ''}
                   </p>
                 </div>
               </div>
-            )}
+              );
+            })()}
           </aside>
         )}
 
