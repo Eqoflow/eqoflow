@@ -286,6 +286,17 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
 
 
 
+  // After React commits remote video elements to the DOM, bind them to their Chime tiles
+  useEffect(() => {
+    Object.entries(remoteCameraTiles).forEach(([tileId, attendeeId]) => {
+      const numericTileId = parseInt(tileId, 10);
+      const el = remoteVideoRefs.current[numericTileId];
+      if (el && sessionRef.current) {
+        sessionRef.current.audioVideo.bindVideoElement(numericTileId, el);
+      }
+    });
+  }, [remoteCameraTiles]);
+
   // Expose controls to parent via controlRef
   useEffect(() => {
     if (controlRef) {
