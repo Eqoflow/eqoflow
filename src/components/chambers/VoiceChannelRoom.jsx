@@ -225,9 +225,14 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
               if (!remoteVideoRefs.current[attendeeId]) {
                 remoteVideoRefs.current[attendeeId] = { current: null };
               }
-              // Store as pending — the <video> element won't exist in DOM until state update re-renders
-              pendingTileBinds.current[attendeeId] = tileState.tileId;
               setRemoteVideoTiles(prev => ({ ...prev, [attendeeId]: tileState.tileId }));
+              // Try to bind immediately — element is pre-rendered in DOM for all known attendees
+              const el = remoteVideoRefs.current[attendeeId]?.current;
+              if (el) {
+                sessionRef.current?.audioVideo.bindVideoElement(tileState.tileId, el);
+              } else {
+                pendingTileBinds.current[attendeeId] = tileState.tileId;
+              }
             }
           },
           videoTileWasRemoved: (tileId) => {
