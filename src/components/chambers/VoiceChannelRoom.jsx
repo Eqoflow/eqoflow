@@ -289,7 +289,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
     return () => {
       if (session) session.audioVideo.stop();
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-      if (audioCtxRef.current) audioCtxRef.current.close();
+      if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') audioCtxRef.current.close();
     };
   }, [channel.id, community.id]);
 
