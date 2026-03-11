@@ -625,23 +625,21 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           </div>
         )}
 
-        {/* Local video preview when no screen share active */}
-        {isVideoOn && !isSharing && (
-          <video
-            ref={localVideoRef}
-            autoPlay
-            muted
-            playsInline
-            style={{
-              width: 200,
-              borderRadius: 10,
-              marginTop: 16,
-              background: '#000',
-              border: '1px solid rgba(0,229,160,0.2)',
-              display: 'block',
-            }}
-          />
-        )}
+        {/* Local video — always in DOM so Chime can bind immediately when video is toggled on */}
+        <video
+          ref={localVideoRef}
+          autoPlay
+          muted
+          playsInline
+          style={{
+            width: 200,
+            borderRadius: 10,
+            marginTop: 16,
+            background: '#0e1118',
+            border: `1px solid ${isVideoOn ? 'rgba(0,229,160,0.2)' : 'rgba(255,255,255,0.06)'}`,
+            display: isSharing ? 'none' : 'block',
+          }}
+        />
       </div>
     </div>
   );
