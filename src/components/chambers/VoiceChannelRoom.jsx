@@ -221,17 +221,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
             }
             // Remote participant video (not local, not content)
             else if (!tileState.isContent && !tileState.localTile && attendeeId) {
-              if (!remoteVideoRefs.current[attendeeId]) {
-                remoteVideoRefs.current[attendeeId] = { current: null };
-              }
               setRemoteVideoTiles(prev => ({ ...prev, [attendeeId]: tileState.tileId }));
-              // Try to bind immediately — element is pre-rendered in DOM for all known attendees
-              const el = remoteVideoRefs.current[attendeeId]?.current;
-              if (el) {
-                sessionRef.current?.audioVideo.bindVideoElement(tileState.tileId, el);
-              } else {
-                pendingTileBinds.current[attendeeId] = tileState.tileId;
-              }
             }
           },
           videoTileWasRemoved: (tileId) => {
