@@ -200,18 +200,13 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
             if (!tileState.tileId) return;
             const attendeeId = tileState.attendeeId;
             
-            // Local video tile — bind to personal preview only
+            // Local video tile — bind to always-present localVideoRef immediately
             if (tileState.localTile && !tileState.isContent) {
               setLocalVideoTileId(tileState.tileId);
-              const tryBindLocal = () => {
-                const target = localVideoShareRef.current || localVideoRef.current;
-                if (target) {
-                  sessionRef.current?.audioVideo.bindVideoElement(tileState.tileId, target);
-                } else {
-                  setTimeout(tryBindLocal, 100);
-                }
-              };
-              tryBindLocal();
+              const target = localVideoShareRef.current || localVideoRef.current;
+              if (target) {
+                sessionRef.current?.audioVideo.bindVideoElement(tileState.tileId, target);
+              }
             }
             // Remote content share (screen share from another participant)
             else if (tileState.isContent && !tileState.localTile) {
