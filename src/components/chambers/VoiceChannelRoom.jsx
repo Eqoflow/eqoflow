@@ -577,21 +577,12 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           }}>
             {Object.keys(remoteAttendees).map((attendeeId) => {
               const hasTile = !!remoteVideoTiles[attendeeId];
-              if (!remoteVideoRefs.current[attendeeId]) {
-                remoteVideoRefs.current[attendeeId] = { current: null };
-              }
               return (
                 <video
                   key={attendeeId}
-                  ref={el => {
-                    remoteVideoRefs.current[attendeeId].current = el;
-                    // If a tile is already assigned, bind immediately once this element mounts
-                    if (el && remoteVideoTiles[attendeeId]) {
-                      sessionRef.current?.audioVideo.bindVideoElement(remoteVideoTiles[attendeeId], el);
-                      delete pendingTileBinds.current[attendeeId];
-                    }
-                  }}
+                  ref={el => { remoteVideoRefs.current[attendeeId] = el; }}
                   autoPlay
+                  playsInline
                   style={{
                     width: '100%',
                     height: '200px',
