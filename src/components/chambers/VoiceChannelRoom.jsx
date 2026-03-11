@@ -555,36 +555,37 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           </div>
         )}
 
-        {/* Remote participant videos — rendered for ALL remote attendees so the DOM element
-            is always available for Chime to bind to when they turn on their camera */}
-        {Object.keys(remoteAttendees).length > 0 && !isSharing && !remoteShareActive && (
+        {/* Remote participant camera tiles — one <video> per active tile, bound directly in ref callback */}
+        {Object.keys(remoteCameraTiles).length > 0 && !isSharing && !remoteShareActive && (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: Object.keys(remoteAttendees).length === 1 ? '1fr' : 'repeat(auto-fit, minmax(200px, 1fr))',
+            gridTemplateColumns: Object.keys(remoteCameraTiles).length === 1 ? '1fr' : 'repeat(auto-fit, minmax(200px, 1fr))',
             gap: 12,
             padding: '16px',
             width: '100%',
           }}>
-            {Object.keys(remoteAttendees).map((attendeeId) => {
-              const hasTile = !!remoteVideoTiles[attendeeId];
-              return (
-                <video
-                  key={attendeeId}
-                  ref={el => { remoteVideoRefs.current[attendeeId] = el; }}
-                  autoPlay
-                  playsInline
-                  style={{
-                    width: '100%',
-                    height: '200px',
-                    borderRadius: '8px',
-                    background: '#0e1118',
-                    border: `1px solid ${hasTile ? 'rgba(0,229,160,0.2)' : 'rgba(255,255,255,0.06)'}`,
-                    objectFit: 'cover',
-                    display: 'block',
-                  }}
-                />
-              );
-            })}
+            {Object.entries(remoteCameraTiles).map(([tileId, attendeeId]) => (
+              <video
+                key={tileId}
+                ref={el => {
+                  remoteVideoRefs.current[tileId] = el;
+                  if (el && sessionRef.current) {
+                    sessionRef.current.audioVideo.bindVideoElement(Number(tileId), el);
+                  }
+                }}
+                autoPlay
+                playsInline
+                style={{
+                  width: '100%',
+                  height: '200px',
+                  borderRadius: '8px',
+                  background: '#0e1118',
+                  border: '1px solid rgba(0,229,160,0.2)',
+                  objectFit: 'cover',
+                  display: 'block',
+                }}
+              />
+            ))}
           </div>
         )}
 
