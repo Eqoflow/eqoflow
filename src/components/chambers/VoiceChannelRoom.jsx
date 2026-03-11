@@ -222,6 +222,16 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
             // Remote participant video (not local, not content)
             else if (!tileState.isContent && !tileState.localTile && attendeeId) {
               setRemoteVideoTiles(prev => ({ ...prev, [attendeeId]: tileState.tileId }));
+              // Bind immediately using same tryBind pattern as screen sharing
+              const tryBind = () => {
+                const el = remoteVideoRefs.current[attendeeId];
+                if (el) {
+                  sessionRef.current?.audioVideo.bindVideoElement(tileState.tileId, el);
+                } else {
+                  setTimeout(tryBind, 100);
+                }
+              };
+              tryBind();
             }
           },
           videoTileWasRemoved: (tileId) => {
