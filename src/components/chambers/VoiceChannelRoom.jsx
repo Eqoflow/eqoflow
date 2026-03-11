@@ -582,13 +582,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
               <video
                 key={tileId}
                 ref={el => {
-                  remoteVideoRefs.current[tileId] = el;
-                  // Bind immediately when React mounts this element — this is the reliable path
-                  const numericTileId = parseInt(tileId, 10);
-                  if (el && pendingBindingsRef.current.has(numericTileId) && sessionRef.current) {
-                    pendingBindingsRef.current.delete(numericTileId);
-                    sessionRef.current.audioVideo.bindVideoElement(numericTileId, el);
-                  }
+                  remoteVideoRefs.current[parseInt(tileId, 10)] = el;
                 }}
                 autoPlay
                 playsInline
