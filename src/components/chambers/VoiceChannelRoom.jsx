@@ -114,7 +114,6 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
   const localAttendeeIdRef = useRef(null);
   const remoteVideoRefs = useRef({}); // { tileId: DOM element }
   const localVideoGridRef = useRef(null);
-  const pendingBindingsRef = useRef(new Set()); // tileIds waiting for their <video> element to mount
 
   // Derive local speaking from waveform amplitude
   const avgAmplitude = waveBars.reduce((s, v) => s + v, 0) / waveBars.length;
