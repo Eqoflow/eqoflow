@@ -282,15 +282,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
     };
   }, [channel.id, community.id]);
 
-  // Whenever tile assignments change, bind each tile to its video element
-  useEffect(() => {
-    Object.entries(remoteVideoTiles).forEach(([attendeeId, tileId]) => {
-      const el = remoteVideoRefs.current[attendeeId];
-      if (el && sessionRef.current) {
-        sessionRef.current.audioVideo.bindVideoElement(tileId, el);
-      }
-    });
-  }, [remoteVideoTiles]);
+
 
   // Expose controls to parent via controlRef
   useEffect(() => {
