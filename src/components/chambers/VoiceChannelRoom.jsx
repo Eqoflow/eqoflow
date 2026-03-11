@@ -114,6 +114,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
   const localAttendeeIdRef = useRef(null);
   const remoteVideoRefs = useRef({}); // { tileId: DOM element }
   const localVideoGridRef = useRef(null);
+  const pendingBindingsRef = useRef(new Set()); // tileIds waiting for their <video> element to mount
 
   // Derive local speaking from waveform amplitude
   const avgAmplitude = waveBars.reduce((s, v) => s + v, 0) / waveBars.length;
@@ -222,20 +223,19 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
             // Remote participant video (not local, not content)
             else if (!tileState.isContent && !tileState.localTile && attendeeId) {
               const tileId = tileState.tileId;
+              // Register as pending BEFORE triggering the React state update that mounts the <video>
+              pendingBindingsRef.current.add(tileId);
               setRemoteCameraTiles(prev => ({ ...prev, [tileId]: attendeeId }));
-              // Defer to next tick so React can mount the <video> element, then poll until ready
-              const tryBindRemote = () => {
-                const el = remoteVideoRefs.current[tileId];
-                if (el && sessionRef.current) {
-                  sessionRef.current.audioVideo.bindVideoElement(tileId, el);
-                } else if (sessionRef.current) {
-                  setTimeout(tryBindRemote, 50);
-                }
-              };
-              setTimeout(tryBindRemote, 0);
+              // If the element is already in the DOM (e.g. re-render), bind immediately
+              const el = remoteVideoRefs.current[tileId];
+              if (el && sessionRef.current) {
+                pendingBindingsRef.current.delete(tileId);
+                sessionRef.current.audioVideo.bindVideoElement(tileId, el);
+              }
             }
           },
           videoTileWasRemoved: (tileId) => {
+            pendingBindingsRef.current.delete(tileId);
             setLocalVideoTileId(prev => (prev === tileId ? null : prev));
             setRemoteCameraTiles(prev => {
               const next = { ...prev };
@@ -290,6 +290,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
       if (session) session.audioVideo.stop();
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
       if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') audioCtxRef.current.close();
+      audioCtxRef.current = null;
     };
   }, [channel.id, community.id]);
 
@@ -381,6 +382,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
     if (session) session.audioVideo.stop();
     if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') audioCtxRef.current.close();
+    audioCtxRef.current = null;
     onLeave();
   };
 
@@ -580,6 +582,12 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
                 key={tileId}
                 ref={el => {
                   remoteVideoRefs.current[tileId] = el;
+                  // Bind immediately when React mounts this element — this is the reliable path
+                  const numericTileId = parseInt(tileId, 10);
+                  if (el && pendingBindingsRef.current.has(numericTileId) && sessionRef.current) {
+                    pendingBindingsRef.current.delete(numericTileId);
+                    sessionRef.current.audioVideo.bindVideoElement(numericTileId, el);
+                  }
                 }}
                 autoPlay
                 playsInline
