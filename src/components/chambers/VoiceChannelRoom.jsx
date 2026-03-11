@@ -226,11 +226,9 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           },
           videoTileWasRemoved: (tileId) => {
             setLocalVideoTileId(prev => (prev === tileId ? null : prev));
-            setRemoteVideoTiles(prev => {
+            setRemoteCameraTiles(prev => {
               const next = { ...prev };
-              Object.keys(next).forEach(id => {
-                if (next[id] === tileId) delete next[id];
-              });
+              delete next[tileId];
               return next;
             });
             setRemoteShareActive(false);
