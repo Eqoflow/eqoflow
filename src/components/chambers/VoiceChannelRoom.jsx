@@ -100,7 +100,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
   const [waveBars, setWaveBars] = useState(Array(20).fill(2));
   const [remoteAttendees, setRemoteAttendees] = useState({});
   const [speakingIds, setSpeakingIds] = useState(new Set());
-  const [remoteVideoTiles, setRemoteVideoTiles] = useState({}); // { attendeeId: tileId }
+  const [remoteCameraTiles, setRemoteCameraTiles] = useState({}); // { tileId: attendeeId }
   const [localVideoTileId, setLocalVideoTileId] = useState(null);
 
   const sessionRef = useRef(null);
