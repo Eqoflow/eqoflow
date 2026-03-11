@@ -226,7 +226,6 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
             }
           },
           videoTileWasRemoved: (tileId) => {
-            pendingBindingsRef.current.delete(tileId);
             setLocalVideoTileId(prev => (prev === tileId ? null : prev));
             setRemoteCameraTiles(prev => {
               const next = { ...prev };
