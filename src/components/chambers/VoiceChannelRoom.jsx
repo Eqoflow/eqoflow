@@ -284,16 +284,15 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
     };
   }, [channel.id, community.id]);
 
-  // After each render, bind any pending remote video tiles to newly-mounted <video> elements
+  // Whenever tile assignments change, bind each tile to its video element
   useEffect(() => {
-    Object.entries(pendingTileBinds.current).forEach(([attendeeId, tileId]) => {
-      const el = remoteVideoRefs.current[attendeeId]?.current;
+    Object.entries(remoteVideoTiles).forEach(([attendeeId, tileId]) => {
+      const el = remoteVideoRefs.current[attendeeId];
       if (el && sessionRef.current) {
         sessionRef.current.audioVideo.bindVideoElement(tileId, el);
-        delete pendingTileBinds.current[attendeeId];
       }
     });
-  });
+  }, [remoteVideoTiles]);
 
   // Expose controls to parent via controlRef
   useEffect(() => {
