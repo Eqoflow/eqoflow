@@ -229,10 +229,15 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
             // Local video tile — bind to personal preview only
             if (tileState.localTile && !tileState.isContent) {
               setLocalVideoTileId(tileState.tileId);
-              const target = localVideoShareRef.current || localVideoRef.current;
-              if (target) {
-                session.audioVideo.bindVideoElement(tileState.tileId, target);
-              }
+              const tryBindLocal = () => {
+                const target = localVideoShareRef.current || localVideoRef.current;
+                if (target) {
+                  session.audioVideo.bindVideoElement(tileState.tileId, target);
+                } else {
+                  setTimeout(tryBindLocal, 100);
+                }
+              };
+              tryBindLocal();
             }
             // Remote content share (screen share from another participant)
             else if (tileState.isContent && !tileState.localTile) {
