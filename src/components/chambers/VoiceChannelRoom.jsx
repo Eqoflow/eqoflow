@@ -192,7 +192,70 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           } catch (e) {}
         }
 
-        session.audioVideo.start();
+        // Observe all video and screen share tiles (local and remote)
+        // MUST be registered BEFORE start() to avoid missing tile events
+        const tileObserver = {
+          videoTileDidUpdate: (tileState) => {
+            if (!tileState.tileId) return;
+            const attendeeId = tileState.attendeeId;
+            
+            // Local video tile — bind to personal preview only
+            if (tileState.localTile && !tileState.isContent) {
+              setLocalVideoTileId(tileState.tileId);
+              const tryBindLocal = () => {
+                const target = localVideoShareRef.current || localVideoRef.current;
+                if (target) {
+                  sessionRef.current?.audioVideo.bindVideoElement(tileState.tileId, target);
+                } else {
+                  setTimeout(tryBindLocal, 100);
+                }
+              };
+              tryBindLocal();
+            }
+            // Remote content share (screen share from another participant)
+            else if (tileState.isContent && !tileState.localTile) {
+              setRemoteShareActive(true);
+              const tryBind = () => {
+                if (remoteScreenShareRef.current) {
+                  sessionRef.current?.audioVideo.bindVideoElement(tileState.tileId, remoteScreenShareRef.current);
+                } else {
+                  setTimeout(tryBind, 100);
+                }
+              };
+              tryBind();
+            }
+            // Remote participant video (not local, not content)
+            else if (!tileState.isContent && !tileState.localTile && attendeeId) {
+              if (!remoteVideoRefs.current[attendeeId]) {
+                remoteVideoRefs.current[attendeeId] = { current: null };
+              }
+              setRemoteVideoTiles(prev => ({ ...prev, [attendeeId]: tileState.tileId }));
+              const tryBindRemote = () => {
+                if (remoteVideoRefs.current[attendeeId]?.current) {
+                  sessionRef.current?.audioVideo.bindVideoElement(tileState.tileId, remoteVideoRefs.current[attendeeId].current);
+                } else {
+                  setTimeout(tryBindRemote, 100);
+                }
+              };
+              tryBindRemote();
+            }
+          },
+          videoTileWasRemoved: (tileId) => {
+            setLocalVideoTileId(prev => (prev === tileId ? null : prev));
+            setRemoteVideoTiles(prev => {
+              const next = { ...prev };
+              Object.keys(next).forEach(id => {
+                if (next[id] === tileId) delete next[id];
+              });
+              return next;
+            });
+            setRemoteShareActive(false);
+          },
+          audioVideoDidStart: () => {
+            setStatus('connected');
+          },
+        };
+        session.audioVideo.addObserver(tileObserver);
 
         // Track remote attendees via presence subscription
         session.audioVideo.realtimeSubscribeToAttendeeIdPresence((attendeeId, present, externalUserId) => {
@@ -220,74 +283,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           (activeSpeakers) => setSpeakingIds(new Set(activeSpeakers))
         );
 
-        // Observe all video and screen share tiles (local and remote)
-        const tileObserver = {
-          videoTileDidUpdate: (tileState) => {
-            if (!tileState.tileId) return;
-            const attendeeId = tileState.attendeeId;
-            
-            // Local video tile — bind to personal preview only
-            if (tileState.localTile && !tileState.isContent) {
-              setLocalVideoTileId(tileState.tileId);
-              const tryBindLocal = () => {
-                const target = localVideoShareRef.current || localVideoRef.current;
-                if (target) {
-                  session.audioVideo.bindVideoElement(tileState.tileId, target);
-                } else {
-                  setTimeout(tryBindLocal, 100);
-                }
-              };
-              tryBindLocal();
-            }
-            // Remote content share (screen share from another participant)
-            else if (tileState.isContent && !tileState.localTile) {
-              setRemoteShareActive(true);
-              const tryBind = () => {
-                if (remoteScreenShareRef.current) {
-                  session.audioVideo.bindVideoElement(tileState.tileId, remoteScreenShareRef.current);
-                } else {
-                  setTimeout(tryBind, 100);
-                }
-              };
-              tryBind();
-            }
-            // Remote participant video (not local, not content)
-            else if (!tileState.isContent && !tileState.localTile && attendeeId) {
-              if (!remoteVideoRefs.current[attendeeId]) {
-                remoteVideoRefs.current[attendeeId] = { current: null };
-              }
-              setRemoteVideoTiles(prev => ({ ...prev, [attendeeId]: tileState.tileId }));
-              const tryBindRemote = () => {
-                if (remoteVideoRefs.current[attendeeId]?.current) {
-                  session.audioVideo.bindVideoElement(tileState.tileId, remoteVideoRefs.current[attendeeId].current);
-                } else {
-                  setTimeout(tryBindRemote, 100);
-                }
-              };
-              tryBindRemote();
-            }
-          },
-          videoTileWasRemoved: (tileId) => {
-            // Remove from tiles tracking
-            if (localVideoTileId === tileId) {
-              setLocalVideoTileId(null);
-            }
-            setRemoteVideoTiles(prev => {
-              const next = { ...prev };
-              Object.keys(next).forEach(id => {
-                if (next[id] === tileId) delete next[id];
-              });
-              return next;
-            });
-            // Check if it was a screen share
-            if (remoteScreenShareRef.current) {
-              setRemoteShareActive(false);
-            }
-          },
-        };
-        session.audioVideo.addObserver(tileObserver);
-
-        setStatus('connected');
+        session.audioVideo.start();
       } catch (err) {
         console.error('Chime join error:', err);
         setError(err.message);
