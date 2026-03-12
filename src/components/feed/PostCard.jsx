@@ -930,7 +930,7 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
         </motion.div>
         }
 
-        <Card className={`hover-lift transition-all duration-300 ${isSupercharged ? 'super-charged-card' : 'bg-[#0e1118]/80 backdrop-blur-md border border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.4)]'}`}>
+        <Card className={`hover-lift transition-all duration-300 ${isSupercharged ? 'super-charged-card' : 'bg-white/[0.04] backdrop-blur-xl border border-white/[0.12] shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.08)]'}`} style={isSupercharged ? {} : { background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)' }}>
           {isSupercharged &&
           <div className="absolute inset-0 pointer-events-none rounded-xl overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/20 via-amber-500/20 to-orange-400/20 animate-pulse"></div>
@@ -1439,7 +1439,7 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
 
       }
 
-      <Card className={`hover-lift transition-all duration-300 ${isSupercharged ? 'super-charged-card' : 'bg-[#0e1118]/80 backdrop-blur-md border border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.4)]'}`}>
+      <Card className={`hover-lift transition-all duration-300 ${isSupercharged ? 'super-charged-card' : 'bg-white/[0.04] backdrop-blur-xl border border-white/[0.12] shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.08)]'}`} style={isSupercharged ? {} : { background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)' }}>
         {isSupercharged &&
         <div className="absolute inset-0 pointer-events-none rounded-xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/20 via-amber-500/20 to-orange-400/20 animate-pulse"></div>
