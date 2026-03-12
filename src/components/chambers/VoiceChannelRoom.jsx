@@ -220,9 +220,15 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
               tryBind();
             }
             // Remote participant video (not local, not content)
-            else if (!tileState.isContent && !tileState.localTile && attendeeId) {
+            else if (!tileState.isContent && !tileState.localTile) {
               const tileId = tileState.tileId;
-              setRemoteCameraTiles(prev => ({ ...prev, [tileId]: attendeeId }));
+              // Update state so React renders the <video> element
+              setRemoteCameraTiles(prev => ({ ...prev, [tileId]: attendeeId || prev[tileId] || tileId.toString() }));
+              // Also try to bind immediately if the element is already in the DOM (e.g. tile updates)
+              const existingEl = remoteVideoRefs.current[tileId];
+              if (existingEl && sessionRef.current) {
+                sessionRef.current.audioVideo.bindVideoElement(tileId, existingEl);
+              }
             }
           },
           videoTileWasRemoved: (tileId) => {
