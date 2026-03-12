@@ -19,18 +19,24 @@ Deno.serve(async (req) => {
       }
     });
 
-    // Check cache for existing meeting
+    // Check cache for existing meeting (best-effort — ignore cache errors)
     let meetingId = null;
-    const cached = await base44.asServiceRole.entities.FunctionCache.filter({ function_name: cacheKey });
-    if (cached.length > 0) {
-      meetingId = cached[0].cached_response?.meetingId;
-      // Verify meeting still exists
-      try {
-        await chime.send(new GetMeetingCommand({ MeetingId: meetingId }));
-      } catch (e) {
-        meetingId = null;
-        await base44.asServiceRole.entities.FunctionCache.delete(cached[0].id);
+    let cacheRecordId = null;
+    try {
+      const cached = await base44.asServiceRole.entities.FunctionCache.filter({ function_name: cacheKey });
+      if (cached.length > 0) {
+        cacheRecordId = cached[0].id;
+        meetingId = cached[0].cached_response?.meetingId;
+        // Verify meeting still exists
+        try {
+          await chime.send(new GetMeetingCommand({ MeetingId: meetingId }));
+        } catch (e) {
+          meetingId = null;
+          try { await base44.asServiceRole.entities.FunctionCache.delete(cacheRecordId); } catch (_) {}
+        }
       }
+    } catch (_) {
+      // Cache unavailable (e.g. rate-limited) — proceed without cache
     }
 
     // Create new meeting if needed
@@ -41,12 +47,14 @@ Deno.serve(async (req) => {
         ExternalMeetingId: `${communityId}-${channelId}`,
       }));
       meetingId = res.Meeting.MeetingId;
-      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-      await base44.asServiceRole.entities.FunctionCache.create({
-        function_name: cacheKey,
-        cached_response: { meetingId },
-        expires_at: expiresAt,
-      });
+      try {
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+        await base44.asServiceRole.entities.FunctionCache.create({
+          function_name: cacheKey,
+          cached_response: { meetingId },
+          expires_at: expiresAt,
+        });
+      } catch (_) {}
     }
 
     // Get full meeting info
