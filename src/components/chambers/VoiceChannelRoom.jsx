@@ -597,7 +597,11 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
                   remoteVideoRefs.current[numericTileId] = el;
                   // Bind as soon as this element mounts — this is the most reliable path
                   if (el && sessionRef.current) {
-                    sessionRef.current.audioVideo.bindVideoElement(numericTileId, el);
+                    try {
+                      sessionRef.current.audioVideo.bindVideoElement(numericTileId, el);
+                    } catch (e) {
+                      // Swallow SDK errors to prevent crashing the component tree
+                    }
                   }
                 }}
                 autoPlay
