@@ -14,6 +14,7 @@ import {
   MeetingSessionConfiguration,
 } from 'amazon-chime-sdk-js';
 import { createChimeMeeting } from '@/functions/createChimeMeeting';
+import { base44 } from '@/api/base44Client';
 import { Loader } from 'lucide-react';
 import VoiceChannelChat from './VoiceChannelChat';
 
