@@ -1,10 +1,35 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Plus } from 'lucide-react';
+import { UserContext } from '@/components/contexts/UserContext';
+import { base44 } from '@/api/base44Client';
+import CreateCommunityModal from '@/components/communities/CreateCommunityModal';
 
 export default function UserChambersSidebar({ joinedCommunities, onHomeClick }) {
+  const { user } = useContext(UserContext);
+  const navigate = useNavigate();
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  const handleCreateCommunity = async (communityData) => {
+    const newCommunity = await base44.entities.Community.create({
+      ...communityData,
+      member_emails: [user.email],
+    });
+    setShowCreateModal(false);
+    navigate(`${createPageUrl("CommunityProfile")}?id=${newCommunity.id}`);
+  };
+
   return (
+    <>
+      {showCreateModal && (
+        <CreateCommunityModal
+          user={user}
+          onClose={() => setShowCreateModal(false)}
+          onSubmit={handleCreateCommunity}
+        />
+      )}
     <div className="w-[60px] flex-shrink-0 bg-black border-r border-white/5 flex flex-col items-center py-3 gap-2 overflow-y-auto">
       {/* EqoFlow platform home icon */}
       <Tooltip>
@@ -22,6 +47,21 @@ export default function UserChambersSidebar({ joinedCommunities, onHomeClick }) 
         </TooltipTrigger>
         <TooltipContent side="right" className="bg-black/90 border-white/10 text-white">
           EqoFlow Home
+        </TooltipContent>
+      </Tooltip>
+
+      {/* Create Community button */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="w-11 h-11 rounded-full bg-white/5 border border-dashed border-white/20 hover:border-purple-500/60 hover:bg-purple-500/10 transition-all flex-shrink-0 flex items-center justify-center"
+          >
+            <Plus className="w-5 h-5 text-white/50 hover:text-purple-400" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="right" className="bg-black/90 border-white/10 text-white">
+          Create a Chamber
         </TooltipContent>
       </Tooltip>
 
