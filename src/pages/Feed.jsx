@@ -112,6 +112,7 @@ export default function Feed() {
   });
 
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
@@ -2035,8 +2036,6 @@ export default function Feed() {
       setInCache(CACHE_CONFIG.FEED_POSTS, originalPosts);
     }
   }, [user, posts, showErrorMessage]);
-
-  const [searchQuery, setSearchQuery] = useState("");
 
   const filteredPosts = posts.filter(post => {
     const matchesCategory = selectedCategory === "all" || post.category === selectedCategory;
