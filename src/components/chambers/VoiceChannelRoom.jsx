@@ -695,8 +695,8 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
             borderRadius: 10,
             marginTop: 16,
             background: '#0e1118',
-            border: `1px solid ${isVideoOn ? 'rgba(0,229,160,0.2)' : 'rgba(255,255,255,0.06)'}`,
-            display: isSharing ? 'none' : 'block',
+            border: '1px solid rgba(0,229,160,0.2)',
+            display: isVideoOn && !isSharing ? 'block' : 'none',
           }}
         />
       </div>
