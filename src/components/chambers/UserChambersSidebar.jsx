@@ -102,6 +102,6 @@ export default function UserChambersSidebar({ joinedCommunities, onHomeClick }) 
         </div>
       )}
     </div>
-    </>
+  </>
   );
 }
