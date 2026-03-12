@@ -227,7 +227,9 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
               // Also try to bind immediately if the element is already in the DOM (e.g. tile updates)
               const existingEl = remoteVideoRefs.current[tileId];
               if (existingEl && sessionRef.current) {
-                sessionRef.current.audioVideo.bindVideoElement(tileId, existingEl);
+                try {
+                  sessionRef.current.audioVideo.bindVideoElement(tileId, existingEl);
+                } catch (e) {}
               }
             }
           },
