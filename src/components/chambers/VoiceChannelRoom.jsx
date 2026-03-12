@@ -351,13 +351,14 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
 
   const updateParticipantStatus = (updates) => {
     if (!onUpdateParticipants) return;
-    const currentParticipant = participants.find(p => p.email === user.email) || {
+    const current = participantsRef.current;
+    const currentParticipant = current.find(p => p.email === user.email) || {
       email: user.email,
       name: user.full_name || 'Anonymous',
       avatar_url: user.avatar_url,
     };
     const updated = { ...currentParticipant, ...updates };
-    const newParticipants = participants.filter(p => p.email !== user.email);
+    const newParticipants = current.filter(p => p.email !== user.email);
     onUpdateParticipants([...newParticipants, updated]);
   };
 
