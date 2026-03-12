@@ -210,6 +210,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
             }
             // Remote content share (screen share from another participant)
             else if (tileState.isContent && !tileState.localTile) {
+              remoteContentTileIdRef.current = tileState.tileId;
               setRemoteShareActive(true);
               const tryBind = () => {
                 if (remoteScreenShareRef.current) {
