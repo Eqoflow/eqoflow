@@ -85,11 +85,21 @@ export default function CommunityDiscordView({
     }
 
     // Subscribe to real-time updates on this community record
-    const unsubscribe = base44.entities.Community.subscribe((event) => {
+    const unsubscribe = base44.entities.Community.subscribe(async (event) => {
       if (event.id !== community.id) return;
-      if (event.data?.channels) {
+      // event.data can be null when the payload is too large — fetch fresh in that case
+      let channels = event.data?.channels;
+      if (!channels) {
+        try {
+          const fresh = await base44.entities.Community.get(community.id);
+          channels = fresh.channels;
+        } catch (e) {
+          return;
+        }
+      }
+      if (channels) {
         const updated = {};
-        event.data.channels.forEach(ch => {
+        channels.forEach(ch => {
           if (ch.type === 'voice' && ch.voice_participants) {
             updated[ch.id] = ch.voice_participants;
           }
