@@ -102,6 +102,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
   const [speakingIds, setSpeakingIds] = useState(new Set());
   const [remoteCameraTiles, setRemoteCameraTiles] = useState({}); // { tileId: attendeeId }
   const [localVideoTileId, setLocalVideoTileId] = useState(null);
+  const remoteContentTileIdRef = useRef(null); // track content share tile to clear remoteShareActive on removal
 
   const sessionRef = useRef(null);
   const localVideoRef = useRef(null);
