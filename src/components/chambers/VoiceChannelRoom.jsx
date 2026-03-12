@@ -599,7 +599,7 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
                 autoPlay
                 playsInline
                 style={{
-                  width: '100%',
+                  width: '200px',
                   height: '200px',
                   borderRadius: '8px',
                   background: '#0e1118',
