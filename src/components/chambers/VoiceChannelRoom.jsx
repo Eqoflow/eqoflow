@@ -349,17 +349,20 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
     updateParticipantStatus({ isMuted: next });
   };
 
-  const updateParticipantStatus = (updates) => {
+  const updateParticipantStatus = async (updates) => {
     if (!onUpdateParticipants) return;
-    const current = participantsRef.current;
-    const currentParticipant = current.find(p => p.email === user.email) || {
+    // Always fetch fresh community data so we don't wipe other participants' entries
+    const fresh = await base44.entities.Community.get(community.id);
+    const freshChannel = (fresh.channels || []).find(c => c.id === channel.id);
+    const freshParticipants = freshChannel?.voice_participants || participantsRef.current;
+    const currentParticipant = freshParticipants.find(p => p.email === user.email) || {
       email: user.email,
       name: user.full_name || 'Anonymous',
       avatar_url: user.avatar_url,
     };
     const updated = { ...currentParticipant, ...updates };
-    const newParticipants = current.filter(p => p.email !== user.email);
-    onUpdateParticipants([...newParticipants, updated]);
+    const others = freshParticipants.filter(p => p.email !== user.email);
+    onUpdateParticipants([...others, updated]);
   };
 
   const handleToggleVideo = async () => {
