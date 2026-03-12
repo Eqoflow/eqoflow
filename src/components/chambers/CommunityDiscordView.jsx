@@ -663,9 +663,10 @@ export default function CommunityDiscordView({
               memberProfiles={memberProfiles}
               onUpdateParticipants={async (updated) => {
                 setVoiceParticipants(prev => ({ ...prev, [activeVoice.id]: updated }));
-                // Also persist to channels so all users see status
-                const allChs = community.channels && community.channels.length > 0
-                  ? community.channels
+                // Fetch fresh channels to avoid overwriting participants who joined after last render
+                const freshCommunity = await base44.entities.Community.get(community.id);
+                const allChs = freshCommunity.channels && freshCommunity.channels.length > 0
+                  ? freshCommunity.channels
                   : [...DEFAULT_TEXT_CHANNELS, ...DEFAULT_VOICE_CHANNELS];
                 const channelsUpdated = allChs.map(c =>
                   c.id === activeVoice.id ? { ...c, voice_participants: updated } : c
