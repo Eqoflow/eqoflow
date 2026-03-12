@@ -2134,9 +2134,6 @@ export default function Feed() {
                     <Button onClick={() => navigate(createPageUrl('OrbitalFeed'))} size="sm" className="bg-teal-500/20 hover:bg-teal-500/30 text-teal-400 border border-teal-500/30 gap-1.5">
                       <Map className="w-4 h-4" /><span className="hidden sm:inline">Orbital View</span>
                     </Button>
-                    <Button onClick={() => setShowCreatePostModal(true)} size="sm" className="bg-teal-500 hover:bg-teal-600 text-white gap-1.5">
-                      <Plus className="w-4 h-4" /><span className="hidden sm:inline">Broadcast</span>
-                    </Button>
                     <Button onClick={() => setShowAlgorithmSettings(!showAlgorithmSettings)} variant="outline" size="sm" className="lg:hidden border-white/10 text-white bg-white/5 hover:bg-white/10">
                       <Settings className="w-4 h-4" />
                     </Button>
