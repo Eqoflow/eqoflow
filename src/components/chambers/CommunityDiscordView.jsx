@@ -661,17 +661,10 @@ export default function CommunityDiscordView({
               onShareChange={setIsSharing}
               participants={voiceParticipants[activeVoice?.id] || []}
               memberProfiles={memberProfiles}
-              onUpdateParticipants={async (updated) => {
+              onUpdateParticipants={(updated) => {
+                // DB write is handled inside VoiceChannelRoom.updateParticipantStatus
+                // Just sync local state here — the real-time subscription propagates to others
                 setVoiceParticipants(prev => ({ ...prev, [activeVoice.id]: updated }));
-                // Fetch fresh channels to avoid overwriting participants who joined after last render
-                const freshCommunity = await base44.entities.Community.get(community.id);
-                const allChs = freshCommunity.channels && freshCommunity.channels.length > 0
-                  ? freshCommunity.channels
-                  : [...DEFAULT_TEXT_CHANNELS, ...DEFAULT_VOICE_CHANNELS];
-                const channelsUpdated = allChs.map(c =>
-                  c.id === activeVoice.id ? { ...c, voice_participants: updated } : c
-                );
-                await onUpdateChannels(channelsUpdated);
               }}
             />
           ) : (
