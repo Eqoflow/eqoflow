@@ -22,10 +22,9 @@ import {
   Map,
   ArrowUp,
   X,
-  Users,
   Plus,
   RefreshCw,
-  Layers } from
+  Search } from
 "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
@@ -2037,406 +2036,236 @@ export default function Feed() {
     }
   }, [user, posts, showErrorMessage]);
 
-  const filteredPosts = selectedCategory === "all" 
-    ? posts 
-    : posts.filter(post => post.category === selectedCategory);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredPosts = posts.filter(post => {
+    const matchesCategory = selectedCategory === "all" || post.category === selectedCategory;
+    const matchesSearch = !searchQuery.trim() ||
+      (post.content && post.content.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (post.author_full_name && post.author_full_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (post.question && post.question.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesCategory && matchesSearch;
+  });
 
   const userColorScheme = getColorScheme(user?.color_scheme);
 
-  // Check if this is a public shared post view
-  const urlParams = new URLSearchParams(window.location.search);
-  const isSharedPostView = urlParams.get('postId') && !user;
-
-  // Listen for pull-refresh event from Layout
   useEffect(() => {
-    const handlePullRefresh = () => {
-      refreshFeed();
-    };
-
+    const handlePullRefresh = () => { refreshFeed(); };
     window.addEventListener('pull-refresh', handlePullRefresh);
     return () => window.removeEventListener('pull-refresh', handlePullRefresh);
   }, [refreshFeed]);
 
   return (
-    <div className="min-h-screen bg-black text-white p-3 md:p-6">
+    <div className="min-h-screen bg-black text-white">
       <style>{`
         @keyframes highlight-flash {
           0%, 100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); }
           50% { box-shadow: 0 0 20px 5px rgba(168, 85, 247, 0.6); }
         }
-
-        .highlight-flash {
-          animation: highlight-flash 2s ease-in-out;
-        }
-
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
+        .highlight-flash { animation: highlight-flash 2s ease-in-out; }
       `}</style>
-
 
       <AnimatePresence>
         {errorMessage &&
-        <motion.div
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -50 }}
+        <motion.div initial={{ opacity: 0, y: -50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -50 }}
           className="fixed top-4 left-4 right-4 z-50 mx-auto max-w-2xl">
-            <div className={errorMessage.startsWith('✓') ? "bg-green-600/20 border border-green-500/30 rounded-xl p-4 backdrop-blur-sm" : "bg-red-600/20 border border-red-500/30 rounded-xl p-4 backdrop-blur-sm"}>
-              <div className="flex items-start gap-3">
-                <div className={errorMessage.startsWith('✓') ? "w-2 h-2 bg-green-400 rounded-full animate-pulse mt-2 flex-shrink-0" : "w-2 h-2 bg-red-400 rounded-full animate-pulse mt-2 flex-shrink-0"}></div>
-                <div className="flex-1">
-                  <p className="text-white font-medium text-sm leading-relaxed">
-                    {errorMessage}
-                  </p>
-                </div>
-                <Button
-                onClick={() => setErrorMessage(null)}
-                variant="ghost"
-                size="sm"
-                className={errorMessage.startsWith('✓') ? "text-green-300 hover:text-white p-1" : "text-red-300 hover:text-white p-1"}>
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
+          <div className={errorMessage.startsWith('✓') ? "bg-green-600/20 border border-green-500/30 rounded-xl p-4 backdrop-blur-sm" : "bg-red-600/20 border border-red-500/30 rounded-xl p-4 backdrop-blur-sm"}>
+            <div className="flex items-start gap-3">
+              <div className={errorMessage.startsWith('✓') ? "w-2 h-2 bg-green-400 rounded-full animate-pulse mt-2 flex-shrink-0" : "w-2 h-2 bg-red-400 rounded-full animate-pulse mt-2 flex-shrink-0"} />
+              <p className="text-white font-medium text-sm leading-relaxed flex-1">{errorMessage}</p>
+              <Button onClick={() => setErrorMessage(null)} variant="ghost" size="sm" className={errorMessage.startsWith('✓') ? "text-green-300 hover:text-white p-1" : "text-red-300 hover:text-white p-1"}>
+                <X className="w-4 h-4" />
+              </Button>
             </div>
-          </motion.div>
+          </div>
+        </motion.div>
         }
       </AnimatePresence>
 
-      {showTermsModal &&
-      <TermsOfServiceModal
-        onClose={() => setShowTermsModal(false)}
-        onAgree={handleTermsAgree} />
-
-      }
-
-      {showPrivacyModal &&
-      <PrivacyPolicyModal
-        onClose={() => setShowPrivacyModal(false)}
-        onAgree={handlePrivacyAgree} />
-
-      }
-
-      {showDeclarationModal &&
-      <EqoFlowDeclarationModal
-        onClose={() => setShowDeclarationModal(false)}
-        onAgree={handleDeclarationAgree} />
-
-      }
-
-      <CreatePostModal
-        isOpen={showCreatePostModal}
-        onClose={() => setShowCreatePostModal(false)}
-        onSubmit={handleNewPost}
-        user={user} />
-
-
+      {showTermsModal && <TermsOfServiceModal onClose={() => setShowTermsModal(false)} onAgree={handleTermsAgree} />}
+      {showPrivacyModal && <PrivacyPolicyModal onClose={() => setShowPrivacyModal(false)} onAgree={handlePrivacyAgree} />}
+      {showDeclarationModal && <EqoFlowDeclarationModal onClose={() => setShowDeclarationModal(false)} onAgree={handleDeclarationAgree} />}
+      <CreatePostModal isOpen={showCreatePostModal} onClose={() => setShowCreatePostModal(false)} onSubmit={handleNewPost} user={user} />
       {showWelcomeModal && user && user.has_completed_onboarding === false &&
-      <WelcomeModal
-        user={user}
-        onClose={handleWelcomeClose}
-        onComplete={handleWelcomeComplete}
-        bonusAmount={welcomeBonusAmount} />
-
-      }
-
+        <WelcomeModal user={user} onClose={handleWelcomeClose} onComplete={handleWelcomeComplete} bonusAmount={welcomeBonusAmount} />}
       {showEditModal && editingPost &&
-      <EditPostModal
-        post={editingPost}
-        user={user}
-        onSave={handleSaveEditedPost}
-        onClose={() => {
-          setShowEditModal(false);
-          setEditingPost(null);
-        }} />
-
-      }
-
-      <RoadmapModal
-        isOpen={showRoadmapModal}
-        onClose={() => setShowRoadmapModal(false)} />
-
+        <EditPostModal post={editingPost} user={user} onSave={handleSaveEditedPost} onClose={() => { setShowEditModal(false); setEditingPost(null); }} />}
+      <RoadmapModal isOpen={showRoadmapModal} onClose={() => setShowRoadmapModal(false)} />
       {showRepostModal && repostingPost &&
-      <RepostModal
-        post={repostingPost}
-        onRepost={handleRepost}
-        onClose={() => {
-          setShowRepostModal(false);
-          setRepostingPost(null);
-        }} />
-      }
+        <RepostModal post={repostingPost} onRepost={handleRepost} onClose={() => { setShowRepostModal(false); setRepostingPost(null); }} />}
 
-
-      {isLoading && posts.length === 0 ?
-      <div className="flex items-center justify-center min-h-[calc(10vh)]">
+      {isLoading && posts.length === 0 ? (
+        <div className="flex items-center justify-center min-h-[calc(10vh)]">
           <QuantumFlowLoader />
-        </div> :
+        </div>
+      ) : (
+        <div className="max-w-7xl mx-auto px-3 md:px-6">
 
-      <div className="max-w-7xl mx-auto">
-          <div className="bg-[#000000] pt-3 pb-6 sticky top-0 z-10 backdrop-blur-sm -mx-3 md:-mx-6 md:pt-6 md:pb-8 flex flex-col md:flex-row md:justify-between md:items-start">
-            <div className="mb-4 md:mb-0">
-              <div className="flex items-center justify-between mb-2">
-                <h1
-                  className="text-2xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r"
-                  style={{
-                    backgroundImage: `linear-gradient(to right, ${userColorScheme.primary}, ${userColorScheme.secondary})`
-                  }}
-                >
-                  Activity Feed
-                </h1>
-
-                {user &&
-              <div className="flex items-center gap-2">
-                    <Button
-                      onClick={refreshFeed}
-                      variant="outline"
-                      className="border-purple-500/30 text-white hover:bg-purple-500/10 px-3 py-2 min-h-[44px]"
-                      size="sm"
-                    >
-                      <RefreshCw className="w-5 h-5 mr-1" />
-                      <span className="hidden sm:inline">Refresh</span>
+          {/* Header bar */}
+          <div className="sticky top-0 z-10 bg-black/95 backdrop-blur-sm py-4 -mx-3 md:-mx-6 px-3 md:px-6 mb-6 border-b border-white/5">
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-2xl md:text-3xl font-bold text-white flex-shrink-0">Activity Feed</h1>
+              {user && (
+                <>
+                  <div className="relative flex-1 min-w-[140px] max-w-xs">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    <input type="text" placeholder="Search" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                      className="w-full pl-9 pr-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm focus:outline-none focus:border-teal-500/50" />
+                  </div>
+                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                    <SelectTrigger className="w-40 bg-white/5 border-white/10 text-white text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#0e1118] border-white/10">
+                      <SelectItem value="all" className="text-white focus:text-white data-[highlighted]:text-white">All Categories</SelectItem>
+                      <SelectItem value="general" className="text-white focus:text-white data-[highlighted]:text-white">General</SelectItem>
+                      <SelectItem value="entertainment" className="text-white focus:text-white data-[highlighted]:text-white">Entertainment</SelectItem>
+                      <SelectItem value="education" className="text-white focus:text-white data-[highlighted]:text-white">Education</SelectItem>
+                      <SelectItem value="business_finance" className="text-white focus:text-white data-[highlighted]:text-white">Business/Finance</SelectItem>
+                      <SelectItem value="world_news" className="text-white focus:text-white data-[highlighted]:text-white">World News</SelectItem>
+                      <SelectItem value="technology" className="text-white focus:text-white data-[highlighted]:text-white">Technology</SelectItem>
+                      <SelectItem value="health_wellness" className="text-white focus:text-white data-[highlighted]:text-white">Health & Wellness</SelectItem>
+                      <SelectItem value="sports" className="text-white focus:text-white data-[highlighted]:text-white">Sports</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <div className="flex items-center gap-2 ml-auto flex-shrink-0">
+                    <Button onClick={refreshFeed} size="sm" className="bg-teal-500/20 hover:bg-teal-500/30 text-teal-400 border border-teal-500/30 gap-1.5">
+                      <RefreshCw className="w-4 h-4" /><span className="hidden sm:inline">Refresh</span>
                     </Button>
-                    <Button
-                      onClick={() => navigate(createPageUrl('OrbitalFeed'))}
-                      variant="outline"
-                      className="border-purple-500/30 text-white hover:bg-purple-500/10 px-3 py-2 min-h-[44px]"
-                      size="sm"
-                    >
-                      <Map className="w-5 h-5 mr-1" />
-                      <span className="hidden sm:inline">Orbital View</span>
+                    <Button onClick={() => navigate(createPageUrl('OrbitalFeed'))} size="sm" className="bg-teal-500/20 hover:bg-teal-500/30 text-teal-400 border border-teal-500/30 gap-1.5">
+                      <Map className="w-4 h-4" /><span className="hidden sm:inline">Orbital View</span>
                     </Button>
-                    <Button
-                      onClick={() => setShowAlgorithmSettings(!showAlgorithmSettings)}
-                      variant="outline"
-                      className="lg:hidden border-purple-500/30 text-white hover:bg-purple-500/10 min-w-[44px] min-h-[44px] flex items-center justify-center"
-                      size="sm">
-                      <Settings className="w-5 h-5" />
+                    <Button onClick={() => setShowCreatePostModal(true)} size="sm" className="bg-teal-500 hover:bg-teal-600 text-white gap-1.5">
+                      <Plus className="w-4 h-4" /><span className="hidden sm:inline">Broadcast</span>
+                    </Button>
+                    <Button onClick={() => setShowAlgorithmSettings(!showAlgorithmSettings)} variant="outline" size="sm" className="lg:hidden border-white/10 text-white bg-white/5 hover:bg-white/10">
+                      <Settings className="w-4 h-4" />
                     </Button>
                   </div>
-              }
-              </div>
-
-              <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
-                <p className="text-gray-400 text-sm md:text-base">
-                  Stay updated with the latest from your network
-                </p>
-
-                <div className="hidden md:block h-4 w-px bg-gray-700"></div>
-
-                <a href="https://discord.gg/EjxuUhJKWE" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-sm cursor-pointer hover:opacity-80 transition-opacity" style={{ color: userColorScheme.primary }}>
-                  <Users className="w-4 h-4" />
-                  <span>Join our Discord</span>
-                </a>
-              </div>
+                </>
+              )}
             </div>
           </div>
 
-          {/* Category Filter */}
-          {user &&
-          <div className="mb-6 flex items-center gap-3">
-            <Layers className="w-5 h-5 text-purple-400 flex-shrink-0" />
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="w-full md:w-64 bg-black/20 border-purple-500/20 text-white">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-black border-purple-500/20">
-                <SelectItem value="all" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">All Categories</SelectItem>
-                <SelectItem value="general" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">General</SelectItem>
-                <SelectItem value="entertainment" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">Entertainment</SelectItem>
-                <SelectItem value="education" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">Education</SelectItem>
-                <SelectItem value="business_finance" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">Business/Finance</SelectItem>
-                <SelectItem value="world_news" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">World News</SelectItem>
-                <SelectItem value="technology" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">Technology</SelectItem>
-                <SelectItem value="health_wellness" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">Health & Wellness</SelectItem>
-                <SelectItem value="sports" className="text-white hover:bg-purple-500/10 focus:text-white data-[highlighted]:text-white">Sports</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          }
-
           <AnimatePresence>
             {hasNewPosts &&
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="mb-4 md:mb-6 p-4 bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 rounded-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+              <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+                className="mb-4 p-4 bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 rounded-xl flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
                   <span className="text-white font-medium">New posts available</span>
                 </div>
-                <Button
-              onClick={refreshFeed}
-              className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white px-4 py-2 rounded-lg w-full md:w-auto">
-                  <TrendingUp className="w-4 h-4 mr-2" />
-                  Refresh Feed
+                <Button onClick={refreshFeed} className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white px-4 py-2 rounded-lg">
+                  <TrendingUp className="w-4 h-4 mr-2" />Refresh Feed
                 </Button>
               </motion.div>
-          }
+            }
           </AnimatePresence>
 
           <AnimatePresence>
             {showAlgorithmSettings &&
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="mb-6 md:mb-8">
-                <AlgorithmSelector
-              preferences={user?.algorithm_preferences}
-              onUpdate={handleUpdateAlgorithm}
-              onApply={() => setShowAlgorithmSettings(false)} />
-
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="mb-6">
+                <AlgorithmSelector preferences={user?.algorithm_preferences} onUpdate={handleUpdateAlgorithm} onApply={() => setShowAlgorithmSettings(false)} />
               </motion.div>
-          }
+            }
           </AnimatePresence>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-8">
-            <div className="lg:col-span-3 space-y-4 md:space-y-6 order-1">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Posts column */}
+            <div className="lg:col-span-2 space-y-4">
               {user &&
-            <div className="flex justify-center my-4">
-                  <Button
-                    onClick={() => setShowCreatePostModal(true)} className="bg-slate-950 text-white px-6 py-3 text-sm font-medium rounded-lg inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-primary/90 min-h-[44px] from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 shadow-lg hover:shadow-blue-500/50 transition-shadow duration-300">
-
-                    <Plus className="w-5 h-5 mr-2" />
-                    Broadcast an Echo
+                <div className="flex justify-center my-2">
+                  <Button onClick={() => setShowCreatePostModal(true)} className="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2.5 gap-2">
+                    <Plus className="w-5 h-5" />Broadcast an Echo
                   </Button>
                 </div>
-            }
-
+              }
               <AnimatePresence>
                 {filteredPosts.map((item, index) => {
-                const isPollItem = !!item.question;
-
-                console.log('Rendering item:', item.id, 'has question:', !!item.question, 'has content:', !!item.content);
-
-                return isPollItem ?
-                <PollCard
-                  key={item.id}
-                  poll={item}
-                  user={user}
-                  onUserUpdate={handleUserUpdate}
-                  index={index}
-                  onPollUpdate={handlePollUpdate}
-                  onDelete={handleDeletePost}
-                  onFlag={handleFlagPoll}
-                  onTogglePin={handleTogglePollPin} /> :
-
-
-                <PostCard
-                  key={item.id}
-                  post={item}
-                  currentUser={user}
-                  onUserUpdate={handleUserUpdate}
-                  author={item.author}
-                  onLike={handleLike}
-                  onRepost={handleOpenRepostModal}
-                  onCommentAdded={handleCommentAdded}
-                  onEdit={handleEditPost}
-                  onDelete={handleDeletePost}
-                  onReactionChange={handleReactionChange}
-                  onFlag={handleFlagPost}
-                  index={index}
-                  recommendationReason={item.recommendationReason}
-                  highlightCommentId={highlightPostId === item.id ? highlightCommentId : null} />;
-
-
-              })}
+                  const isPollItem = !!item.question;
+                  return isPollItem ? (
+                    <PollCard key={item.id} poll={item} user={user} onUserUpdate={handleUserUpdate} index={index}
+                      onPollUpdate={handlePollUpdate} onDelete={handleDeletePost} onFlag={handleFlagPoll} onTogglePin={handleTogglePollPin} />
+                  ) : (
+                    <PostCard key={item.id} post={item} currentUser={user} onUserUpdate={handleUserUpdate} author={item.author}
+                      onLike={handleLike} onRepost={handleOpenRepostModal} onCommentAdded={handleCommentAdded}
+                      onEdit={handleEditPost} onDelete={handleDeletePost} onReactionChange={handleReactionChange}
+                      onFlag={handleFlagPost} index={index} recommendationReason={item.recommendationReason}
+                      highlightCommentId={highlightPostId === item.id ? highlightCommentId : null} />
+                  );
+                })}
               </AnimatePresence>
-
               {filteredPosts.length === 0 && !isLoading &&
-            <div className="dark-card rounded-2xl p-8 md:p-12 text-center neon-glow">
-                  <Zap className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 text-purple-400" />
-                  <h3 className="text-lg md:text-xl font-semibold text-white mb-2">No echoes or polls yet</h3>
+                <div className="rounded-2xl p-12 text-center bg-white/5 border border-white/10">
+                  <Zap className="w-16 h-16 mx-auto mb-4 text-purple-400" />
+                  <h3 className="text-xl font-semibold text-white mb-2">No echoes or polls yet</h3>
                   <p className="text-gray-500">Be the first to broadcast an echo or create a poll!</p>
                 </div>
-            }
-            </div>
-
-            <div className="lg:col-span-1 order-2">
-              <div className="lg:sticky lg:top-6 space-y-4 md:space-y-6">
-                {user &&
-              <>
-                    <Button
-                  onClick={() => setShowAlgorithmSettings(!showAlgorithmSettings)}
-                  variant="outline" className="bg-slate-950 text-white px-4 py-4 text-sm font-medium rounded-md justify-center gap-2 whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border hover:text-accent-foreground h-10 hidden lg:flex w-full border-purple-500/30 hover:bg-purple-500/10 md:py-6 md:text-base items-center">
-
-                      <Settings className="w-4 h-4 md:w-5 md:h-5 mr-2 md:mr-3" />
-                      Customize Feed
-                    </Button>
-
-                    {user?.algorithm_preferences && Object.keys(user.algorithm_preferences).length > 0 ?
-                    <div className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-black/20 rounded-xl border border-purple-500/20 gap-3">
-                      <div className="flex items-center gap-3">
-                        <Filter className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                        <span className="text-white text-sm">
-                          Sorted by: <span className="font-medium text-purple-400">
-                            {user.algorithm_preferences.primary_algorithm?.replace('_', ' ') || 'Personalized'}
-                          </span>
-                        </span>
-                      </div>
-                      <Badge variant="outline" className="border-purple-500/30 text-purple-400 text-xs w-fit">
-                        Custom Algorithm Active
-                      </Badge>
-                    </div> :
-
-                    <div className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-black/20 rounded-xl border border-purple-500/20 gap-3">
-                      <div className="flex items-center gap-3">
-                        <Sparkles className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                        <span className="text-white text-sm">
-                          Sorted by: <span className="font-medium text-purple-400">Latest</span>
-                        </span>
-                      </div>
-                      <Badge variant="outline" className="border-purple-500/30 text-purple-400 text-xs w-fit">
-                        Default Algorithm Active
-                      </Badge>
-                    </div>
-                    }
-
-                    <Card className="dark-card">
-                      <CardHeader className="bg-[#000000] pb-3 p-6 flex flex-col space-y-1.5 md:pb-4">
-                        <h3 className="text-base md:text-lg font-semibold text-white flex items-center gap-2">
-                          <Zap className="w-4 h-4 md:w-5 md:h-5 text-purple-400" />
-                          Your EP Stats
-                        </h3>
-                      </CardHeader>
-                      <CardContent className="bg-[#000000] pt-0 p-6 space-y-3 md:space-y-4">
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-400 text-sm md:text-base">Today's EP</span>
-                          <span className="text-cyan-400 font-bold text-sm md:text-base">+{epStats.today} EP</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-400 text-sm md:text-base">This Week</span>
-                          <span className="text-purple-400 font-bold text-sm md:text-base">+{epStats.week} EP</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-400 text-sm md:text-base">Token Balance</span>
-                          <span className="text-yellow-400 font-bold text-sm md:text-base">{((user.token_balance || 0) + (user.tokens_on_hold || 0)).toLocaleString()} $EQOFLO</span>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    <TrendingCommunitiesSlider
-                      user={user}
-                      onUserUpdate={handleUserUpdate}
-                      showSlider={showTrendingCommunities}
-                      setShowSlider={setShowTrendingCommunities} />
-
-                    <TrendingTopics />
-                  </>
               }
-              </div>
             </div>
+
+            {/* Sidebar */}
+            {user &&
+              <div className="lg:col-span-1">
+                <div className="sticky top-24 space-y-4">
+                  <Button onClick={() => setShowAlgorithmSettings(!showAlgorithmSettings)} variant="outline"
+                    className="hidden lg:flex w-full border-white/10 text-white bg-white/5 hover:bg-white/10 gap-2">
+                    <Settings className="w-4 h-4" />Customize Feed
+                  </Button>
+                  {user?.algorithm_preferences && Object.keys(user.algorithm_preferences).length > 0 ? (
+                    <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
+                      <div className="flex items-center gap-2">
+                        <Filter className="w-4 h-4 text-purple-400" />
+                        <span className="text-white text-sm">Sorted by: <span className="text-purple-400 font-medium">{user.algorithm_preferences.primary_algorithm?.replace('_', ' ') || 'Personalized'}</span></span>
+                      </div>
+                      <Badge variant="outline" className="border-purple-500/30 text-purple-400 text-xs">Custom</Badge>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-purple-400" />
+                        <span className="text-white text-sm">Sorted by: <span className="text-purple-400 font-medium">Latest</span></span>
+                      </div>
+                      <Badge variant="outline" className="border-purple-500/30 text-purple-400 text-xs">Default</Badge>
+                    </div>
+                  )}
+                  <Card className="bg-[#0e1118] border border-white/10">
+                    <CardHeader className="pb-2 pt-4 px-4">
+                      <h3 className="text-base font-semibold text-white flex items-center gap-2">
+                        <Zap className="w-4 h-4 text-teal-400" />Your EP Stats
+                      </h3>
+                    </CardHeader>
+                    <CardContent className="px-4 pb-4 space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400 text-sm">Today EP</span>
+                        <span className="text-teal-400 font-bold text-sm">+{epStats.today} EP</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400 text-sm">This Week</span>
+                        <span className="text-teal-400 font-bold text-sm">+{epStats.week} EP</span>
+                      </div>
+                      <div className="h-px bg-white/10 my-1" />
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400 text-sm">Token Balance</span>
+                        <div className="text-right">
+                          <div className="text-white font-bold text-sm">{((user.token_balance || 0) + (user.tokens_on_hold || 0)).toLocaleString()}</div>
+                          <div className="text-teal-400 text-xs">$EQOFLO</div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <TrendingCommunitiesSlider user={user} onUserUpdate={handleUserUpdate} showSlider={showTrendingCommunities} setShowSlider={setShowTrendingCommunities} />
+                  <TrendingTopics />
+                </div>
+              </div>
+            }
           </div>
         </div>
-      }
+      )}
 
       {showScrollToTop &&
-      <div className="fixed bottom-20 right-4 z-40 md:hidden">
-          <Button
-          onClick={scrollToTop}
-          className="bg-purple-600 hover:bg-purple-700 text-white rounded-full p-3 shadow-lg"
-          size="icon">
+        <div className="fixed bottom-20 right-4 z-40 md:hidden">
+          <Button onClick={scrollToTop} className="bg-purple-600 hover:bg-purple-700 text-white rounded-full p-3 shadow-lg" size="icon">
             <ArrowUp className="w-5 h-5" />
           </Button>
         </div>
