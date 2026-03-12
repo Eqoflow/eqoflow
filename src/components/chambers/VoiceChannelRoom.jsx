@@ -579,10 +579,11 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
         {Object.keys(remoteCameraTiles).length > 0 && !isSharing && !remoteShareActive && (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: Object.keys(remoteCameraTiles).length === 1 ? '1fr' : 'repeat(auto-fit, minmax(200px, 1fr))',
+            gridTemplateColumns: Object.keys(remoteCameraTiles).length === 1 ? '1fr' : 'repeat(auto-fit, minmax(200px, 200px))',
             gap: 12,
             padding: '16px',
             width: '100%',
+            justifyContent: 'center',
           }}>
             {Object.entries(remoteCameraTiles).map(([tileId, attendeeId]) => (
               <video
