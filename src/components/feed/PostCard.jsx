@@ -930,7 +930,7 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
         </motion.div>
         }
 
-        <Card className={`hover-lift transition-all duration-300 ${isSupercharged ? 'super-charged-card' : 'dark-card'}`}>
+        <Card className={`hover-lift transition-all duration-300 ${isSupercharged ? 'super-charged-card' : 'bg-[#0e1118]/80 backdrop-blur-md border border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.4)]'}`}>
           {isSupercharged &&
           <div className="absolute inset-0 pointer-events-none rounded-xl overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/20 via-amber-500/20 to-orange-400/20 animate-pulse"></div>
@@ -992,7 +992,7 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
             }
           </AnimatePresence>
 
-          <CardContent className="bg-[#000000] p-4 md:p-6">
+          <CardContent className="bg-transparent p-4 md:p-6">
             {communityInfo && showCommunityContext &&
             <div className="mb-4">
                 <Link to={`${createPageUrl("CommunityProfile")}?id=${communityInfo.id}`}>
@@ -1439,7 +1439,7 @@ export default function PostCard({ post, currentUser, onUserUpdate, author, onRe
 
       }
 
-      <Card className={`hover-lift transition-all duration-300 ${isSupercharged ? 'super-charged-card' : 'dark-card'}`}>
+      <Card className={`hover-lift transition-all duration-300 ${isSupercharged ? 'super-charged-card' : 'bg-[#0e1118]/80 backdrop-blur-md border border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.4)]'}`}>
         {isSupercharged &&
         <div className="absolute inset-0 pointer-events-none rounded-xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/20 via-amber-500/20 to-orange-400/20 animate-pulse"></div>
