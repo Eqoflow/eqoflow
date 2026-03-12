@@ -242,8 +242,11 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
               delete next[tileId];
               return next;
             });
-            // Only clear remoteShareActive if no more content tiles exist
-            // (we track this via the tileState — just clear it optimistically; Chime will re-fire if still active)
+            // Clear remote share active when the content tile is removed
+            if (remoteContentTileIdRef.current === tileId) {
+              remoteContentTileIdRef.current = null;
+              setRemoteShareActive(false);
+            }
           },
           audioVideoDidStart: () => {
             setStatus('connected');
