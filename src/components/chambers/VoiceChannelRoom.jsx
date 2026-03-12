@@ -364,6 +364,9 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
     if (isVideoOn) {
       session.audioVideo.stopLocalVideoTile();
       await session.audioVideo.stopVideoInput();
+      // Clear srcObject on both video elements so the feed visually stops
+      if (localVideoRef.current) localVideoRef.current.srcObject = null;
+      if (localVideoShareRef.current) localVideoShareRef.current.srcObject = null;
       setIsVideoOn(false);
       onVideoChange?.(false);
       updateParticipantStatus({ isVideoOn: false });
