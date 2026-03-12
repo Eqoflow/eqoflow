@@ -351,19 +351,28 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
   };
 
   const updateParticipantStatus = async (updates) => {
-    if (!onUpdateParticipants) return;
-    // Always fetch fresh community data so we don't wipe other participants' entries
+    // Fetch fresh community data, write directly to DB, then sync local state via callback
     const fresh = await base44.entities.Community.get(community.id);
-    const freshChannel = (fresh.channels || []).find(c => c.id === channel.id);
+    const allChs = fresh.channels || [];
+    const freshChannel = allChs.find(c => c.id === channel.id);
     const freshParticipants = freshChannel?.voice_participants || participantsRef.current;
     const currentParticipant = freshParticipants.find(p => p.email === user.email) || {
       email: user.email,
       name: user.full_name || 'Anonymous',
       avatar_url: user.avatar_url,
     };
-    const updated = { ...currentParticipant, ...updates };
-    const others = freshParticipants.filter(p => p.email !== user.email);
-    onUpdateParticipants([...others, updated]);
+    const updatedParticipant = { ...currentParticipant, ...updates };
+    const updatedParticipants = [
+      ...freshParticipants.filter(p => p.email !== user.email),
+      updatedParticipant,
+    ];
+    const updatedChannels = allChs.map(c =>
+      c.id === channel.id ? { ...c, voice_participants: updatedParticipants } : c
+    );
+    // Write directly to DB — triggers real-time subscription for all other users
+    await base44.entities.Community.update(community.id, { channels: updatedChannels });
+    // Sync local state in parent
+    onUpdateParticipants?.(updatedParticipants);
   };
 
   const handleToggleVideo = async () => {
