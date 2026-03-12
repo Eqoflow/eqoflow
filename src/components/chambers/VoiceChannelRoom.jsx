@@ -379,12 +379,20 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
       const observer = {
         videoTileDidUpdate: (tileState) => {
           if (tileState.isContent && screenShareRef.current) {
-            session.audioVideo.bindVideoElement(tileState.tileId, screenShareRef.current);
+            try {
+              session.audioVideo.bindVideoElement(tileState.tileId, screenShareRef.current);
+            } catch (e) {}
             session.audioVideo.removeObserver(observer);
           }
         },
       };
       session.audioVideo.addObserver(observer);
+      // Rebind local video tile to the PiP ref now that sharing has started
+      if (localVideoTileId && localVideoShareRef.current) {
+        try {
+          session.audioVideo.bindVideoElement(localVideoTileId, localVideoShareRef.current);
+        } catch (e) {}
+      }
       setIsSharing(true);
       onShareChange?.(true);
       updateParticipantStatus({ isSharing: true });
