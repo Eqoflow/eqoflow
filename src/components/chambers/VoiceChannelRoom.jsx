@@ -433,6 +433,36 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
               display: 'block',
             }}
           />
+          {/* PiP camera overlays for participants with their camera on (e.g. the sharer's live feed) */}
+          {Object.entries(remoteCameraTiles).map(([tileId], idx) => (
+            <video
+              key={tileId}
+              ref={el => {
+                const numericTileId = parseInt(tileId, 10);
+                remoteVideoRefs.current[numericTileId] = el;
+                if (el && sessionRef.current) {
+                  try {
+                    sessionRef.current.audioVideo.bindVideoElement(numericTileId, el);
+                  } catch (e) {}
+                }
+              }}
+              autoPlay
+              playsInline
+              style={{
+                position: 'absolute',
+                bottom: 24,
+                right: 24 + idx * 176,
+                width: 160,
+                height: 120,
+                borderRadius: 8,
+                background: '#0e1118',
+                border: '2px solid rgba(0,229,160,0.5)',
+                objectFit: 'cover',
+                zIndex: 10,
+                display: 'block',
+              }}
+            />
+          ))}
         </div>
       )}
 
