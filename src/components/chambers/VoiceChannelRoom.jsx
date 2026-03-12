@@ -280,6 +280,14 @@ export default function VoiceChannelRoom({ community, user, channel, onLeave, co
           (activeSpeakers) => setSpeakingIds(new Set(activeSpeakers))
         );
 
+        // Handle native browser "Stop sharing" button
+        session.audioVideo.addContentShareObserver({
+          contentShareDidStop: () => {
+            setIsSharing(false);
+            onShareChange?.(false);
+          },
+        });
+
         session.audioVideo.start();
       } catch (err) {
         console.error('Chime join error:', err);
