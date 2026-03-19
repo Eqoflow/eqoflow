@@ -75,11 +75,11 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Update UserProfileData (this is what the logged-in user's profile reads from)
-    const profileEntries = await base44.asServiceRole.entities.UserProfileData.filter({ user_email: review.user_email });
-    if (profileEntries[0]) {
-      const updatedIdentity = buildUpdatedIdentity(profileEntries[0].cross_platform_identity || {});
-      await base44.asServiceRole.entities.UserProfileData.update(profileEntries[0].id, {
+    // Update the User entity directly (this is what the logged-in user's session reads from)
+    const users = await base44.asServiceRole.entities.User.filter({ email: review.user_email });
+    if (users[0]) {
+      const updatedIdentity = buildUpdatedIdentity(users[0].cross_platform_identity || {});
+      await base44.asServiceRole.entities.User.update(users[0].id, {
         cross_platform_identity: updatedIdentity,
       });
     }
