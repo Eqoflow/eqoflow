@@ -82,17 +82,17 @@ Deno.serve(async (req) => {
         console.error('Failed to update PublicUserDirectory:', e.message);
       }
 
-      // Update the User entity directly so the logged-in user sees the change immediately
+      // Also update UserProfileData if it exists for this user
       try {
-        const targetUsers = await base44.asServiceRole.entities.User.filter({ email: review.user_email });
-        if (targetUsers[0]) {
-          const updatedIdentity = buildUpdatedIdentity(targetUsers[0].cross_platform_identity);
-          await base44.asServiceRole.entities.User.update(targetUsers[0].id, {
+        const profileEntries = await base44.asServiceRole.entities.UserProfileData.filter({ user_email: review.user_email });
+        if (profileEntries[0]) {
+          const updatedIdentity = buildUpdatedIdentity(profileEntries[0].cross_platform_identity);
+          await base44.asServiceRole.entities.UserProfileData.update(profileEntries[0].id, {
             cross_platform_identity: updatedIdentity,
           });
         }
       } catch (e) {
-        console.error('Failed to update User entity:', e.message);
+        console.error('Failed to update UserProfileData:', e.message);
       }
     }
 
