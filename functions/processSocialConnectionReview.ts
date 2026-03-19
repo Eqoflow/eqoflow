@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
     reviewed_at: new Date().toISOString(),
   });
 
-  // If approved, add the verified connection to the user's PublicUserDirectory entry
+  // If approved, add the verified connection to both PublicUserDirectory and UserProfileData
   if (decision === 'approved') {
     const web2Platforms = ['twitter', 'facebook', 'instagram', 'linkedin', 'github', 'youtube', 'spotify'];
     const web3Protocols = ['lens', 'farcaster', 'nostr', 'bluesky', 'mastodon'];
@@ -36,17 +36,11 @@ Deno.serve(async (req) => {
     const platform = review.platform?.toLowerCase();
     const submittedData = review.submitted_data || {};
 
-    // Find or create PublicUserDirectory entry
-    const dirEntries = await base44.asServiceRole.entities.PublicUserDirectory.filter({ user_email: review.user_email });
-    const dirEntry = dirEntries[0];
-
-    if (dirEntry) {
-      const currentIdentity = dirEntry.cross_platform_identity || { web2_verifications: [], web3_connections: [] };
+    const buildUpdatedIdentity = (currentIdentity) => {
       const web2Verifications = currentIdentity.web2_verifications || [];
       const web3Connections = currentIdentity.web3_connections || [];
 
       if (web2Platforms.includes(platform)) {
-        // Remove existing entry for this platform if any
         const filtered = web2Verifications.filter(v => v.platform !== platform);
         filtered.push({
           platform,
@@ -57,9 +51,7 @@ Deno.serve(async (req) => {
           verified: true,
           verified_at: new Date().toISOString(),
         });
-        await base44.asServiceRole.entities.PublicUserDirectory.update(dirEntry.id, {
-          cross_platform_identity: { ...currentIdentity, web2_verifications: filtered },
-        });
+        return { ...currentIdentity, web2_verifications: filtered };
       } else if (web3Protocols.includes(platform)) {
         const filtered = web3Connections.filter(c => c.protocol !== platform);
         filtered.push({
@@ -69,10 +61,27 @@ Deno.serve(async (req) => {
           profile_id: submittedData.profile_url || '',
           connected_at: new Date().toISOString(),
         });
-        await base44.asServiceRole.entities.PublicUserDirectory.update(dirEntry.id, {
-          cross_platform_identity: { ...currentIdentity, web3_connections: filtered },
-        });
+        return { ...currentIdentity, web3_connections: filtered };
       }
+      return currentIdentity;
+    };
+
+    // Update PublicUserDirectory
+    const dirEntries = await base44.asServiceRole.entities.PublicUserDirectory.filter({ user_email: review.user_email });
+    if (dirEntries[0]) {
+      const updatedIdentity = buildUpdatedIdentity(dirEntries[0].cross_platform_identity || {});
+      await base44.asServiceRole.entities.PublicUserDirectory.update(dirEntries[0].id, {
+        cross_platform_identity: updatedIdentity,
+      });
+    }
+
+    // Update UserProfileData (this is what the logged-in user's profile reads from)
+    const profileEntries = await base44.asServiceRole.entities.UserProfileData.filter({ user_email: review.user_email });
+    if (profileEntries[0]) {
+      const updatedIdentity = buildUpdatedIdentity(profileEntries[0].cross_platform_identity || {});
+      await base44.asServiceRole.entities.UserProfileData.update(profileEntries[0].id, {
+        cross_platform_identity: updatedIdentity,
+      });
     }
   }
 
