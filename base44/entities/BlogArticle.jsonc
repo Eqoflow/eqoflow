@@ -1,0 +1,95 @@
+{
+  "name": "BlogArticle",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title of the blog article"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly slug for the article (e.g., 'my-first-update')"
+    },
+    "content_type": {
+      "type": "string",
+      "enum": [
+        "article",
+        "pdf"
+      ],
+      "default": "article",
+      "description": "The type of content, either a written article or an uploaded PDF."
+    },
+    "content": {
+      "type": "string",
+      "description": "Full content of the article (HTML or Markdown)"
+    },
+    "pdf_url": {
+      "type": "string",
+      "description": "URL to the uploaded PDF file if content_type is 'pdf'"
+    },
+    "excerpt": {
+      "type": "string",
+      "description": "Short excerpt/summary for listing pages"
+    },
+    "author_email": {
+      "type": "string",
+      "description": "Email of the admin who authored this article"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Display name of the author"
+    },
+    "featured_image_url": {
+      "type": "string",
+      "description": "URL to the featured image for this article"
+    },
+    "publish_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the article was published"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for categorizing articles"
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the article is published and visible to public"
+    },
+    "likes_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of likes on this article"
+    },
+    "comments_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of comments on this article"
+    },
+    "view_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of times this article has been viewed"
+    },
+    "meta_description": {
+      "type": "string",
+      "description": "SEO meta description for the article"
+    }
+  },
+  "required": [
+    "title",
+    "slug",
+    "author_email"
+  ],
+  "rls": {
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

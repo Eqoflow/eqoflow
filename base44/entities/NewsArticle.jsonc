@@ -1,0 +1,73 @@
+{
+  "name": "NewsArticle",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "The title of the news article"
+    },
+    "content_snippet": {
+      "type": "string",
+      "description": "A brief summary or snippet of the news article content"
+    },
+    "image_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL for the main image of the news article"
+    },
+    "full_article_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to the full news article (can be external)"
+    },
+    "news_type": {
+      "type": "string",
+      "enum": [
+        "breaking",
+        "trending",
+        "update"
+      ],
+      "default": "update",
+      "description": "Type of news: breaking, trending, or general update"
+    },
+    "source_community_id": {
+      "type": "string",
+      "description": "ID of the community that published this news article"
+    },
+    "is_paid_placement": {
+      "type": "boolean",
+      "default": false,
+      "description": "Indicates if this is a paid promotional placement"
+    },
+    "paid_until": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date and time until which the paid placement is active"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Name of the publisher or author"
+    }
+  },
+  "required": [
+    "title",
+    "content_snippet",
+    "image_url",
+    "news_type",
+    "author_name"
+  ],
+  "rls": {
+    "write": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "created_by": "{{user.email}}"
+        }
+      ]
+    }
+  }
+}

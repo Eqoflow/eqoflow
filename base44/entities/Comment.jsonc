@@ -1,0 +1,82 @@
+{
+  "name": "Comment",
+  "type": "object",
+  "properties": {
+    "content": {
+      "type": "string",
+      "description": "The content of the comment"
+    },
+    "post_id": {
+      "type": "string",
+      "description": "The ID of the post this comment belongs to"
+    },
+    "parent_comment_id": {
+      "type": "string",
+      "description": "The ID of the parent comment if this is a reply"
+    },
+    "author_full_name": {
+      "type": "string",
+      "description": "The full name of the commenter"
+    },
+    "author_avatar_url": {
+      "type": "string",
+      "description": "The avatar URL of the commenter"
+    },
+    "author_username": {
+      "type": "string",
+      "description": "The username of the commenter for profile links"
+    },
+    "liked_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of user emails who liked this comment"
+    },
+    "disliked_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of user emails who disliked this comment"
+    },
+    "likes_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of likes on this comment"
+    },
+    "dislikes_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of dislikes on this comment"
+    },
+    "reply_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of replies to this comment"
+    }
+  },
+  "required": [
+    "content",
+    "post_id"
+  ],
+  "rls": {
+    "write": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "created_by": "{{user.email}}"
+        }
+      ]
+    }
+  }
+}

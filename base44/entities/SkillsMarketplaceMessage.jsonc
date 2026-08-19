@@ -1,0 +1,64 @@
+{
+  "name": "SkillsMarketplaceMessage",
+  "type": "object",
+  "properties": {
+    "sender_email": {
+      "type": "string",
+      "description": "Email of the message sender"
+    },
+    "recipient_email": {
+      "type": "string",
+      "description": "Email of the message recipient"
+    },
+    "conversation_id": {
+      "type": "string",
+      "description": "ID to group messages between two users"
+    },
+    "skill_id": {
+      "type": "string",
+      "description": "Optional: ID of the skill being discussed"
+    },
+    "skill_title": {
+      "type": "string",
+      "description": "Optional: Title of the skill for context"
+    },
+    "message_content": {
+      "type": "string",
+      "description": "The message content (NOT encrypted - monitored for fraud/scams)"
+    },
+    "is_read": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the message has been read by recipient"
+    },
+    "read_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the message was read"
+    },
+    "sender_name": {
+      "type": "string",
+      "description": "Name of the sender at time of message"
+    },
+    "sender_avatar": {
+      "type": "string",
+      "description": "Avatar URL of the sender at time of message"
+    },
+    "recipient_name": {
+      "type": "string",
+      "description": "Name of the recipient at time of message"
+    },
+    "recipient_avatar": {
+      "type": "string",
+      "description": "Avatar URL of the recipient at time of message"
+    }
+  },
+  "required": [
+    "sender_email",
+    "recipient_email",
+    "conversation_id",
+    "message_content",
+    "sender_name",
+    "recipient_name"
+  ]
+}

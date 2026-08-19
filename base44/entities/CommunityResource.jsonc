@@ -1,0 +1,82 @@
+{
+  "name": "CommunityResource",
+  "type": "object",
+  "properties": {
+    "community_id": {
+      "type": "string",
+      "description": "ID of the community this resource belongs to"
+    },
+    "title": {
+      "type": "string",
+      "description": "Title of the media resource"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the media content"
+    },
+    "media_url": {
+      "type": "string",
+      "description": "URL to the uploaded media file"
+    },
+    "media_type": {
+      "type": "string",
+      "enum": [
+        "video",
+        "audio",
+        "document"
+      ],
+      "description": "Type of media content"
+    },
+    "category": {
+      "type": "string",
+      "description": "User-defined category/topic for organization"
+    },
+    "duration": {
+      "type": "string",
+      "description": "Duration of video/audio content (e.g., '5:30')"
+    },
+    "file_size": {
+      "type": "number",
+      "description": "File size in bytes"
+    },
+    "thumbnail_url": {
+      "type": "string",
+      "description": "URL to thumbnail image for videos"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this resource is featured in the community"
+    },
+    "view_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of times this resource has been viewed"
+    },
+    "display_order": {
+      "type": "number",
+      "default": 0,
+      "description": "Order for displaying resources within a category"
+    }
+  },
+  "required": [
+    "community_id",
+    "title",
+    "media_url",
+    "media_type"
+  ],
+  "rls": {
+    "write": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "created_by": "{{user.email}}"
+        }
+      ]
+    }
+  }
+}

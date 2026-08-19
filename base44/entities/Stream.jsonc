@@ -1,0 +1,126 @@
+{
+  "name": "Stream",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Stream title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Stream description"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "gaming",
+        "just_chatting",
+        "music",
+        "art",
+        "coding",
+        "fitness",
+        "cooking",
+        "education",
+        "irl",
+        "other"
+      ],
+      "description": "Stream category"
+    },
+    "thumbnail_url": {
+      "type": "string",
+      "description": "Stream thumbnail image URL"
+    },
+    "mux_live_stream_id": {
+      "type": "string",
+      "description": "ID of the persistent Mux Live Stream object"
+    },
+    "mux_playback_id": {
+      "type": "string",
+      "description": "Mux Playback ID for the current live session"
+    },
+    "mux_asset_id": {
+      "type": "string",
+      "description": "Mux Asset ID for the stream recording"
+    },
+    "viewer_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Current number of viewers"
+    },
+    "total_views": {
+      "type": "number",
+      "default": 0,
+      "description": "Total lifetime views"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 0,
+      "description": "Stream duration in minutes"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Stream tags"
+    },
+    "language": {
+      "type": "string",
+      "default": "english",
+      "description": "Stream language"
+    },
+    "is_mature": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether stream contains mature content"
+    },
+    "donations_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether donations are enabled"
+    },
+    "ep_earned": {
+      "type": "number",
+      "default": 0,
+      "description": "Total EP earned from this stream"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "live",
+        "offline",
+        "ended"
+      ],
+      "default": "offline",
+      "description": "Stream status"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the stream went live"
+    }
+  },
+  "required": [
+    "title",
+    "category"
+  ],
+  "rls": {
+    "write": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "created_by": "{{user.email}}"
+        }
+      ]
+    }
+  }
+}

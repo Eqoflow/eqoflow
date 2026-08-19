@@ -1,0 +1,47 @@
+{
+  "name": "TradingAccount",
+  "type": "object",
+  "properties": {
+    "account_type": {
+      "type": "string",
+      "enum": [
+        "basic",
+        "pro",
+        "premium"
+      ],
+      "default": "basic",
+      "description": "Trading account tier"
+    },
+    "balance_usd": {
+      "type": "number",
+      "default": 0,
+      "description": "USD balance in trading account"
+    },
+    "total_portfolio_value": {
+      "type": "number",
+      "default": 0,
+      "description": "Total portfolio value in USD"
+    },
+    "total_profit_loss": {
+      "type": "number",
+      "default": 0,
+      "description": "Total profit/loss in USD"
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "unverified",
+        "pending",
+        "verified"
+      ],
+      "default": "unverified",
+      "description": "KYC verification status"
+    },
+    "trading_level": {
+      "type": "number",
+      "default": 1,
+      "description": "Trading experience level (1-10)"
+    }
+  },
+  "required": []
+}

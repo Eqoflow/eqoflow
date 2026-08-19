@@ -1,0 +1,57 @@
+{
+  "name": "PlatformWallet",
+  "type": "object",
+  "properties": {
+    "transaction_type": {
+      "type": "string",
+      "enum": [
+        "ep_purchase_qflow",
+        "ep_purchase_fiat",
+        "withdrawal",
+        "distribution_to_dao"
+      ],
+      "description": "Type of platform wallet transaction"
+    },
+    "amount_qflow": {
+      "type": "number",
+      "description": "Amount of $EQOFLO tokens involved (positive for income, negative for outgoing)"
+    },
+    "source_description": {
+      "type": "string",
+      "description": "Description of the transaction source (e.g., 'EP Package Purchase - Medium Pack')"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email of user involved in transaction (for purchases)"
+    },
+    "package_id": {
+      "type": "string",
+      "description": "ID of EP package purchased (if applicable)"
+    },
+    "square_transaction_id": {
+      "type": "string",
+      "description": "Square transaction ID for fiat purchases"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes about the transaction"
+    }
+  },
+  "required": [
+    "transaction_type",
+    "amount_qflow",
+    "source_description"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

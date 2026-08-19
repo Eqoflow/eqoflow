@@ -1,0 +1,49 @@
+{
+  "name": "CommunityQuestion",
+  "type": "object",
+  "properties": {
+    "community_id": {
+      "type": "string",
+      "description": "ID of the community this question belongs to"
+    },
+    "question_text": {
+      "type": "string",
+      "description": "The text of the user's question"
+    },
+    "answer_text": {
+      "type": "string",
+      "description": "The creator's answer to the question"
+    },
+    "is_answered": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the question has been answered"
+    },
+    "asker_name": {
+      "type": "string",
+      "description": "Full name of the user who asked the question"
+    },
+    "asker_avatar": {
+      "type": "string",
+      "description": "Avatar URL of the user who asked the question"
+    }
+  },
+  "required": [
+    "community_id",
+    "question_text"
+  ],
+  "rls": {
+    "write": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

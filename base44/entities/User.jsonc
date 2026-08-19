@@ -1,0 +1,33 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "solana_wallet_address": {
+      "type": "string",
+      "description": "Linked Solana wallet address"
+    },
+    "solana_wallet_linked_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the Solana wallet was linked"
+    },
+    "x_access_token": {
+      "type": "string",
+      "description": "X (Twitter) OAuth access token for posting"
+    },
+    "x_access_token_secret": {
+      "type": "string",
+      "description": "X (Twitter) OAuth access token secret for posting"
+    },
+    "x_username": {
+      "type": "string",
+      "description": "Connected X (Twitter) username"
+    },
+    "x_connected_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the X account was connected"
+    }
+  },
+  "required": []
+}

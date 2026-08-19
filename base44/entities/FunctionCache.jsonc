@@ -1,0 +1,33 @@
+{
+  "name": "FunctionCache",
+  "type": "object",
+  "properties": {
+    "function_name": {
+      "type": "string",
+      "description": "The unique name of the function being cached."
+    },
+    "cached_response": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true,
+      "description": "The JSON response from the function that is being cached."
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The timestamp when this cache entry expires."
+    }
+  },
+  "required": [
+    "function_name",
+    "cached_response",
+    "expires_at"
+  ],
+  "rls": {
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

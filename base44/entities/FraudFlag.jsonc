@@ -1,0 +1,129 @@
+{
+  "name": "FraudFlag",
+  "type": "object",
+  "properties": {
+    "flagged_user_email": {
+      "type": "string",
+      "description": "Email of the user who has been flagged"
+    },
+    "flagged_user_name": {
+      "type": "string",
+      "description": "Full name of the flagged user at time of flagging"
+    },
+    "flag_type": {
+      "type": "string",
+      "enum": [
+        "suspicious_ep_gain",
+        "bot_like_followers",
+        "coordinated_engagement",
+        "fake_activity_spike",
+        "generic_comment_pattern",
+        "rapid_follower_growth",
+        "single_creator_focus",
+        "unusual_engagement_ratio"
+      ],
+      "description": "Type of fraudulent activity detected"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium",
+      "description": "Severity level of the detected fraud"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "under_review",
+        "resolved",
+        "dismissed",
+        "escalated"
+      ],
+      "default": "new",
+      "description": "Current status of the fraud flag"
+    },
+    "detection_reason": {
+      "type": "string",
+      "description": "Detailed explanation of why this user was flagged"
+    },
+    "metrics_snapshot": {
+      "type": "object",
+      "description": "Relevant metrics at time of detection",
+      "properties": {
+        "daily_ep_gained": {
+          "type": "number"
+        },
+        "follower_count": {
+          "type": "number"
+        },
+        "engagement_rate": {
+          "type": "number"
+        },
+        "account_age_days": {
+          "type": "number"
+        },
+        "suspicious_interactions": {
+          "type": "number"
+        }
+      }
+    },
+    "related_content_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of posts/content related to this flag"
+    },
+    "auto_detected": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this flag was detected automatically or manually reported"
+    },
+    "reviewed_by": {
+      "type": "string",
+      "description": "Email of admin who reviewed this flag"
+    },
+    "review_notes": {
+      "type": "string",
+      "description": "Admin notes from manual review"
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this flag was reviewed by an admin"
+    },
+    "action_taken": {
+      "type": "string",
+      "enum": [
+        "none",
+        "warning_sent",
+        "rewards_suspended",
+        "account_banned",
+        "under_monitoring"
+      ],
+      "description": "Action taken after review"
+    }
+  },
+  "required": [
+    "flagged_user_email",
+    "flag_type",
+    "detection_reason"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

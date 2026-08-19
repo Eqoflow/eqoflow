@@ -1,0 +1,112 @@
+{
+  "name": "Skill",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Skill or service title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "design",
+        "development",
+        "writing",
+        "marketing",
+        "consulting",
+        "education",
+        "art",
+        "music",
+        "fitness",
+        "cooking",
+        "other"
+      ],
+      "description": "Skill category"
+    },
+    "skill_type": {
+      "type": "string",
+      "enum": [
+        "offering",
+        "seeking"
+      ],
+      "description": "Whether offering or seeking this skill"
+    },
+    "price_type": {
+      "type": "string",
+      "enum": [
+        "free",
+        "tokens",
+        "fiat"
+      ],
+      "description": "Payment type"
+    },
+    "price_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Price amount"
+    },
+    "duration_hours": {
+      "type": "number",
+      "description": "Estimated hours needed"
+    },
+    "is_remote": {
+      "type": "boolean",
+      "default": true,
+      "description": "Can be done remotely"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Skill tags"
+    },
+    "media_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Images or videos showcasing the skill"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "completed",
+        "cancelled"
+      ],
+      "default": "active",
+      "description": "Skill listing status"
+    }
+  },
+  "required": [
+    "title",
+    "description",
+    "category",
+    "skill_type"
+  ],
+  "rls": {
+    "write": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "created_by": "{{user.email}}"
+        }
+      ]
+    }
+  }
+}

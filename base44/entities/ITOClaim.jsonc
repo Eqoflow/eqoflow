@@ -1,0 +1,55 @@
+{
+  "name": "ITOClaim",
+  "type": "object",
+  "properties": {
+    "sending_wallet_address": {
+      "type": "string",
+      "description": "The Solana wallet address used to send USDC to the ITO, which is claiming tokens."
+    },
+    "claimed_by_user_email": {
+      "type": "string",
+      "description": "The email of the user who successfully claimed tokens from this sending wallet address."
+    },
+    "claimed_amount_qflow": {
+      "type": "number",
+      "description": "The total amount of $EQOFLO tokens claimed via this wallet address."
+    },
+    "claimed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the claim was processed."
+    },
+    "associated_transaction_hashes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of transaction hashes (ITOTransaction IDs) linked to this claim."
+    }
+  },
+  "required": [
+    "sending_wallet_address",
+    "claimed_by_user_email",
+    "claimed_amount_qflow",
+    "claimed_at"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.claimed_by_user_email": "{{user.email}}"
+        }
+      ]
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "name": "VirtualSpaceChat",
+  "type": "object",
+  "properties": {
+    "space_id": {
+      "type": "string",
+      "description": "ID of the virtual space"
+    },
+    "message": {
+      "type": "string",
+      "description": "Chat message content"
+    },
+    "message_type": {
+      "type": "string",
+      "enum": [
+        "text",
+        "emote",
+        "system"
+      ],
+      "default": "text",
+      "description": "Type of message"
+    },
+    "sender_name": {
+      "type": "string",
+      "description": "Name of the message sender"
+    },
+    "sender_avatar": {
+      "type": "string",
+      "description": "Avatar URL of the sender"
+    }
+  },
+  "required": [
+    "space_id",
+    "message",
+    "sender_name"
+  ],
+  "rls": {
+    "write": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

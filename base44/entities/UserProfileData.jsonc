@@ -1,0 +1,162 @@
+{
+  "name": "UserProfileData",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "The email of the user this profile data belongs to. Acts as a foreign key."
+    },
+    "full_name": {
+      "type": "string"
+    },
+    "username": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "square_connect_link": {
+      "type": "string"
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "interests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "color_scheme": {
+      "type": "string"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "has_completed_onboarding": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user has completed the welcome onboarding"
+    },
+    "discovery_visible": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this user should appear in Discovery tab"
+    },
+    "has_agreed_token_distribution": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has agreed to the Token Distribution Agreement."
+    },
+    "has_agreed_terms_of_service": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has agreed to the Terms of Service"
+    },
+    "has_agreed_privacy_policy": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has agreed to the Privacy Policy"
+    },
+    "has_agreed_eqoflow_declaration": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has agreed to the EqoFlow Declaration"
+    },
+    "solana_wallet_address": {
+      "type": "string",
+      "description": "Linked Solana wallet address"
+    },
+    "solana_wallet_linked_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the Solana wallet was linked"
+    },
+    "cross_platform_identity": {
+      "type": "object",
+      "description": "Cross-platform social identity connections, both Web2 and Web3",
+      "properties": {
+        "web2_verifications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "platform": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string"
+              },
+              "display_name": {
+                "type": "string"
+              },
+              "follower_count": {
+                "type": "number"
+              },
+              "verified": {
+                "type": "boolean"
+              },
+              "profile_url": {
+                "type": "string"
+              },
+              "verified_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        "web3_connections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "protocol": {
+                "type": "string"
+              },
+              "handle": {
+                "type": "string"
+              },
+              "follower_count": {
+                "type": "number"
+              },
+              "profile_id": {
+                "type": "string"
+              },
+              "connected_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "user_email"
+  ],
+  "rls": {
+    "write": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

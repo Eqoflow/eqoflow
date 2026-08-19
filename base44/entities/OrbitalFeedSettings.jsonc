@@ -1,0 +1,27 @@
+{
+  "name": "OrbitalFeedSettings",
+  "type": "object",
+  "properties": {
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this is the active global layout"
+    },
+    "positions": {
+      "type": "object",
+      "description": "Positions of all orbs in the orbital feed",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "is_active",
+    "positions"
+  ],
+  "rls": {
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

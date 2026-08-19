@@ -1,0 +1,49 @@
+{
+  "name": "NillionStore",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "The email of the user who owns this store."
+    },
+    "store_id": {
+      "type": "string",
+      "description": "The UUID of the Nillion collection (store)."
+    },
+    "store_name": {
+      "type": "string",
+      "description": "A user-friendly name for the store, e.g., 'My Secret Data 1'."
+    }
+  },
+  "required": [
+    "user_email",
+    "store_id",
+    "store_name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

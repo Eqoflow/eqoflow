@@ -1,0 +1,83 @@
+{
+  "name": "SocialConnectionReview",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user requesting the connection."
+    },
+    "platform": {
+      "type": "string",
+      "description": "The social platform to be connected (e.g., 'spotify', 'twitter', 'github')."
+    },
+    "platform_label": {
+      "type": "string",
+      "description": "The display name of the platform (e.g., 'Spotify', 'X (Twitter)')."
+    },
+    "submitted_data": {
+      "type": "object",
+      "description": "Data submitted by the user for verification.",
+      "properties": {
+        "display_name": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "profile_url": {
+          "type": "string"
+        },
+        "follower_count": {
+          "type": "number"
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "The current status of the review."
+    },
+    "admin_notes": {
+      "type": "string",
+      "description": "Notes from the admin, especially for rejections."
+    },
+    "reviewed_by": {
+      "type": "string",
+      "description": "Email of the admin who conducted the review."
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of when the review was completed."
+    }
+  },
+  "required": [
+    "user_email",
+    "platform",
+    "submitted_data"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_email.": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

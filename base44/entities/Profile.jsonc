@@ -1,0 +1,34 @@
+{
+  "name": "Profile",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "The user's unique ID"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Display name"
+    },
+    "handle": {
+      "type": "string",
+      "description": "User handle (@username)"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "URL to avatar image"
+    },
+    "dashboard_image_url": {
+      "type": "string",
+      "description": "URL to custom dashboard image"
+    },
+    "color_theme": {
+      "type": "string",
+      "description": "Preferred color theme",
+      "default": "blue"
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

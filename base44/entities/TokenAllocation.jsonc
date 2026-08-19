@@ -1,0 +1,41 @@
+{
+  "name": "TokenAllocation",
+  "type": "object",
+  "properties": {
+    "pool_name": {
+      "type": "string",
+      "enum": [
+        "community_rewards",
+        "dao_treasury",
+        "team_and_advisors",
+        "ecosystem_fund",
+        "public_private_sale"
+      ],
+      "description": "The unique name of the token allocation pool."
+    },
+    "description": {
+      "type": "string",
+      "description": "A brief description of the pool's purpose."
+    },
+    "total_allocated": {
+      "type": "number",
+      "description": "The total number of tokens allocated to this pool."
+    },
+    "amount_distributed": {
+      "type": "number",
+      "default": 0,
+      "description": "The number of tokens that have been distributed from this pool."
+    }
+  },
+  "required": [
+    "pool_name",
+    "total_allocated"
+  ],
+  "rls": {
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "name": "SkillReview",
+  "type": "object",
+  "properties": {
+    "transaction_id": {
+      "type": "string",
+      "description": "ID of the MarketplaceTransaction this review is for"
+    },
+    "skill_id": {
+      "type": "string",
+      "description": "ID of the skill that was purchased"
+    },
+    "creator_email": {
+      "type": "string",
+      "description": "Email of the skill creator being reviewed"
+    },
+    "reviewer_email": {
+      "type": "string",
+      "description": "Email of the buyer leaving the review"
+    },
+    "reviewer_name": {
+      "type": "string",
+      "description": "Name of the buyer leaving the review"
+    },
+    "reviewer_avatar": {
+      "type": "string",
+      "description": "Avatar of the buyer leaving the review"
+    },
+    "rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Star rating from 1-5"
+    },
+    "review_text": {
+      "type": "string",
+      "description": "Written review from the buyer"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the creator has chosen to feature this review"
+    },
+    "creator_response": {
+      "type": "string",
+      "description": "Optional response from the creator to the review"
+    },
+    "is_verified_purchase": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this review is from a verified transaction"
+    }
+  },
+  "required": [
+    "transaction_id",
+    "skill_id",
+    "creator_email",
+    "reviewer_email",
+    "rating"
+  ],
+  "rls": {
+    "write": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

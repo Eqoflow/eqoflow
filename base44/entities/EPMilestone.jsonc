@@ -1,0 +1,80 @@
+{
+  "name": "EPMilestone",
+  "type": "object",
+  "properties": {
+    "milestone_id": {
+      "type": "string",
+      "description": "Unique identifier for the milestone"
+    },
+    "title": {
+      "type": "string",
+      "description": "Title of the milestone"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of what the milestone represents"
+    },
+    "ep_threshold": {
+      "type": "number",
+      "description": "EP required to unlock this milestone"
+    },
+    "reward_type": {
+      "type": "string",
+      "enum": [
+        "tokens",
+        "nft",
+        "badge",
+        "access",
+        "multiplier"
+      ],
+      "description": "Type of reward for reaching milestone"
+    },
+    "reward_amount": {
+      "type": "number",
+      "description": "Amount of reward (tokens, multiplier percentage, etc.)"
+    },
+    "reward_description": {
+      "type": "string",
+      "description": "Description of the reward"
+    },
+    "badge_image_url": {
+      "type": "string",
+      "description": "URL for milestone badge image"
+    },
+    "is_achieved": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user has achieved this milestone"
+    },
+    "achieved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the milestone was achieved"
+    },
+    "rarity": {
+      "type": "string",
+      "enum": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "default": "common",
+      "description": "Rarity level of the milestone"
+    }
+  },
+  "required": [
+    "milestone_id",
+    "title",
+    "description",
+    "ep_threshold",
+    "reward_type"
+  ],
+  "rls": {
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

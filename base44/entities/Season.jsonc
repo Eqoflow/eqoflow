@@ -1,0 +1,44 @@
+{
+  "name": "Season",
+  "type": "object",
+  "properties": {
+    "season_id": {
+      "type": "string",
+      "description": "Unique Season ID"
+    },
+    "name": {
+      "type": "string",
+      "description": "Season Name"
+    },
+    "theme": {
+      "type": "string",
+      "description": "Season Theme Description"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Start Date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "End Date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "ended",
+        "upcoming"
+      ],
+      "default": "upcoming",
+      "description": "Current status of the season"
+    }
+  },
+  "required": [
+    "season_id",
+    "name",
+    "start_date",
+    "end_date"
+  ]
+}

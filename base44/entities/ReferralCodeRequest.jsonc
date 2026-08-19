@@ -1,0 +1,53 @@
+{
+  "name": "ReferralCodeRequest",
+  "type": "object",
+  "properties": {
+    "requested_code": {
+      "type": "string",
+      "description": "The custom referral code requested by the user."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "The current status of the request."
+    },
+    "rejection_reason": {
+      "type": "string",
+      "description": "The reason provided by an admin if the request is rejected."
+    }
+  },
+  "required": [
+    "requested_code"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

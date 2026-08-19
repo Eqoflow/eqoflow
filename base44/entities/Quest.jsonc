@@ -1,0 +1,65 @@
+{
+  "name": "Quest",
+  "type": "object",
+  "properties": {
+    "quest_id": {
+      "type": "string",
+      "description": "Unique Quest ID"
+    },
+    "season_id": {
+      "type": "string",
+      "description": "ID of the season this quest belongs to"
+    },
+    "title": {
+      "type": "string",
+      "description": "Quest Title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Quest Description"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "content",
+        "engagement",
+        "community",
+        "privacy",
+        "builder",
+        "discovery"
+      ],
+      "description": "Quest Category"
+    },
+    "frequency": {
+      "type": "string",
+      "enum": [
+        "once",
+        "daily",
+        "weekly",
+        "multi"
+      ],
+      "default": "once",
+      "description": "How often the quest can be completed"
+    },
+    "sp_reward": {
+      "type": "number",
+      "default": 0,
+      "description": "Seasonal Points reward"
+    },
+    "max_claims": {
+      "type": "number",
+      "default": 1,
+      "description": "Maximum times this quest can be claimed (for multi/daily/weekly)"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the quest is active"
+    }
+  },
+  "required": [
+    "quest_id",
+    "title",
+    "sp_reward"
+  ]
+}

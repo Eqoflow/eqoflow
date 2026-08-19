@@ -1,0 +1,86 @@
+{
+  "name": "QFLOWStake",
+  "type": "object",
+  "properties": {
+    "amount": {
+      "type": "number",
+      "description": "Amount of $EQOFLO tokens staked"
+    },
+    "period_days": {
+      "type": "number",
+      "description": "Staking period in days"
+    },
+    "apy": {
+      "type": "number",
+      "description": "Annual percentage yield for this stake"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the stake was created"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the stake matures"
+    },
+    "current_rewards": {
+      "type": "number",
+      "default": 0,
+      "description": "Current accumulated rewards"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "withdrawn"
+      ],
+      "default": "active",
+      "description": "Current status of the stake"
+    },
+    "last_reward_calculation": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time rewards were calculated"
+    },
+    "total_rewards_paid": {
+      "type": "number",
+      "default": 0,
+      "description": "Total rewards paid out for this stake"
+    }
+  },
+  "required": [
+    "amount",
+    "period_days",
+    "apy",
+    "start_date",
+    "end_date"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "name": "DirectMessage",
+  "type": "object",
+  "properties": {
+    "recipient_email": {
+      "type": "string",
+      "description": "Email of the message recipient"
+    },
+    "content": {
+      "type": "string",
+      "description": "The message content"
+    },
+    "message_type": {
+      "type": "string",
+      "enum": [
+        "text",
+        "image",
+        "video",
+        "audio",
+        "file"
+      ],
+      "default": "text",
+      "description": "Type of message content"
+    },
+    "media_url": {
+      "type": "string",
+      "description": "URL of attached media (if any)"
+    },
+    "is_read": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the message has been read"
+    },
+    "read_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the message was read"
+    },
+    "conversation_id": {
+      "type": "string",
+      "description": "ID to group messages between two users"
+    },
+    "reply_to_id": {
+      "type": "string",
+      "description": "ID of the message being replied to"
+    },
+    "is_deleted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the message has been deleted"
+    },
+    "deleted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the message was deleted"
+    }
+  },
+  "required": [
+    "recipient_email",
+    "content",
+    "conversation_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.recipient_email": "{{user.email}}"
+        }
+      ]
+    },
+    "write": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        }
+      ]
+    }
+  }
+}

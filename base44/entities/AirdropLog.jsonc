@@ -1,0 +1,56 @@
+{
+  "name": "AirdropLog",
+  "type": "object",
+  "properties": {
+    "recipient_address": {
+      "type": "string",
+      "description": "The Solana wallet address of the recipient."
+    },
+    "amount": {
+      "type": "number",
+      "description": "The amount of $QFLOW tokens airdropped."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "success",
+        "failed"
+      ],
+      "default": "pending",
+      "description": "The status of the airdrop transaction."
+    },
+    "transaction_signature": {
+      "type": "string",
+      "description": "The Solana transaction signature."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes about the airdrop."
+    }
+  },
+  "required": [
+    "recipient_address",
+    "amount",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.recipient_address.": "{{user.data.solana_wallet_address}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

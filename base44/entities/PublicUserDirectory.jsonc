@@ -1,0 +1,268 @@
+{
+  "name": "PublicUserDirectory",
+  "type": "object",
+  "properties": {
+    "user_public_id": {
+      "type": "string",
+      "description": "Unique, non-reversible public identifier for the user (UUID). Used in place of email for all client-side operations to protect user privacy."
+    },
+    "user_email": {
+      "type": "string",
+      "description": "User's email address"
+    },
+    "full_name": {
+      "type": "string",
+      "description": "User's display name"
+    },
+    "username": {
+      "type": "string",
+      "description": "User's username"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "User's avatar URL"
+    },
+    "banner_url": {
+      "type": "string",
+      "description": "User's banner image URL"
+    },
+    "bio": {
+      "type": "string",
+      "description": "User's bio"
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User's skills"
+    },
+    "interests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User's interests"
+    },
+    "reputation_score": {
+      "type": "number",
+      "default": 100,
+      "description": "User's reputation score"
+    },
+    "is_public": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether user wants to be discoverable"
+    },
+    "total_follower_count": {
+      "type": "number",
+      "default": 0,
+      "description": "The user's total follower count across all platforms."
+    },
+    "join_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The date the user created their account."
+    },
+    "subscription_tier": {
+      "type": "string",
+      "enum": [
+        "Standard",
+        "Creator",
+        "Pro"
+      ],
+      "default": "Standard",
+      "description": "The user's current Quantum+ subscription tier."
+    },
+    "is_pioneer": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user is among the first 100 users"
+    },
+    "cross_platform_identity": {
+      "type": "object",
+      "description": "User's cross-platform identity and social verifications",
+      "properties": {
+        "web2_verifications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "platform": {
+                "type": "string",
+                "enum": [
+                  "twitter",
+                  "facebook",
+                  "instagram",
+                  "linkedin",
+                  "github",
+                  "youtube",
+                  "spotify"
+                ]
+              },
+              "username": {
+                "type": "string"
+              },
+              "display_name": {
+                "type": "string"
+              },
+              "follower_count": {
+                "type": "number"
+              },
+              "verified": {
+                "type": "boolean"
+              },
+              "profile_url": {
+                "type": "string"
+              },
+              "verified_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        "web3_connections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "protocol": {
+                "type": "string",
+                "enum": [
+                  "lens",
+                  "farcaster",
+                  "nostr",
+                  "bluesky",
+                  "mastodon"
+                ]
+              },
+              "handle": {
+                "type": "string"
+              },
+              "follower_count": {
+                "type": "number"
+              },
+              "reputation_score": {
+                "type": "number"
+              },
+              "profile_id": {
+                "type": "string"
+              },
+              "connected_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    },
+    "professional_credentials": {
+      "type": "object",
+      "description": "User's professional credentials for public display",
+      "properties": {
+        "is_verified": {
+          "type": "boolean",
+          "default": false
+        },
+        "profession": {
+          "type": "string"
+        },
+        "regulatory_body": {
+          "type": "string"
+        },
+        "verification_status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "verified",
+            "rejected"
+          ]
+        },
+        "verified_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "credentials": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "issuer": {
+                "type": "string"
+              },
+              "is_verified": {
+                "type": "boolean"
+              },
+              "public_display": {
+                "type": "boolean"
+              },
+              "expiry_date": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          }
+        }
+      }
+    },
+    "custom_badges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "textColor": {
+            "type": "string"
+          },
+          "borderColor": {
+            "type": "string"
+          },
+          "assignedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "assignedBy": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Custom badges assigned by admins"
+    },
+    "kyc_status": {
+      "type": "string",
+      "enum": [
+        "not_initiated",
+        "pending",
+        "verified",
+        "declined",
+        "review",
+        "expired",
+        "resubmission_requested"
+      ],
+      "description": "Current KYC verification status"
+    }
+  },
+  "required": [
+    "user_email",
+    "full_name"
+  ]
+}

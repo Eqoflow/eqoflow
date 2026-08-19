@@ -1,0 +1,71 @@
+{
+  "name": "PlatformExpense",
+  "type": "object",
+  "properties": {
+    "expense_type": {
+      "type": "string",
+      "enum": [
+        "infrastructure",
+        "marketing",
+        "salaries",
+        "legal",
+        "development",
+        "operations",
+        "other"
+      ],
+      "description": "Category of the platform expense."
+    },
+    "description": {
+      "type": "string",
+      "description": "A clear description of the expense (e.g., 'Mux Live Streaming Costs - May 2024')."
+    },
+    "amount_usd": {
+      "type": "number",
+      "description": "The cost of the expense in USD."
+    },
+    "vendor": {
+      "type": "string",
+      "description": "The company or service that was paid (e.g., 'Mux, Inc.', 'Amazon Web Services')."
+    },
+    "transaction_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The date the expense was paid."
+    },
+    "related_invoice_url": {
+      "type": "string",
+      "description": "A link to an invoice for maximum transparency (optional)."
+    },
+    "transaction_id": {
+      "type": "string",
+      "description": "Blockchain transaction hash (if applicable) for the expense payment."
+    }
+  },
+  "required": [
+    "expense_type",
+    "description",
+    "amount_usd",
+    "transaction_date"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

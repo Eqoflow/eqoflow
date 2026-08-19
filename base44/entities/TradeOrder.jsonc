@@ -1,0 +1,55 @@
+{
+  "name": "TradeOrder",
+  "type": "object",
+  "properties": {
+    "symbol": {
+      "type": "string",
+      "description": "Cryptocurrency symbol"
+    },
+    "order_type": {
+      "type": "string",
+      "enum": [
+        "market",
+        "limit",
+        "stop_loss"
+      ],
+      "description": "Type of order"
+    },
+    "side": {
+      "type": "string",
+      "enum": [
+        "buy",
+        "sell"
+      ],
+      "description": "Buy or sell order"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Amount of crypto to trade"
+    },
+    "price": {
+      "type": "number",
+      "description": "Price for limit orders"
+    },
+    "total_value": {
+      "type": "number",
+      "description": "Total value in USD"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "filled",
+        "cancelled"
+      ],
+      "default": "pending",
+      "description": "Order status"
+    }
+  },
+  "required": [
+    "symbol",
+    "order_type",
+    "side",
+    "amount"
+  ]
+}

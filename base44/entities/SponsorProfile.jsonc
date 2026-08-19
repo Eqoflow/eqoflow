@@ -1,0 +1,125 @@
+{
+  "name": "SponsorProfile",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The official name of the brand or sponsor."
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "URL for the brand's logo."
+    },
+    "website": {
+      "type": "string",
+      "description": "The brand's official website."
+    },
+    "contact_email": {
+      "type": "string",
+      "description": "Primary contact email for the sponsor."
+    },
+    "contact_person": {
+      "type": "string",
+      "description": "Name of the primary contact person."
+    },
+    "company_description": {
+      "type": "string",
+      "description": "Brief description of the company and what they do."
+    },
+    "subscribed_category_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of AIBrandingCategory IDs the sponsor is subscribed to."
+    },
+    "auto_approval_rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "category_id": {
+            "type": "string"
+          },
+          "min_velocity": {
+            "type": "number",
+            "description": "Minimum interaction velocity (e.g., likes/hour) to trigger auto-approval."
+          },
+          "max_bid_amount": {
+            "type": "number",
+            "description": "Maximum amount to automatically bid for a partnership."
+          }
+        }
+      },
+      "description": "Rules for automatically partnering with trending content."
+    },
+    "monthly_budget_usd": {
+      "type": "number",
+      "default": 0,
+      "description": "The monthly budget allocated for AI Branding partnerships."
+    },
+    "registration_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Status of the sponsor registration request."
+    },
+    "manager_user_email": {
+      "type": "string",
+      "description": "Email of the user who will manage this sponsor profile."
+    },
+    "reviewed_by": {
+      "type": "string",
+      "description": "Email of the admin who reviewed this application."
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the registration was reviewed."
+    },
+    "rejection_reason": {
+      "type": "string",
+      "description": "Reason for rejection if status is rejected."
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this sponsor's profile is active for partnerships."
+    }
+  },
+  "required": [
+    "name",
+    "contact_email",
+    "manager_user_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.manager_user_email": "{{user.email}}"
+        }
+      ]
+    },
+    "write": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "created_by": "{{user.email}}"
+        }
+      ]
+    }
+  }
+}

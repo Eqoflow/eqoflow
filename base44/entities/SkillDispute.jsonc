@@ -1,0 +1,141 @@
+{
+  "name": "SkillDispute",
+  "type": "object",
+  "properties": {
+    "transaction_id": {
+      "type": "string",
+      "description": "ID of the MarketplaceTransaction this dispute is for"
+    },
+    "skill_id": {
+      "type": "string",
+      "description": "ID of the skill involved"
+    },
+    "skill_title": {
+      "type": "string",
+      "description": "Title of the skill at time of dispute"
+    },
+    "complainant_email": {
+      "type": "string",
+      "description": "Email of the user raising the dispute"
+    },
+    "complainant_role": {
+      "type": "string",
+      "enum": [
+        "buyer",
+        "seller"
+      ],
+      "description": "Whether the complainant is the buyer or seller"
+    },
+    "respondent_email": {
+      "type": "string",
+      "description": "Email of the other party in the transaction"
+    },
+    "dispute_reason": {
+      "type": "string",
+      "enum": [
+        "service_not_delivered",
+        "poor_quality",
+        "late_delivery",
+        "not_as_described",
+        "payment_not_received",
+        "buyer_unresponsive",
+        "scope_creep",
+        "other"
+      ],
+      "description": "Primary reason for the dispute"
+    },
+    "dispute_details": {
+      "type": "string",
+      "description": "Detailed explanation of the dispute from complainant"
+    },
+    "evidence_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "URLs to any evidence (screenshots, files, etc.)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "under_review",
+        "awaiting_response",
+        "resolved_refund_buyer",
+        "resolved_pay_seller",
+        "resolved_partial_refund",
+        "closed_no_action"
+      ],
+      "default": "open",
+      "description": "Current status of the dispute"
+    },
+    "admin_notes": {
+      "type": "string",
+      "description": "Internal notes from admin reviewing the dispute"
+    },
+    "resolution_details": {
+      "type": "string",
+      "description": "Explanation of how the dispute was resolved"
+    },
+    "refund_amount": {
+      "type": "number",
+      "description": "Amount to be refunded if applicable"
+    },
+    "resolved_by": {
+      "type": "string",
+      "description": "Email of admin who resolved the dispute"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the dispute was resolved"
+    },
+    "respondent_response": {
+      "type": "string",
+      "description": "Response from the other party"
+    },
+    "respondent_response_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the other party responded"
+    }
+  },
+  "required": [
+    "transaction_id",
+    "skill_id",
+    "complainant_email",
+    "complainant_role",
+    "respondent_email",
+    "dispute_reason",
+    "dispute_details"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.complainant_email": "{{user.email}}"
+        },
+        {
+          "data.respondent_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "name": "DAOTreasury",
+  "type": "object",
+  "properties": {
+    "transaction_type": {
+      "type": "string",
+      "enum": [
+        "deposit",
+        "withdrawal",
+        "allocation",
+        "investment_return"
+      ],
+      "default": "deposit",
+      "description": "Type of treasury transaction"
+    },
+    "source": {
+      "type": "string",
+      "description": "Description of the revenue source (e.g., Marketplace Fee, Community Creation Fee)"
+    },
+    "amount_qflow": {
+      "type": "number",
+      "description": "Amount of $EQOFLO tokens involved in the transaction. Negative for withdrawals."
+    },
+    "value_usd": {
+      "type": "number",
+      "description": "USD value of the transaction at the time it occurred"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Any additional notes or links related to the transaction (e.g., Skill ID, Proposal ID)"
+    }
+  },
+  "required": [
+    "transaction_type",
+    "source",
+    "amount_qflow",
+    "value_usd"
+  ],
+  "rls": {
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

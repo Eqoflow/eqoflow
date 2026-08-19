@@ -1,0 +1,478 @@
+{
+  "name": "Post",
+  "type": "object",
+  "properties": {
+    "content": {
+      "type": "string",
+      "description": "Post content"
+    },
+    "media_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Attached media URLs"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Post tags"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "general",
+        "entertainment",
+        "education",
+        "business_finance",
+        "world_news",
+        "technology",
+        "health_wellness",
+        "sports"
+      ],
+      "default": "general",
+      "description": "Content category for filtering"
+    },
+    "author_full_name": {
+      "type": "string",
+      "description": "The full name of the post's author"
+    },
+    "author_username": {
+      "type": "string",
+      "description": "The username of the post's author, for URL slugs."
+    },
+    "author_avatar_url": {
+      "type": "string",
+      "description": "The avatar URL of the post's author"
+    },
+    "author_banner_url": {
+      "type": "string",
+      "description": "The banner URL of the post's author"
+    },
+    "author_follower_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Snapshot of the author's Engage follower count at time of posting"
+    },
+    "author_professional_credentials": {
+      "type": "object",
+      "description": "Snapshot of the author's professional credentials at time of posting",
+      "properties": {
+        "is_verified": {
+          "type": "boolean",
+          "default": false
+        },
+        "profession": {
+          "type": "string"
+        },
+        "regulatory_body": {
+          "type": "string"
+        },
+        "license_number": {
+          "type": "string"
+        },
+        "verification_status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "verified",
+            "rejected"
+          ]
+        },
+        "credentials": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "issuer": {
+                "type": "string"
+              },
+              "is_verified": {
+                "type": "boolean"
+              },
+              "public_display": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "author_cross_platform_identity": {
+      "type": "object",
+      "description": "Snapshot of the author's cross-platform identity at time of posting",
+      "properties": {
+        "web2_verifications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "platform": {
+                "type": "string",
+                "enum": [
+                  "twitter",
+                  "facebook",
+                  "instagram",
+                  "linkedin",
+                  "github",
+                  "youtube"
+                ]
+              },
+              "username": {
+                "type": "string"
+              },
+              "display_name": {
+                "type": "string"
+              },
+              "follower_count": {
+                "type": "number"
+              },
+              "verified": {
+                "type": "boolean"
+              },
+              "profile_url": {
+                "type": "string"
+              },
+              "verified_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        "web3_connections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "protocol": {
+                "type": "string",
+                "enum": [
+                  "lens",
+                  "farcaster",
+                  "nostr",
+                  "bluesky",
+                  "mastodon"
+                ]
+              },
+              "handle": {
+                "type": "string"
+              },
+              "follower_count": {
+                "type": "number"
+              },
+              "reputation_score": {
+                "type": "number"
+              },
+              "profile_id": {
+                "type": "string"
+              },
+              "connected_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    },
+    "likes_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of likes"
+    },
+    "liked_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of user emails who liked the post"
+    },
+    "reposts_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of reposts"
+    },
+    "comments_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of comments"
+    },
+    "ep_rewards_earned": {
+      "type": "number",
+      "default": 0,
+      "description": "EP earned from this post"
+    },
+    "privacy_level": {
+      "type": "string",
+      "enum": [
+        "public",
+        "friends",
+        "private"
+      ],
+      "default": "public",
+      "description": "Post privacy setting"
+    },
+    "is_nft": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether post is minted as an NFT"
+    },
+    "blockchain_hash": {
+      "type": "string",
+      "description": "Blockchain transaction hash"
+    },
+    "is_repost": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is a repost"
+    },
+    "original_post_id": {
+      "type": "string",
+      "description": "ID of the original post if this is a repost"
+    },
+    "original_author": {
+      "type": "string",
+      "description": "Original author's email if this is a repost"
+    },
+    "repost_comment": {
+      "type": "string",
+      "description": "Optional comment added when reposting"
+    },
+    "nft_gate_settings": {
+      "type": "object",
+      "description": "NFT gating configuration for this post",
+      "properties": {
+        "collection": {
+          "type": "string",
+          "description": "NFT collection contract address"
+        },
+        "amount": {
+          "type": "number",
+          "default": 1,
+          "description": "Minimum NFTs required"
+        },
+        "blockchain": {
+          "type": "string",
+          "description": "Blockchain network"
+        },
+        "accessType": {
+          "type": "string",
+          "description": "Type of access granted"
+        },
+        "access_url": {
+          "type": "string",
+          "description": "URL where verified NFT holders will be redirected"
+        },
+        "preview_content": {
+          "type": "string",
+          "description": "Preview content shown to non-NFT holders"
+        }
+      }
+    },
+    "moderation_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "flagged",
+        "removed"
+      ],
+      "default": "pending",
+      "description": "The moderation status of the post"
+    },
+    "moderation_details": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "description": "Brief details of the latest moderation action"
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this post is pinned by admin to the top of feed"
+    },
+    "is_super_charged": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this post has been supercharged with a Super Boost token"
+    },
+    "super_charged_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the post was supercharged"
+    },
+    "community_id": {
+      "type": "string",
+      "description": "ID of the community this post belongs to (null for general platform posts)"
+    },
+    "share_to_main_feed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this community post should also appear on the main platform feed (only available to community creators)"
+    },
+    "youtube_video_id": {
+      "type": "string",
+      "description": "The ID of the embedded YouTube video."
+    },
+    "youtube_thumbnail_url": {
+      "type": "string",
+      "description": "The URL for the YouTube video's thumbnail image."
+    },
+    "youtube_video_title": {
+      "type": "string",
+      "description": "The title of the embedded YouTube video."
+    },
+    "impressions_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of times the post has been viewed (impressions)."
+    },
+    "shared_article_id": {
+      "type": "string",
+      "description": "ID of the BlogArticle if this post is sharing an EqoFlow article"
+    },
+    "ai_branding_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "trending",
+        "partnered"
+      ],
+      "default": "none",
+      "description": "The current status of the post within the AI Branding system."
+    },
+    "ai_branding_partnership_id": {
+      "type": "string",
+      "description": "If partnered, the ID of the active AIBrandingPartnership record."
+    },
+    "ai_suggested_categories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of category IDs suggested by the ML system."
+    },
+    "creator_overlay_presets": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "top_left",
+          "top_right",
+          "bottom_left",
+          "bottom_right",
+          "lower_third"
+        ]
+      },
+      "description": "The overlay locations pre-selected by the creator before posting."
+    },
+    "post_to_x": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this post should be cross-posted to X (Twitter)"
+    },
+    "x_tweet_id": {
+      "type": "string",
+      "description": "The ID of the corresponding tweet if posted to X"
+    },
+    "x_posted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the post was successfully posted to X"
+    },
+    "content_hash": {
+      "type": "string",
+      "description": "Cryptographic hash of the content for provenance verification"
+    },
+    "blockchain_tx_id": {
+      "type": "string",
+      "description": "Blockchain transaction ID for timestamped proof of creation"
+    },
+    "license_id": {
+      "type": "string",
+      "description": "ID of the ContentLicense applied to this post"
+    },
+    "eqoflo_price": {
+      "type": "number",
+      "description": "Price in $eqoflo tokens to unlock this gated content (null if not gated)"
+    },
+    "gated_content_title": {
+      "type": "string",
+      "description": "Title shown to users for gated content before unlock"
+    },
+    "unlocked_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of user emails who have paid to unlock this gated content"
+    },
+    "total_revenue": {
+      "type": "number",
+      "default": 0,
+      "description": "Total $eqoflo revenue earned from this gated content"
+    },
+    "brand_content_price": {
+      "type": "number",
+      "description": "Price in $eqoflo for brands to purchase distribution rights to this content"
+    },
+    "brand_content_title": {
+      "type": "string",
+      "description": "Title for the content package being sold to brands"
+    },
+    "purchased_by_brands": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of user emails who purchased distribution rights to this content"
+    },
+    "brand_content_revenue": {
+      "type": "number",
+      "default": 0,
+      "description": "Total $eqoflo revenue earned from brand content purchases"
+    },
+    "is_creator_hub_published": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this stamped content has been published to the Creator Hub for public viewing"
+    }
+  },
+  "required": [
+    "content"
+  ],
+  "rls": {
+    "write": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "created_by": "{{user.email}}"
+        }
+      ]
+    }
+  }
+}

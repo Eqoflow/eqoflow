@@ -1,0 +1,72 @@
+{
+  "name": "EPPackage",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the EP package (e.g., Small Pack)."
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description of the package, including bonus details."
+    },
+    "ep_amount": {
+      "type": "number",
+      "description": "The total amount of EP the user receives."
+    },
+    "fiat_cost_usd": {
+      "type": "number",
+      "description": "The cost of the package in US Dollars."
+    },
+    "fiat_cost_gbp": {
+      "type": "number",
+      "description": "The cost of the package in British Pounds."
+    },
+    "qflow_cost": {
+      "type": "number",
+      "description": "The cost of the package in $EQOFLO tokens."
+    },
+    "image_url": {
+      "type": "string",
+      "description": "URL for the package's display image."
+    },
+    "display_order": {
+      "type": "number",
+      "default": 0,
+      "description": "The order in which to display this package."
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this package is currently available for purchase."
+    }
+  },
+  "required": [
+    "name",
+    "ep_amount",
+    "fiat_cost_usd",
+    "fiat_cost_gbp",
+    "qflow_cost"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

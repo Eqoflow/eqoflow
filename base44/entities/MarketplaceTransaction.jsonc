@@ -1,0 +1,128 @@
+{
+  "name": "MarketplaceTransaction",
+  "type": "object",
+  "properties": {
+    "item_id": {
+      "type": "string",
+      "description": "The ID of the item being purchased (e.g., Skill ID, Project ID)."
+    },
+    "item_type": {
+      "type": "string",
+      "enum": [
+        "skill",
+        "project_contribution",
+        "community_access",
+        "subscription"
+      ],
+      "description": "The type of item being purchased."
+    },
+    "item_title": {
+      "type": "string",
+      "description": "The title of the item at the time of purchase."
+    },
+    "buyer_email": {
+      "type": "string",
+      "description": "The email of the user making the purchase."
+    },
+    "seller_email": {
+      "type": "string",
+      "description": "The email of the user receiving the funds."
+    },
+    "amount_total": {
+      "type": "number",
+      "description": "The total amount paid by the buyer."
+    },
+    "amount_platform_fee": {
+      "type": "number",
+      "description": "The portion of the total amount taken as a platform fee."
+    },
+    "amount_seller_payout": {
+      "type": "number",
+      "description": "The final amount to be paid out to the seller."
+    },
+    "currency": {
+      "type": "string",
+      "description": "The currency of the transaction (e.g., USD, GBP)."
+    },
+    "payment_processor": {
+      "type": "string",
+      "enum": [
+        "square",
+        "solana"
+      ],
+      "description": "The payment processor used for the transaction."
+    },
+    "processor_transaction_id": {
+      "type": "string",
+      "description": "The unique transaction ID from the payment processor (e.g., Square Payment ID)."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending_payment",
+        "held_in_escrow",
+        "release_to_seller",
+        "completed",
+        "disputed",
+        "refunded",
+        "cancelled"
+      ],
+      "default": "pending_payment",
+      "description": "The current status of the transaction in the escrow lifecycle."
+    },
+    "payout_status": {
+      "type": "string",
+      "enum": [
+        "due",
+        "processing",
+        "paid",
+        "on_hold"
+      ],
+      "default": "due",
+      "description": "The payout status for the seller's earnings from this transaction."
+    },
+    "payout_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The date when the payout was processed."
+    },
+    "payout_notes": {
+      "type": "string",
+      "description": "Administrator notes regarding the payout."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes related to the transaction."
+    }
+  },
+  "required": [
+    "item_id",
+    "item_type",
+    "buyer_email",
+    "seller_email",
+    "amount_total",
+    "currency"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.buyer_email": "{{user.email}}"
+        },
+        {
+          "data.seller_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

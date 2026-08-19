@@ -1,0 +1,233 @@
+{
+  "name": "CrowdProject",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Project title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed project description"
+    },
+    "project_type": {
+      "type": "string",
+      "enum": [
+        "fundraising",
+        "bounty"
+      ],
+      "description": "Type of crowdsourcing project"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "technology",
+        "art",
+        "music",
+        "gaming",
+        "education",
+        "social_impact",
+        "research",
+        "business",
+        "other"
+      ],
+      "description": "Project category"
+    },
+    "funding_goal": {
+      "type": "number",
+      "description": "Target funding amount"
+    },
+    "funding_currency": {
+      "type": "string",
+      "enum": [
+        "qflow",
+        "gbp"
+      ],
+      "default": "gbp",
+      "description": "Currency for funding goal"
+    },
+    "current_funding": {
+      "type": "number",
+      "default": 0,
+      "description": "Current amount raised"
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Project deadline"
+    },
+    "reward_token": {
+      "type": "string",
+      "description": "Community token offered as reward (optional)"
+    },
+    "reward_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount of reward tokens offered"
+    },
+    "milestones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "funding_required": {
+            "type": "number"
+          },
+          "completed": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "description": "Project milestones"
+    },
+    "contributors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "contributed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "description": "List of contributors and their contributions"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Project tags"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending_approval",
+        "active",
+        "funded",
+        "completed",
+        "failed",
+        "cancelled",
+        "rejected"
+      ],
+      "default": "pending_approval",
+      "description": "Project status"
+    },
+    "approval_proposal_id": {
+      "type": "string",
+      "description": "ID of the DAO governance proposal for this project's approval"
+    },
+    "featured_image": {
+      "type": "string",
+      "description": "Featured project image URL"
+    },
+    "project_images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Additional project images (max 6)"
+    },
+    "project_documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "document_type": {
+            "type": "string",
+            "enum": [
+              "pitch_deck",
+              "one_pager",
+              "financial_projections",
+              "other"
+            ]
+          },
+          "file_url": {
+            "type": "string"
+          },
+          "file_name": {
+            "type": "string"
+          },
+          "uploaded_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "description": "Project documents (max 3)"
+    },
+    "updates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "posted_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "description": "Project updates for backers"
+    },
+    "community_id": {
+      "type": "string",
+      "description": "Associated community ID (optional)"
+    }
+  },
+  "required": [
+    "title",
+    "description",
+    "project_type",
+    "category",
+    "funding_goal",
+    "deadline"
+  ],
+  "rls": {
+    "write": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "created_by": "{{user.email}}"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "CommunityMessage",
+  "type": "object",
+  "properties": {
+    "community_id": {
+      "type": "string",
+      "description": "ID of the community this message belongs to"
+    },
+    "channel_id": {
+      "type": "string",
+      "description": "ID of the channel within the community"
+    },
+    "content": {
+      "type": "string",
+      "description": "The text content of the message"
+    },
+    "author_email": {
+      "type": "string",
+      "description": "Email of the message author"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Display name of the author"
+    },
+    "author_avatar_url": {
+      "type": "string",
+      "description": "Avatar URL of the author"
+    },
+    "media_url": {
+      "type": "string",
+      "description": "Optional attached image/media URL"
+    }
+  },
+  "required": [
+    "community_id",
+    "channel_id",
+    "content",
+    "author_email"
+  ]
+}

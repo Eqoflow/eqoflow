@@ -1,0 +1,124 @@
+{
+  "name": "ModerationLog",
+  "type": "object",
+  "properties": {
+    "content_id": {
+      "type": "string",
+      "description": "ID of the moderated content (e.g., Post ID)"
+    },
+    "content_type": {
+      "type": "string",
+      "enum": [
+        "post",
+        "comment",
+        "profile"
+      ],
+      "description": "The type of content that was moderated"
+    },
+    "post_author_email": {
+      "type": "string",
+      "description": "The email of the author of the content that was moderated."
+    },
+    "content_snapshot": {
+      "type": "string",
+      "description": "A snapshot of the content at the time of moderation"
+    },
+    "moderation_result": {
+      "type": "string",
+      "enum": [
+        "approved",
+        "flagged",
+        "removed"
+      ],
+      "description": "The final outcome of the moderation"
+    },
+    "moderation_reason": {
+      "type": "string",
+      "description": "The primary category for the moderation action (can be free text for admin flags or enum for AI)"
+    },
+    "moderator_email": {
+      "type": "string",
+      "description": "Email of the admin/moderator who took the action."
+    },
+    "moderator_notes": {
+      "type": "string",
+      "description": "The free-text reason provided by the moderator."
+    },
+    "ai_confidence_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "The AI's confidence in its decision (0 to 1)"
+    },
+    "ai_explanation": {
+      "type": "string",
+      "description": "A detailed explanation from the AI about its decision"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "final",
+        "appealed",
+        "resolved"
+      ],
+      "default": "final",
+      "description": "The current status of this moderation record"
+    },
+    "appeal_reason": {
+      "type": "string",
+      "description": "Reason provided by the user if the decision is appealed"
+    },
+    "human_reviewer_decision": {
+      "type": "string",
+      "enum": [
+        "upheld",
+        "overturned"
+      ],
+      "description": "Decision from a human reviewer after an appeal"
+    },
+    "admin_response": {
+      "type": "string",
+      "description": "The final response from the admin to the user regarding the appeal."
+    },
+    "reviewed_by": {
+      "type": "string",
+      "description": "Email of the admin who resolved the appeal."
+    },
+    "resolved_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the appeal was resolved."
+    }
+  },
+  "required": [
+    "content_id",
+    "content_type",
+    "moderation_result"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.post_author_email": "{{user.email}}"
+        }
+      ]
+    },
+    "write": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "created_by": "{{user.email}}"
+        }
+      ]
+    }
+  }
+}

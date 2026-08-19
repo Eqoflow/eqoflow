@@ -1,0 +1,54 @@
+{
+  "name": "StreamChat",
+  "type": "object",
+  "properties": {
+    "stream_id": {
+      "type": "string",
+      "description": "ID of the stream this message belongs to"
+    },
+    "message": {
+      "type": "string",
+      "description": "Chat message content"
+    },
+    "username": {
+      "type": "string",
+      "description": "Username of the sender"
+    },
+    "is_moderator": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user is a moderator"
+    },
+    "is_subscriber": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user is a subscriber"
+    },
+    "donation_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Donation amount if this is a donation message"
+    }
+  },
+  "required": [
+    "stream_id",
+    "message",
+    "username"
+  ],
+  "rls": {
+    "write": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

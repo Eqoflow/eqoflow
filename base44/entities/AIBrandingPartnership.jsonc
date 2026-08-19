@@ -1,0 +1,70 @@
+{
+  "name": "AIBrandingPartnership",
+  "type": "object",
+  "properties": {
+    "post_id": {
+      "type": "string",
+      "description": "The ID of the Post content in this partnership."
+    },
+    "sponsor_id": {
+      "type": "string",
+      "description": "The ID of the SponsorProfile in this partnership."
+    },
+    "creator_email": {
+      "type": "string",
+      "description": "The email of the content creator."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending_creator_approval",
+        "active",
+        "completed",
+        "rejected_by_creator",
+        "cancelled_by_sponsor"
+      ],
+      "default": "pending_creator_approval"
+    },
+    "overlay_location": {
+      "type": "string",
+      "enum": [
+        "top_left",
+        "top_right",
+        "bottom_left",
+        "bottom_right",
+        "lower_third"
+      ],
+      "description": "The location where the brand's logo will be overlaid on the content."
+    },
+    "payment_amount_usd": {
+      "type": "number",
+      "description": "The amount paid to the creator for this partnership."
+    },
+    "partnership_start_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "partnership_end_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "post_id",
+    "sponsor_id",
+    "creator_email",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

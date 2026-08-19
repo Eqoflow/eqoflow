@@ -1,0 +1,96 @@
+{
+  "name": "Subscription",
+  "type": "object",
+  "properties": {
+    "subscriber_email": {
+      "type": "string",
+      "description": "Email of the subscriber"
+    },
+    "creator_email": {
+      "type": "string",
+      "description": "Email of the creator being subscribed to"
+    },
+    "subscription_type": {
+      "type": "string",
+      "enum": [
+        "monthly",
+        "yearly"
+      ],
+      "default": "monthly",
+      "description": "Type of subscription"
+    },
+    "amount_usd": {
+      "type": "number",
+      "default": 5,
+      "description": "Subscription amount in USD"
+    },
+    "platform_fee_usd": {
+      "type": "number",
+      "default": 0.75,
+      "description": "Platform fee (15% of subscription)"
+    },
+    "creator_payout_usd": {
+      "type": "number",
+      "default": 4.25,
+      "description": "Amount paid to creator (85% of subscription)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "cancelled",
+        "expired"
+      ],
+      "default": "active",
+      "description": "Subscription status"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When subscription started"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When subscription ends"
+    },
+    "auto_renew": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether subscription auto-renews"
+    }
+  },
+  "required": [
+    "subscriber_email",
+    "creator_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.subscriber_email": "{{user.email}}"
+        },
+        {
+          "data.creator_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "$or": [
+        {
+          "data.subscriber_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "name": "DistributionRound",
+  "type": "object",
+  "properties": {
+    "round_number": {
+      "type": "number",
+      "description": "Sequential round number (e.g., 1, 2, 3...)"
+    },
+    "year": {
+      "type": "number",
+      "description": "Year of this distribution round"
+    },
+    "quarter": {
+      "type": "number",
+      "enum": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "description": "Quarter of the year (1=Q1, 2=Q2, etc.)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "open_for_proposals",
+        "voting_active",
+        "completed",
+        "skipped"
+      ],
+      "default": "upcoming",
+      "description": "Current status of this distribution round"
+    },
+    "proposal_period_start": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When users can start creating distribution proposals"
+    },
+    "proposal_period_end": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Deadline for creating distribution proposals"
+    },
+    "voting_period_start": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When voting begins on submitted proposals"
+    },
+    "voting_period_end": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When voting ends"
+    },
+    "treasury_balance_at_start": {
+      "type": "number",
+      "description": "Treasury balance when the round opened"
+    },
+    "max_distributable_amount": {
+      "type": "number",
+      "description": "Maximum amount that can be distributed (75% of treasury)"
+    },
+    "winning_proposal_id": {
+      "type": "string",
+      "description": "ID of the governance proposal that won this round"
+    },
+    "actual_distributed_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount actually distributed to token holders"
+    },
+    "participant_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of unique token holders who received distributions"
+    }
+  },
+  "required": [
+    "round_number",
+    "year",
+    "quarter",
+    "proposal_period_start",
+    "proposal_period_end",
+    "voting_period_start",
+    "voting_period_end"
+  ],
+  "rls": {
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "name": "ITOTransfer",
+  "type": "object",
+  "properties": {
+    "transaction_hash": {
+      "type": "string",
+      "description": "The unique Solana transaction signature (txid)."
+    },
+    "to_address": {
+      "type": "string",
+      "description": "The recipient's wallet address."
+    },
+    "amount_usdc": {
+      "type": "number",
+      "description": "The amount of USDC transferred out."
+    },
+    "fees_usdc": {
+      "type": "number",
+      "default": 0,
+      "description": "Transaction fees in USDC."
+    },
+    "transfer_type": {
+      "type": "string",
+      "enum": [
+        "operational_expense",
+        "liquidity_provision",
+        "team_payout",
+        "other"
+      ],
+      "default": "other",
+      "description": "The type/purpose of the outgoing transfer."
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the transfer purpose."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "confirmed",
+        "pending",
+        "failed"
+      ],
+      "default": "confirmed",
+      "description": "The status of the transfer."
+    }
+  },
+  "required": [
+    "transaction_hash",
+    "to_address",
+    "amount_usdc"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

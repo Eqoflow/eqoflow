@@ -1,0 +1,101 @@
+{
+  "name": "EPSeason",
+  "type": "object",
+  "properties": {
+    "season_id": {
+      "type": "string",
+      "description": "Unique season identifier (e.g., '2025-Q1')"
+    },
+    "title": {
+      "type": "string",
+      "description": "Season title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Season description and theme"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the season starts"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the season ends"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this season is currently active"
+    },
+    "total_ep_pool": {
+      "type": "number",
+      "description": "Total EP earned by all users this season"
+    },
+    "total_reward_pool": {
+      "type": "number",
+      "description": "Total $QFLOW tokens available for season rewards"
+    },
+    "multiplier_events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "event_name": {
+            "type": "string"
+          },
+          "multiplier": {
+            "type": "number"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Special multiplier events during the season"
+    },
+    "leaderboard": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_email": {
+            "type": "string"
+          },
+          "user_name": {
+            "type": "string"
+          },
+          "total_ep": {
+            "type": "number"
+          },
+          "rank": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Top users for this season"
+    }
+  },
+  "required": [
+    "season_id",
+    "title",
+    "start_date",
+    "end_date"
+  ],
+  "rls": {
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

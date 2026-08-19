@@ -1,0 +1,34 @@
+{
+  "name": "PlatformConfig",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "The configuration key (e.g., 'qflow_mint_address')"
+    },
+    "value": {
+      "type": "string",
+      "description": "The configuration value"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes about this configuration"
+    }
+  },
+  "required": [
+    "key",
+    "value"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "name": "QuestCompletion",
+  "type": "object",
+  "properties": {
+    "quest_id": {
+      "type": "string",
+      "description": "ID of the quest"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "ID of the user"
+    },
+    "season_id": {
+      "type": "string",
+      "description": "ID of the season"
+    },
+    "progress": {
+      "type": "number",
+      "default": 0,
+      "description": "Progress percentage (0-100)"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the quest is completed"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of completion"
+    },
+    "claim_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of times claimed"
+    },
+    "sp_awarded": {
+      "type": "number",
+      "default": 0,
+      "description": "Total SP awarded for this completion record"
+    }
+  },
+  "required": [
+    "quest_id",
+    "user_id",
+    "season_id"
+  ]
+}

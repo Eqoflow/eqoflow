@@ -1,0 +1,53 @@
+{
+  "name": "ProfileAnalytics",
+  "type": "object",
+  "properties": {
+    "profile_owner_email": {
+      "type": "string",
+      "description": "Email of the user whose profile was viewed"
+    },
+    "viewer_email": {
+      "type": "string",
+      "description": "Email of the user who viewed the profile"
+    },
+    "viewer_name": {
+      "type": "string",
+      "description": "Name of the user who viewed the profile"
+    },
+    "view_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the profile view (YYYY-MM-DD)"
+    },
+    "view_timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Exact timestamp of the profile view"
+    }
+  },
+  "required": [
+    "profile_owner_email",
+    "viewer_email",
+    "view_date",
+    "view_timestamp"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.profile_owner_email.": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

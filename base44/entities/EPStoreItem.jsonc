@@ -1,0 +1,80 @@
+{
+  "name": "EPStoreItem",
+  "type": "object",
+  "properties": {
+    "item_name": {
+      "type": "string",
+      "description": "Name of the store item"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of what this item does"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "cosmetic",
+        "utility",
+        "subscription",
+        "badge",
+        "boost"
+      ],
+      "description": "Category of the store item"
+    },
+    "ep_cost": {
+      "type": "number",
+      "description": "Cost in Engagement Points"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Icon name for the item"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the item is available for purchase"
+    },
+    "tier_requirement": {
+      "type": "string",
+      "enum": [
+        "novice",
+        "community_builder",
+        "quantum_pioneer",
+        "cosmic_luminary"
+      ],
+      "description": "Minimum tier required to purchase"
+    },
+    "duration_days": {
+      "type": "number",
+      "description": "Duration in days for temporary items (subscriptions, boosts)"
+    },
+    "item_data": {
+      "type": "object",
+      "description": "Additional data specific to the item type",
+      "properties": {
+        "subscription_tier": {
+          "type": "string"
+        },
+        "boost_multiplier": {
+          "type": "number"
+        },
+        "cosmetic_type": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "item_name",
+    "description",
+    "category",
+    "ep_cost"
+  ],
+  "rls": {
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

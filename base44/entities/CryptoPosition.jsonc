@@ -1,0 +1,39 @@
+{
+  "name": "CryptoPosition",
+  "type": "object",
+  "properties": {
+    "symbol": {
+      "type": "string",
+      "description": "Cryptocurrency symbol (e.g., BTC, ETH)"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Amount of cryptocurrency owned"
+    },
+    "avg_buy_price": {
+      "type": "number",
+      "description": "Average purchase price per unit"
+    },
+    "current_price": {
+      "type": "number",
+      "description": "Current market price per unit"
+    },
+    "total_invested": {
+      "type": "number",
+      "description": "Total USD invested"
+    },
+    "current_value": {
+      "type": "number",
+      "description": "Current value in USD"
+    },
+    "profit_loss": {
+      "type": "number",
+      "description": "Profit/loss in USD"
+    }
+  },
+  "required": [
+    "symbol",
+    "amount",
+    "avg_buy_price"
+  ]
+}

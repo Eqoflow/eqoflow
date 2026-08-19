@@ -1,0 +1,54 @@
+{
+  "name": "NillionData",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "The email of the user who owns this data."
+    },
+    "store_id": {
+      "type": "string",
+      "description": "The UUID of the Nillion store this data belongs to."
+    },
+    "secret_id": {
+      "type": "string",
+      "description": "The Nillion secret ID for this piece of data."
+    },
+    "data_type": {
+      "type": "string",
+      "enum": [
+        "private_data",
+        "birthdate",
+        "interest",
+        "vote"
+      ],
+      "description": "Type of data stored"
+    },
+    "is_simulation": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this is simulated data (stored locally) or real Nillion data"
+    },
+    "simulated_data": {
+      "type": "string",
+      "description": "The actual data when in simulation mode (unencrypted)"
+    },
+    "retrieval_password_hash": {
+      "type": "string",
+      "description": "Hash of the retrieval password for validation in simulation mode"
+    }
+  },
+  "required": [
+    "user_email",
+    "store_id",
+    "secret_id"
+  ],
+  "rls": {
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "write": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}

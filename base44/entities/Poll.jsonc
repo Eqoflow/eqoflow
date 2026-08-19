@@ -1,0 +1,133 @@
+{
+  "name": "Poll",
+  "type": "object",
+  "properties": {
+    "content": {
+      "type": "string",
+      "description": "Optional descriptive text/thoughts accompanying the poll"
+    },
+    "question": {
+      "type": "string",
+      "description": "The poll question"
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of poll options (e.g., ['Option A', 'Option B'])"
+    },
+    "votes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "description": "Object mapping option index to array of voter emails"
+    },
+    "total_votes": {
+      "type": "number",
+      "default": 0,
+      "description": "Total number of votes cast"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the poll closes"
+    },
+    "voters": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of user emails who have voted (to prevent duplicate votes)"
+    },
+    "author_full_name": {
+      "type": "string",
+      "description": "Name of the poll creator"
+    },
+    "author_avatar_url": {
+      "type": "string",
+      "description": "Avatar of the poll creator"
+    },
+    "author_username": {
+      "type": "string",
+      "description": "Username of the poll creator"
+    },
+    "community_id": {
+      "type": "string",
+      "description": "Optional: ID of community this poll belongs to"
+    },
+    "privacy_level": {
+      "type": "string",
+      "enum": [
+        "public",
+        "friends",
+        "private"
+      ],
+      "default": "public",
+      "description": "Poll privacy setting"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for the poll"
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this poll is pinned by admin to the top of feed"
+    },
+    "moderation_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "flagged",
+        "removed"
+      ],
+      "default": "approved",
+      "description": "The moderation status of the poll"
+    },
+    "moderation_details": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "description": "Brief details of the latest moderation action"
+    }
+  },
+  "required": [
+    "question",
+    "options",
+    "end_date"
+  ],
+  "rls": {
+    "write": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "created_by": "{{user.email}}"
+        }
+      ]
+    }
+  }
+}

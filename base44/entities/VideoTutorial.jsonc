@@ -1,0 +1,71 @@
+{
+  "name": "VideoTutorial",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title of the video tutorial"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of what the tutorial covers"
+    },
+    "youtube_url": {
+      "type": "string",
+      "description": "Full YouTube URL of the video"
+    },
+    "youtube_video_id": {
+      "type": "string",
+      "description": "Extracted YouTube video ID"
+    },
+    "thumbnail_url": {
+      "type": "string",
+      "description": "URL of the video thumbnail image"
+    },
+    "duration": {
+      "type": "string",
+      "description": "Video duration (e.g., '8:45')"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "getting_started",
+        "features",
+        "dao",
+        "rewards",
+        "skills",
+        "communities",
+        "other"
+      ],
+      "default": "other",
+      "description": "Category of the tutorial"
+    },
+    "order": {
+      "type": "number",
+      "default": 0,
+      "description": "Display order (lower numbers appear first)"
+    },
+    "views_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of times this video has been viewed"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this video is featured"
+    }
+  },
+  "required": [
+    "title",
+    "description",
+    "youtube_url"
+  ],
+  "rls": {
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

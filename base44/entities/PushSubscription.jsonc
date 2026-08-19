@@ -1,0 +1,64 @@
+{
+  "name": "PushSubscription",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user who owns this subscription"
+    },
+    "endpoint": {
+      "type": "string",
+      "description": "Push notification endpoint URL"
+    },
+    "keys": {
+      "type": "object",
+      "properties": {
+        "p256dh": {
+          "type": "string"
+        },
+        "auth": {
+          "type": "string"
+        }
+      },
+      "description": "Encryption keys for push notifications"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this subscription is active"
+    }
+  },
+  "required": [
+    "user_email",
+    "endpoint",
+    "keys"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,219 @@
+{
+  "name": "VirtualSpace",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the virtual space"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the virtual space"
+    },
+    "space_type": {
+      "type": "string",
+      "enum": [
+        "hangout",
+        "event",
+        "meeting",
+        "party",
+        "gallery",
+        "conference",
+        "gaming",
+        "other"
+      ],
+      "description": "Type of virtual space"
+    },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "space_station",
+        "forest",
+        "beach",
+        "city",
+        "abstract",
+        "neon_city",
+        "underwater",
+        "mountains"
+      ],
+      "default": "space_station",
+      "description": "Virtual environment theme"
+    },
+    "max_participants": {
+      "type": "number",
+      "default": 10,
+      "description": "Maximum number of participants"
+    },
+    "current_participants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "avatar_url": {
+            "type": "string"
+          },
+          "full_name": {
+            "type": "string"
+          },
+          "position": {
+            "type": "object",
+            "properties": {
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              },
+              "z": {
+                "type": "number"
+              }
+            }
+          },
+          "joined_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "description": "Currently active participants"
+    },
+    "is_public": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the space is public or private"
+    },
+    "password": {
+      "type": "string",
+      "description": "Password for private spaces"
+    },
+    "scheduled_start": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Scheduled start time for events"
+    },
+    "scheduled_end": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Scheduled end time for events"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "scheduled",
+        "ended",
+        "cancelled"
+      ],
+      "default": "active",
+      "description": "Current status of the space"
+    },
+    "featured_nfts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "contract_address": {
+            "type": "string"
+          },
+          "token_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "NFTs displayed in the space"
+    },
+    "space_settings": {
+      "type": "object",
+      "properties": {
+        "voice_chat_enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "text_chat_enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "avatar_interactions": {
+          "type": "boolean",
+          "default": true
+        },
+        "music_enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "background_music_url": {
+          "type": "string"
+        },
+        "custom_objects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "position": {
+                "type": "object"
+              },
+              "scale": {
+                "type": "object"
+              },
+              "url": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for the space"
+    },
+    "entry_fee": {
+      "type": "number",
+      "default": 0,
+      "description": "Entry fee in $QFLOW tokens"
+    },
+    "total_visits": {
+      "type": "number",
+      "default": 0,
+      "description": "Total number of visits"
+    }
+  },
+  "required": [
+    "name",
+    "space_type"
+  ],
+  "rls": {
+    "write": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "created_by": "{{user.email}}"
+        }
+      ]
+    }
+  }
+}

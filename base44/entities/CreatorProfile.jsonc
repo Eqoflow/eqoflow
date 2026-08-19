@@ -1,0 +1,89 @@
+{
+  "name": "CreatorProfile",
+  "type": "object",
+  "properties": {
+    "channel_name": {
+      "type": "string",
+      "description": "The creator's chosen channel or creator name"
+    },
+    "description": {
+      "type": "string",
+      "description": "A short bio or description of the creator"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "URL to the creator's channel logo/brand image"
+    },
+    "subscriber_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of subscribers for this creator"
+    },
+    "subscriber_emails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of user emails who are subscribed to this creator"
+    },
+    "social_links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "platform": {
+            "type": "string",
+            "enum": [
+              "youtube",
+              "x",
+              "instagram",
+              "tiktok",
+              "facebook",
+              "website",
+              "other"
+            ],
+            "description": "Social media platform name"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to the creator's profile on this platform"
+          }
+        },
+        "required": [
+          "platform",
+          "url"
+        ]
+      },
+      "description": "Links to the creator's other social media channels"
+    },
+    "is_creator": {
+      "type": "boolean",
+      "description": "Indicates if the user has opted to be a creator (true) or a viewer (false)",
+      "default": true
+    }
+  },
+  "required": [
+    "channel_name",
+    "is_creator"
+  ],
+  "rls": {
+    "write": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "created_by": "{{user.email}}"
+        }
+      ]
+    }
+  }
+}

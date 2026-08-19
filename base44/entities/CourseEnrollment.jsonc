@@ -1,0 +1,132 @@
+{
+  "name": "CourseEnrollment",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "ID of the course"
+    },
+    "course_title": {
+      "type": "string",
+      "description": "Title of the course at time of enrollment"
+    },
+    "student_email": {
+      "type": "string",
+      "description": "Email of the enrolled student"
+    },
+    "student_name": {
+      "type": "string",
+      "description": "Name of the student"
+    },
+    "instructor_email": {
+      "type": "string",
+      "description": "Email of the course instructor"
+    },
+    "enrollment_type": {
+      "type": "string",
+      "enum": [
+        "free",
+        "paid"
+      ],
+      "description": "Whether this was a free or paid enrollment"
+    },
+    "amount_paid": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount paid for the course"
+    },
+    "currency": {
+      "type": "string",
+      "description": "Currency used for payment"
+    },
+    "payment_status": {
+      "type": "string",
+      "enum": [
+        "completed",
+        "pending",
+        "failed"
+      ],
+      "default": "completed",
+      "description": "Status of the payment"
+    },
+    "stripe_payment_intent_id": {
+      "type": "string",
+      "description": "Stripe Payment Intent ID for tracking"
+    },
+    "stripe_checkout_session_id": {
+      "type": "string",
+      "description": "Stripe Checkout Session ID"
+    },
+    "progress_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Course completion percentage (0-100)"
+    },
+    "last_accessed": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time the student accessed the course"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the student has completed the course"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the course was completed"
+    },
+    "rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Student's rating of the course"
+    },
+    "review": {
+      "type": "string",
+      "description": "Student's review of the course"
+    },
+    "completed_lessons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of URLs or identifiers of completed lessons within the course"
+    }
+  },
+  "required": [
+    "course_id",
+    "student_email",
+    "instructor_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.student_email": "{{user.email}}"
+        },
+        {
+          "data.instructor_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "$or": [
+        {
+          "data.student_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

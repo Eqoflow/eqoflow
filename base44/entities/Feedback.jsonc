@@ -1,0 +1,64 @@
+{
+  "name": "Feedback",
+  "type": "object",
+  "properties": {
+    "content": {
+      "type": "string",
+      "description": "The user's feedback or suggestion"
+    },
+    "page_name": {
+      "type": "string",
+      "description": "The page the user was on when submitting feedback"
+    },
+    "feedback_type": {
+      "type": "string",
+      "enum": [
+        "add",
+        "change",
+        "remove",
+        "other"
+      ],
+      "description": "The type of feedback"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "in_progress",
+        "completed",
+        "rejected"
+      ],
+      "default": "new",
+      "description": "The status of the feedback ticket"
+    }
+  },
+  "required": [
+    "content",
+    "page_name",
+    "feedback_type"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "write": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "created_by": "{{user.email}}"
+        }
+      ]
+    }
+  }
+}

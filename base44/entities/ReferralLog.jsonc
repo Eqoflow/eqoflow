@@ -1,0 +1,59 @@
+{
+  "name": "ReferralLog",
+  "type": "object",
+  "properties": {
+    "referrer_email": {
+      "type": "string",
+      "description": "Email of the user who made the referral."
+    },
+    "referred_email": {
+      "type": "string",
+      "description": "Email of the new user who was successfully referred."
+    },
+    "referrer_reward": {
+      "type": "number",
+      "description": "Amount of $QFLOW tokens awarded to the referrer."
+    },
+    "referred_reward": {
+      "type": "number",
+      "description": "Amount of $QFLOW tokens awarded to the new user."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "completed",
+        "pending"
+      ],
+      "default": "completed",
+      "description": "Status of the referral payout."
+    }
+  },
+  "required": [
+    "referrer_email",
+    "referred_email",
+    "referrer_reward",
+    "referred_reward"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.referrer_email.": "{{user.email}}"
+        },
+        {
+          "data.referred_email.": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

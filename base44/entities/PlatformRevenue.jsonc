@@ -1,0 +1,58 @@
+{
+  "name": "PlatformRevenue",
+  "type": "object",
+  "properties": {
+    "revenue_source": {
+      "type": "string",
+      "enum": [
+        "subscription_fee",
+        "nft_gate_fee",
+        "marketplace_fee",
+        "other"
+      ],
+      "description": "Source of the revenue"
+    },
+    "amount_usd": {
+      "type": "number",
+      "description": "Revenue amount in USD"
+    },
+    "related_transaction_id": {
+      "type": "string",
+      "description": "ID of the related transaction (subscription, purchase, etc.)"
+    },
+    "creator_email": {
+      "type": "string",
+      "description": "Email of the creator involved (if applicable)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the revenue"
+    }
+  },
+  "required": [
+    "revenue_source",
+    "amount_usd",
+    "description"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

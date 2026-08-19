@@ -1,0 +1,23 @@
+{
+  "name": "LifetimeProgression",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "ID of the user"
+    },
+    "ep_total": {
+      "type": "number",
+      "default": 0,
+      "description": "Total Engagement Points (Lifetime)"
+    },
+    "level": {
+      "type": "number",
+      "default": 0,
+      "description": "Current Level"
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

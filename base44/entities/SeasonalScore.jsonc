@@ -1,0 +1,37 @@
+{
+  "name": "SeasonalScore",
+  "type": "object",
+  "properties": {
+    "season_id": {
+      "type": "string",
+      "description": "ID of the season"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "ID of the user"
+    },
+    "sp_total": {
+      "type": "number",
+      "default": 0,
+      "description": "Total Seasonal Points"
+    },
+    "rank": {
+      "type": "number",
+      "description": "Cached rank"
+    },
+    "is_deleted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Soft delete flag"
+    },
+    "last_sp_increase": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of last point increase"
+    }
+  },
+  "required": [
+    "season_id",
+    "user_id"
+  ]
+}

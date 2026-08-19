@@ -1,0 +1,329 @@
+{
+  "name": "GovernanceProposal",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title of the proposal"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the proposal"
+    },
+    "proposal_type": {
+      "type": "string",
+      "enum": [
+        "feature_request",
+        "policy_change",
+        "treasury_allocation",
+        "treasury_distribution",
+        "protocol_upgrade",
+        "moderation_rule",
+        "tokenomics_change",
+        "project_approval"
+      ],
+      "description": "Type of governance proposal"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "technical",
+        "economic",
+        "social",
+        "governance",
+        "emergency"
+      ],
+      "description": "Category of the proposal"
+    },
+    "bond_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount of $QFLOW staked by creator, forfeited if proposal fails or is vetoed"
+    },
+    "bond_processed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the proposal bond has been returned or forfeited"
+    },
+    "minimum_voting_threshold": {
+      "type": "number",
+      "default": 1000,
+      "description": "Minimum $QFLOW tokens required to vote on this proposal"
+    },
+    "is_vetoed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the proposal has been vetoed by the Governance Council"
+    },
+    "voting_power_snapshot": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number"
+      },
+      "description": "Snapshot of all eligible voters and their token balances at proposal creation"
+    },
+    "votes_for": {
+      "type": "number",
+      "default": 0,
+      "description": "Total voting power in favor"
+    },
+    "votes_against": {
+      "type": "number",
+      "default": 0,
+      "description": "Total voting power against"
+    },
+    "votes_abstain": {
+      "type": "number",
+      "default": 0,
+      "description": "Total voting power abstaining"
+    },
+    "voter_records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "voter_email": {
+            "type": "string"
+          },
+          "voter_name": {
+            "type": "string"
+          },
+          "vote_choice": {
+            "type": "string",
+            "enum": [
+              "for",
+              "against",
+              "abstain"
+            ]
+          },
+          "voting_power": {
+            "type": "number"
+          },
+          "vote_reason": {
+            "type": "string"
+          },
+          "voted_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "description": "Individual voting records"
+    },
+    "minimum_quorum": {
+      "type": "number",
+      "default": 0.1,
+      "description": "Minimum percentage of total supply needed to vote (0-1)"
+    },
+    "passing_threshold": {
+      "type": "number",
+      "default": 0.5,
+      "description": "Percentage of votes needed to pass (0-1)"
+    },
+    "voting_start": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When voting begins"
+    },
+    "voting_end": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When voting ends"
+    },
+    "time_lock_end": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the proposal can be executed after passing"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "passed",
+        "failed",
+        "queued",
+        "executed",
+        "cancelled",
+        "vetoed"
+      ],
+      "default": "active",
+      "description": "Current status of the proposal"
+    },
+    "execution_details": {
+      "type": "object",
+      "properties": {
+        "executed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "executed_by": {
+          "type": "string"
+        },
+        "execution_notes": {
+          "type": "string"
+        }
+      },
+      "description": "Details about proposal execution"
+    },
+    "distribution_details": {
+      "type": "object",
+      "properties": {
+        "distribution_percentage": {
+          "type": "number",
+          "description": "Percentage of treasury to distribute (0-1)"
+        },
+        "distribution_amount": {
+          "type": "number",
+          "description": "Fixed amount to distribute"
+        },
+        "distribution_type": {
+          "type": "string",
+          "enum": [
+            "percentage",
+            "fixed_amount"
+          ],
+          "default": "percentage"
+        },
+        "eligibility_snapshot_date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When to take the token balance snapshot"
+        },
+        "distribution_rationale": {
+          "type": "string",
+          "description": "Reason for this distribution"
+        },
+        "estimated_per_token_payout": {
+          "type": "number",
+          "description": "Estimated payout per token held"
+        }
+      },
+      "description": "Details specific to treasury distribution proposals"
+    },
+    "project_approval_details": {
+      "type": "object",
+      "properties": {
+        "project_id": {
+          "type": "string",
+          "description": "ID of the project being considered for approval"
+        },
+        "project_title": {
+          "type": "string",
+          "description": "Title of the project"
+        },
+        "project_creator": {
+          "type": "string",
+          "description": "Email of the project creator"
+        },
+        "funding_goal": {
+          "type": "number",
+          "description": "Funding goal amount"
+        },
+        "funding_currency": {
+          "type": "string",
+          "description": "Currency for funding"
+        },
+        "project_type": {
+          "type": "string",
+          "description": "Type of project (fundraising, bounty, grant)"
+        },
+        "risk_assessment": {
+          "type": "string",
+          "description": "Community assessment of project risks"
+        },
+        "viability_score": {
+          "type": "number",
+          "description": "Community viability rating (1-10)"
+        }
+      },
+      "description": "Details specific to project approval proposals"
+    },
+    "discussion_thread": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "commenter_email": {
+            "type": "string"
+          },
+          "commenter_name": {
+            "type": "string"
+          },
+          "comment": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "description": "Discussion comments on the proposal"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for categorizing proposals"
+    },
+    "impact_assessment": {
+      "type": "object",
+      "properties": {
+        "technical_complexity": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "estimated_cost": {
+          "type": "number"
+        },
+        "timeline_estimate": {
+          "type": "string"
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "benefits": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Assessment of proposal impact"
+    }
+  },
+  "required": [
+    "title",
+    "description",
+    "proposal_type",
+    "voting_end"
+  ],
+  "rls": {
+    "write": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "created_by": "{{user.email}}"
+        }
+      ]
+    }
+  }
+}

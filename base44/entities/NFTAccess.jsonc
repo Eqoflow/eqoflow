@@ -1,0 +1,62 @@
+{
+  "name": "NFTAccess",
+  "type": "object",
+  "properties": {
+    "content_type": {
+      "type": "string",
+      "enum": [
+        "post",
+        "stream",
+        "skill",
+        "group"
+      ],
+      "description": "Type of content being gated"
+    },
+    "content_id": {
+      "type": "string",
+      "description": "ID of the content being gated"
+    },
+    "required_nft_collection": {
+      "type": "string",
+      "description": "NFT collection contract address required for access"
+    },
+    "required_nft_amount": {
+      "type": "number",
+      "default": 1,
+      "description": "Minimum number of NFTs required"
+    },
+    "access_type": {
+      "type": "string",
+      "enum": [
+        "view",
+        "interact",
+        "premium_features"
+      ],
+      "default": "view",
+      "description": "Level of access granted"
+    },
+    "blockchain": {
+      "type": "string",
+      "enum": [
+        "ethereum",
+        "polygon",
+        "solana",
+        "binance"
+      ],
+      "default": "ethereum",
+      "description": "Blockchain where the NFT exists"
+    }
+  },
+  "required": [
+    "content_type",
+    "content_id",
+    "required_nft_collection"
+  ],
+  "rls": {
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "name": "DaoCouncilMember",
+  "description": "Represents a member of the DAO's governing council.",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "The email of the user who is a DAO Council member"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "An optional display name to override the user's full name."
+    },
+    "council_title": {
+      "type": "string",
+      "description": "The specific title of the council member (e.g., 'Head of Governance', 'Community Liaison')"
+    },
+    "council_bio": {
+      "type": "string",
+      "description": "A short bio describing the member's role on the council."
+    },
+    "council_image_url": {
+      "type": "string",
+      "description": "Optional URL to a custom image for the council member display on the DAO page (if different from profile avatar)"
+    },
+    "display_order": {
+      "type": "number",
+      "description": "Optional number to define the display order of council members"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this council member entry is active and should be displayed"
+    }
+  },
+  "required": [
+    "user_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        }
+      ]
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

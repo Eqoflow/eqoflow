@@ -1,0 +1,80 @@
+{
+  "name": "TrendingContentAlert",
+  "type": "object",
+  "properties": {
+    "post_id": {
+      "type": "string",
+      "description": "The ID of the trending Post."
+    },
+    "post_snapshot": {
+      "type": "object",
+      "properties": {
+        "content_preview": {
+          "type": "string"
+        },
+        "media_url": {
+          "type": "string"
+        }
+      },
+      "description": "A snapshot of the post content for quick preview."
+    },
+    "creator_email": {
+      "type": "string",
+      "description": "Email of the post's creator."
+    },
+    "suggested_category_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of AIBrandingCategory IDs suggested by the ML system."
+    },
+    "performance_metrics": {
+      "type": "object",
+      "properties": {
+        "velocity": {
+          "type": "number",
+          "description": "A score representing interaction speed (e.g., shares per minute)."
+        },
+        "views": {
+          "type": "number"
+        },
+        "shares": {
+          "type": "number"
+        },
+        "likes": {
+          "type": "number"
+        }
+      },
+      "description": "Key performance metrics at the time of the alert."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "viewed",
+        "actioned",
+        "dismissed"
+      ],
+      "default": "new",
+      "description": "The status of this alert in the dashboard."
+    }
+  },
+  "required": [
+    "post_id",
+    "creator_email",
+    "performance_metrics"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "name": "EngagementPoint",
+  "type": "object",
+  "properties": {
+    "action_type": {
+      "type": "string",
+      "enum": [
+        "post_create",
+        "post_like",
+        "comment_create",
+        "comment_like",
+        "repost",
+        "profile_complete",
+        "daily_login",
+        "skill_offer",
+        "skill_complete",
+        "stream_create",
+        "stream_watch",
+        "community_join",
+        "nft_showcase",
+        "dao_vote",
+        "proposal_create",
+        "referral",
+        "milestone_achievement",
+        "user_follow",
+        "creator_engagement_like",
+        "creator_engagement_reaction",
+        "creator_engagement_comment",
+        "creator_engagement_repost",
+        "reaction_remove"
+      ],
+      "description": "Type of action that earned EP"
+    },
+    "points_earned": {
+      "type": "number",
+      "description": "Number of EP earned from this action"
+    },
+    "multiplier": {
+      "type": "number",
+      "default": 1,
+      "description": "Multiplier applied (for streaks, achievements, etc.)"
+    },
+    "final_points": {
+      "type": "number",
+      "description": "Final EP after multiplier (points_earned * multiplier)"
+    },
+    "points_awarded": {
+      "type": "number",
+      "description": "EP actually awarded to user (after daily cap)"
+    },
+    "points_to_treasury": {
+      "type": "number",
+      "default": 0,
+      "description": "EP sent to treasury due to daily cap"
+    },
+    "daily_total_before": {
+      "type": "number",
+      "description": "User's total EP for the day before this action"
+    },
+    "daily_cap_reached": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether daily cap was reached with this action"
+    },
+    "related_content_id": {
+      "type": "string",
+      "description": "ID of related post, comment, skill, etc."
+    },
+    "related_content_type": {
+      "type": "string",
+      "enum": [
+        "post",
+        "comment",
+        "skill",
+        "stream",
+        "community",
+        "proposal",
+        "user"
+      ],
+      "description": "Type of content that earned the EP"
+    },
+    "streak_bonus": {
+      "type": "number",
+      "default": 0,
+      "description": "Additional points from streak bonus"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of what earned the EP"
+    },
+    "season": {
+      "type": "string",
+      "description": "Season identifier (e.g., '2025-Q1') for seasonal rewards"
+    },
+    "is_swapped": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether these points have been swapped for tokens"
+    },
+    "recipient_email": {
+      "type": "string",
+      "description": "Email of the user receiving the EP (for creator rewards)"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "earned",
+        "purchased",
+        "admin_grant"
+      ],
+      "default": "earned",
+      "description": "How the EP was acquired (earned through activity, purchased, or granted by admin)."
+    }
+  },
+  "required": [
+    "action_type",
+    "points_earned",
+    "final_points",
+    "points_awarded",
+    "description"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "data.recipient_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

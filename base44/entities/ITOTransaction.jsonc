@@ -1,0 +1,83 @@
+{
+  "name": "ITOTransaction",
+  "type": "object",
+  "properties": {
+    "transaction_hash": {
+      "type": "string",
+      "description": "The unique Solana transaction signature (txid)."
+    },
+    "from_address": {
+      "type": "string",
+      "description": "The sender's wallet address."
+    },
+    "amount_usdc": {
+      "type": "number",
+      "description": "The amount of USDC deposited."
+    },
+    "token_price_at_deposit": {
+      "type": "number",
+      "description": "The price of one $QFLOW token at the time of the transaction."
+    },
+    "tokens_allocated": {
+      "type": "number",
+      "description": "The calculated number of $QFLOW tokens allocated for this deposit."
+    },
+    "phase_name": {
+      "type": "string",
+      "description": "The name of the ITO phase active during the transaction (e.g., 'Private Sale')."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "confirmed",
+        "pending",
+        "failed"
+      ],
+      "default": "confirmed",
+      "description": "The status of the transaction."
+    },
+    "claimed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this transaction's tokens have been claimed by a user."
+    },
+    "claimed_by_user_email": {
+      "type": "string",
+      "description": "The email of the user who claimed tokens from this transaction."
+    },
+    "claimed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when this transaction was claimed."
+    }
+  },
+  "required": [
+    "transaction_hash",
+    "from_address",
+    "amount_usdc",
+    "token_price_at_deposit",
+    "tokens_allocated",
+    "phase_name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "name": "AIBrandingCategory",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The unique name of the branding category (e.g., Technology, Healthcare)."
+    },
+    "description": {
+      "type": "string",
+      "description": "A brief description of the category."
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this category is active and can be assigned to content."
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "write": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
